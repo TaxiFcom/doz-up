@@ -1,0 +1,110 @@
+// Load environment variables from .env file
+require('dotenv').config();
+
+const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const dbUtils = require('./lib/db');
+const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
+const http = require('http');
+const https = require('https');
+const WebSocket = require('ws');
+const ftp = require('basic-ftp');
+
+// Process error handlers - prevent silent crashes + AI interception
+process.on('uncaughtException', (err) => {
+    // EADDRINUSE is handled by server.on('error') with retry logic — don't crash
+    if (err.code === 'EADDRINUSE') return;
+    console.error('[GATEWAY] Uncaught Exception:', err.message);
+    if (!err.message.includes('ENOENT') && !err.message.includes('ENOTFOUND')) {
+        process.exit(1);
+    }
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('[GATEWAY] Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const csrf = require('csurf');
+
+// ─── Configuration ────────────────────────────────────────────────────────────
+const PORT       = process.env.GATEWAY_PORT || 3001;
+const BACKEND    = process.env.BACKEND_URL  || 'http://localhost:3000';
+const SSL_KEY    = process.env.SSL_KEY_PATH;
+const SSL_CERT   = process.env.SSL_CERT_PATH;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'replace-me-in-production';
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
+const FTP_HOST   = process.env.FTP_HOST;
+const FTP_USER   = process.env.FTP_USER;
+const FTP_PASS   = process.env.FTP_PASS;
+const FTP_SECURE = process.env.FTP_SECURE === 'true';
+
+// ─── Express App ──────────────────────────────────────────────────────────────
+const app = express();
+
+// ─── Security Middleware ───────────────────────────────────────────────────────
+app.use(cookieParser(SESSION_SECRET));
+
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc:  ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com'],
+            styleSrc:   ["'self'", "'unsafe-inline'", 'fonts.googleapis.com', 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com'],
+            fontSrc:    ["'self'", 'fonts.gstatic.com', 'cdnjs.cloudflare.com'],
+            imgSrc:     ["'self'", 'data:', 'blob:', '*'],
+            connectSrc: ["'self'", '*'],
+            mediaSrc:   ["'self'", 'blob:'],
+            workerSrc:  ["'self'", 'blob:'],
+            frameSrc:   ["'none'"],
+        },
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 500,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => {
+        return req.path.startsWith('/socket.io') ||
+               req.path.startsWith('/ws') ||
+               req.path === '/health';
+    }
+});
+app.use(limiter);
+
+// ─── CORS ─────────────────────────────────────────────────────────────────────
+const corsOptions = {
+    origin: function(origin, callback) {
+        const allowed = [
+            process.env.FRONTEND_URL,
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://localhost:5173',
+            process.env.PUBLIC_URL,
+        ].filter(Boolean);
+        if (!origin || allowed.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, true); // allow all for now
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
+};
+
+app.use(require('cors')(corsOptions));
+
+// ─── Body Parsers ──────────────────────────────────────────────────────────────
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));

@@ -1,0 +1,74 @@
+name: Assemble Gateway Segments
+
+on:
+  push:
+    branches:
+      - fix/security-refactoring
+    paths:
+      - 'gateway-segments/.chunks/**'
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/security-refactoring
+
+      - name: Check if all chunks are present
+        id: check
+        run: |
+          # Count chunks for each segment
+          N01=$(ls gateway-segments/.chunks/seg01_*.txt 2>/dev/null | wc -l)
+          N02=$(ls gateway-segments/.chunks/seg02_*.txt 2>/dev/null | wc -l)
+          N03=$(ls gateway-segments/.chunks/seg03_*.txt 2>/dev/null | wc -l)
+          N04=$(ls gateway-segments/.chunks/seg04_*.txt 2>/dev/null | wc -l)
+          echo "seg01 chunks: $N01"
+          echo "seg02 chunks: $N02"
+          echo "seg03 chunks: $N03"
+          echo "seg04 chunks: $N04"
+          echo "n01=$N01" >> $GITHUB_OUTPUT
+          echo "n02=$N02" >> $GITHUB_OUTPUT
+          echo "n03=$N03" >> $GITHUB_OUTPUT
+          echo "n04=$N04" >> $GITHUB_OUTPUT
+
+      - name: Assemble segments
+        run: |
+          # Assemble segment-01 (26 chunks)
+          if [ "$(ls gateway-segments/.chunks/seg01_*.txt 2>/dev/null | wc -l)" -eq 26 ]; then
+            cat $(ls -1 gateway-segments/.chunks/seg01_*.txt | sort) > gateway-segments/segment-01
+            echo "Assembled segment-01: $(wc -c < gateway-segments/segment-01) bytes"
+          fi
+          # Assemble segment-02 (24 chunks)
+          if [ "$(ls gateway-segments/.chunks/seg02_*.txt 2>/dev/null | wc -l)" -eq 24 ]; then
+            cat $(ls -1 gateway-segments/.chunks/seg02_*.txt | sort) > gateway-segments/segment-02
+            echo "Assembled segment-02: $(wc -c < gateway-segments/segment-02) bytes"
+          fi
+          # Assemble segment-03 (25 chunks)
+          if [ "$(ls gateway-segments/.chunks/seg03_*.txt 2>/dev/null | wc -l)" -eq 25 ]; then
+            cat $(ls -1 gateway-segments/.chunks/seg03_*.txt | sort) > gateway-segments/segment-03
+            echo "Assembled segment-03: $(wc -c < gateway-segments/segment-03) bytes"
+          fi
+          # Assemble segment-04 (23 chunks)
+          if [ "$(ls gateway-segments/.chunks/seg04_*.txt 2>/dev/null | wc -l)" -eq 23 ]; then
+            cat $(ls -1 gateway-segments/.chunks/seg04_*.txt | sort) > gateway-segments/segment-04
+            echo "Assembled segment-04: $(wc -c < gateway-segments/segment-04) bytes"
+          fi
+
+      - name: Verify assembly
+        run: |
+          echo "segment-01: $(wc -c < gateway-segments/segment-01 2>/dev/null || echo MISSING) bytes"
+          echo "segment-02: $(wc -c < gateway-segments/segment-02 2>/dev/null || echo MISSING) bytes"
+          echo "segment-03: $(wc -c < gateway-segments/segment-03 2>/dev/null || echo MISSING) bytes"
+          echo "segment-04: $(wc -c < gateway-segments/segment-04 2>/dev/null || echo MISSING) bytes"
+
+      - name: Commit assembled segments
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gateway-segments/segment-01 gateway-segments/segment-02 gateway-segments/segment-03 gateway-segments/segment-04
+          git diff --staged --quiet || git commit -m "fix: add cookie-parser for CSRF + update gateway segments\n\n- Install cookie-parser (required for CSRF double-submit cookie pattern)\n- Register cookie-parser middleware before security patches in gateway.js\n- Add X-CSRF-Token to CORS allowed headers\n- Updated gateway segments reflect all fixes"
+          git push

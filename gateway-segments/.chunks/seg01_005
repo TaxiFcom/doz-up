@@ -1,0 +1,148 @@
+            message: `Upload directory probe failed: ${e.message}`,
+            source: 'upload-health-probe',
+            context: { errorCode: e.code, uploadsDir },
+        });
+    }
+
+    // Check file count (async to avoid blocking event loop)
+    try {
+        const files = await fs.promises.readdir(uploadsDir);
+        if (files.length > 50000) {
+            aiErrorInterceptor.handleError({
+                message: `Upload directory has ${files.length} files - potential storage issue`,
+                source: 'upload-health-probe',
+                context: { fileCount: files.length },
+            });
+        }
+    } catch (e) {
+        console.error('[Health-Probe] File count check failed:', e.message);
+    }
+}, 60 * 1000);
+
+// Get live statistics
+function getLiveStats() {
+    let desktopCount = 0;
+    let webCount = 0;
+
+    connectedUsers.forEach(user => {
+        if (user.type === 'desktop') desktopCount++;
+        else webCount++;
+    });
+
+    return {
+        online: connectedUsers.size,
+        desktop: desktopCount,
+        web: webCount,
+        totalConnections,
+        timestamp: Date.now()
+    };
+}
+
+// Broadcast stats to all connected clients
+function broadcastStats() {
+    const stats = getLiveStats();
+    const message = JSON.stringify({ type: 'stats', stats });
+
+    connectedUsers.forEach(user => {
+        if (user.ws.readyState === WebSocket.OPEN) {
+            user.ws.send(message);
+        }
+    });
+}
+
+// Clean up stale connections (no ping for 60s)
+setInterval(() => {
+    const now = Date.now();
+    let cleaned = 0;
+
+    connectedUsers.forEach((user, clientId) => {
+        if (now - user.lastPing > 60000) {
+            user.ws.terminate();
+            connectedUsers.delete(clientId);
+            cleaned++;
+        }
+    });
+
+    if (cleaned > 0) {
+        console.log(`[WS] Cleaned ${cleaned} stale connections`);
+        broadcastStats();
+    }
+}, 30000);
+
+// Clean up stale analytics sessions (no activity for 5 min)
+setInterval(() => {
+    const now = Date.now();
+    let cleaned = 0;
+    for (const [sessionId, session] of realtimeAnalytics.activeSessions.entries()) {
+        if (now - (session.lastActivity || session.startTime || 0) > 300000) {
+            realtimeAnalytics.activeSessions.delete(sessionId);
+            cleaned++;
+        }
+    }
+    // Cap uniqueVisitors Set at 10k to prevent memory bloat
+    if (realtimeAnalytics.today.uniqueVisitors.size > 10000) {
+        const count = realtimeAnalytics.today.uniqueVisitors.size;
+        realtimeAnalytics.today.uniqueVisitors.clear();
+        console.log(`[Analytics] Cleared uniqueVisitors Set (was ${count}), count preserved in pageViews`);
+    }
+    // Cap unbounded analytics objects to prevent memory growth
+    const capObj = (obj, maxKeys) => {
+        const keys = Object.keys(obj);
+        if (keys.length > maxKeys) {
+            const sorted = keys.sort((a, b) => (obj[b] || 0) - (obj[a] || 0));
+            sorted.slice(maxKeys).forEach(k => delete obj[k]);
+        }
+    };
+    if (realtimeAnalytics.today.pages) capObj(realtimeAnalytics.today.pages, 500);
+    if (realtimeAnalytics.today.countries) capObj(realtimeAnalytics.today.countries, 200);
+    if (realtimeAnalytics.today.cities) capObj(realtimeAnalytics.today.cities, 500);
+    if (realtimeAnalytics.today.browsers) capObj(realtimeAnalytics.today.browsers, 50);
+    if (realtimeAnalytics.today.operatingSystems) capObj(realtimeAnalytics.today.operatingSystems, 20);
+    if (cleaned > 0) {
+        console.log(`[Analytics] Cleaned ${cleaned} stale sessions`);
+    }
+}, 60000);
+
+// ============ VERSION & FORCE UPDATE SYSTEM ============
+const APP_VERSION = '2.9.4';
+const DOWNLOAD_VERSION = '2.9.4'; // Latest actually-built installer available for download
+const MIN_SUPPORTED_VERSION = '2.6.0'; // Minimum version that can still run without force update
+const FORCE_UPDATE = false; // Silent auto-update handles this now
+
+const APK_VERSION = '3.0.0'; // Latest actually-built APK available for download
+
+const VERSION_INFO = {
+    version: DOWNLOAD_VERSION, // Advertise latest downloadable version to clients
+    serverVersion: APP_VERSION, // Internal server version
+    apkVersion: APK_VERSION,
+    minVersion: MIN_SUPPORTED_VERSION,
+    forceUpdate: FORCE_UPDATE,
+    forceUpdateMessage: 'Update available! New improvements and bug fixes.',
+    releaseDate: '2026-02-07',
+    releaseNotes: 'v3.0.0 - Major Redesign + Theme System\n' +
+        '- NEW: 3 selectable themes (Dark Premium, Vibrant, Clean Light)\n' +
+        '- NEW: Premium floating nav bar with animated pill indicator\n' +
+        '- NEW: Enhanced 88px capture button with animated ring\n' +
+        '- FIX: Floating button visibility on notched devices\n' +
+        '- FIX: Overlay permission check with user notification\n' +
+        '- Premium slide-in toasts, smooth modal animations',
+    changelog: [
+        'Selectable themes: Dark Premium, Vibrant Gradient, Clean Light',
+        'Premium floating navigation bar with glassmorphism',
+        'Enhanced capture button (88px) with animated outer ring',
+        'Floating button permission check + error notification',
+        'Notch-safe button positioning for all Android devices',
+        'Smooth slide-up modal animations',
+        'Premium toast notifications from top',
+        'CSS custom properties for consistent theming',
+        'Fixed upload failure on Android APK (data URL to blob conversion)',
+        'Pre-upload health check before retry loop',
+        'AI-powered health monitoring every 3 hours',
+        'Silent auto-update: downloads and installs in background',
+        '3-button radial menu: Capture, Annotate, Gallery',
+        'Long-press floating button opens radial menu',
+        'Rotating ring animation on floating button',
+        'Shazam-style floating capture button over all apps (Android)',
+        'Finger-drag region selection with animated cyan glow border',
+        'Annotation tools: pen, arrow, rectangle, text with 5 colors',
+        'Upload

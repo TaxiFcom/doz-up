@@ -1,0 +1,15 @@
+// Load environment variables from .env file
+require('dotenv').config();
+
+const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const dbUtils = require('./lib/db'); // Shared async database utility
+const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
+const http = require('http');
+const https = require('https');
+const WebSocket = require('ws');
+const ftp = require('basic-ftp');

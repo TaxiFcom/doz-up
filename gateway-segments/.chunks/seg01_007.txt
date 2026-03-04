@@ -1,0 +1,165 @@
+TS.default.key && SSL_CERTS.default.cert),
+            hasKey: !!SSL_CERTS.default.key,
+            hasCert: !!SSL_CERTS.default.cert,
+            hasCA: hasCA,
+            caSize: SSL_CERTS.default.ca ? SSL_CERTS.default.ca.length : 0,
+            minVersion: SSL_OPTIONS.minVersion || 'TLSv1.2',
+            httpsServerRunning: !!httpsServer
+        },
+        environment: process.env.NODE_ENV || 'development',
+        recommendations: [
+            ...(!hasCA ? ['Add CA bundle (ca-bundle.crt or chain.crt) for complete certificate chain'] : []),
+            ...(!SSL_CERTS.default.key || !SSL_CERTS.default.cert ? ['SSL certificates not found. Add server.key and server.crt to ssl/ folder'] : []),
+            ...(process.env.NODE_ENV !== 'production' ? ['Set NODE_ENV=production for strict SSL verification'] : [])
+        ]
+    });
+});
+
+// SSL certificate verification endpoint
+app.get('/api/ssl/verify', async (req, res) => {
+    const { url } = req.query;
+    if (!url) {
+        return res.status(400).json({ success: false, error: 'URL parameter required' });
+    }
+    try {
+        const urlObj = new URL(url);
+        if (urlObj.protocol !== 'https:') {
+            return res.json({ success: true, ssl: false, message: 'Not an HTTPS URL' });
+        }
+        const testAgent = new https.Agent({ rejectUnauthorized: true });
+        const response = await fetch(url, {
+            method: 'HEAD',
+            agent: testAgent,
+            signal: AbortSignal.timeout(5000)
+        });
+        res.json({
+            success: true,
+            ssl: true,
+            valid: true,
+            status: response.status,
+            message: 'SSL certificate is valid'
+        });
+    } catch (error) {
+        res.json({
+            success: true,
+            ssl: true,
+            valid: false,
+            error: error.message,
+            code: error.code || 'UNKNOWN',
+            message: error.message.includes('certificate')
+                ? 'SSL certificate verification failed - check certificate chain'
+                : error.message
+        });
+    }
+});
+
+// Force update check - returns if update is required
+app.get('/api/check-update', (req, res) => {
+    const clientVersion = req.query.v || req.headers['x-app-version'] || '0.0.0';
+
+    const needsUpdate = isVersionLower(clientVersion, MIN_SUPPORTED_VERSION);
+    const hasUpdate = isVersionLower(clientVersion, DOWNLOAD_VERSION);
+
+    res.json({
+        currentVersion: DOWNLOAD_VERSION,
+        clientVersion: clientVersion,
+        needsUpdate: needsUpdate,
+        forceUpdate: FORCE_UPDATE && needsUpdate,
+        hasUpdate: hasUpdate,
+        downloadUrl: VERSION_INFO.downloadUrl,
+        changelog: VERSION_INFO.changelog
+    });
+});
+
+// Helper function to compare versions
+function isVersionLower(v1, v2) {
+    const parts1 = v1.split('.').map(Number);
+    const parts2 = v2.split('.').map(Number);
+
+    for (let i = 0; i < 3; i++) {
+        const p1 = parts1[i] || 0;
+        const p2 = parts2[i] || 0;
+        if (p1 < p2) return true;
+        if (p1 > p2) return false;
+    }
+    return false;
+}
+
+// Broadcast force update to all connected clients
+function broadcastForceUpdate() {
+    const message = JSON.stringify({
+        type: 'force-update',
+        version: DOWNLOAD_VERSION,
+        downloadUrl: VERSION_INFO.downloadUrl,
+        changelog: VERSION_INFO.changelog,
+        message: `DOZ UP v${DOWNLOAD_VERSION} is now available! Please update for the latest features and fixes.`
+    });
+
+    connectedUsers.forEach(user => {
+        if (user.ws.readyState === WebSocket.OPEN) {
+            user.ws.send(message);
+        }
+    });
+
+    console.log(`[Update] Broadcasted force update to ${connectedUsers.size} clients`);
+}
+
+// ============ SEO MASS SUBMISSION SYSTEM ============
+const { SEOSubmitter, MEGA_PING_LIST } = require('./services/seo-submitter');
+const { StructuredDataGenerator, BacklinkOpportunities, KeywordStrategy, SocialProof } = require('./services/organic-traffic');
+
+const seoSubmitter = new SEOSubmitter();
+
+// Run SEO submission
+app.post('/api/seo/submit', async (req, res) => {
+    try {
+        console.log('[SEO] Starting mass submission...');
+        const report = await seoSubmitter.runFullSubmission();
+        res.json({ success: true, report });
+    } catch (err) {
+        console.error('[SEO] Submission error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Ping specific search engine
+app.get('/api/seo/ping/:engine', async (req, res) => {
+    const { engine } = req.params;
+    const sitemapUrl = `https://${HOST}/sitemap.xml`;
+
+    const pingUrls = {
+        google: `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
+        bing: `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
+        yandex: `https://webmaster.yandex.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`
+    };
+
+    if (!pingUrls[engine]) {
+        return res.status(400).json({ success: false, error: 'Unknown engine. Use: google, bing, yandex' });
+    }
+
+    try {
+        const response = await seoSubmitter.httpGet(pingUrls[engine]);
+        res.json({ success: response.status < 400, engine, status: response.status });
+    } catch (err) {
+        res.json({ success: false, engine, error: err.message });
+    }
+});
+
+// IndexNow instant indexing
+app.post('/api/seo/indexnow', express.json(), async (req, res) => {
+    const urls = req.body.urls || [`https://${HOST}`];
+    try {
+        const results = await seoSubmitter.submitIndexNow(urls);
+        res.json({ success: true, results });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Get structured data for SEO
+app.get('/api/seo/structured-data', (req, res) => {
+    res.json({
+        software: StructuredDataGenerator.getSoftwareSchema(),
+        organization: StructuredDataGenerator.getOrganizationSchema(),
+        faq: StructuredDataGenerator.getFAQSchema(),
+        howTo: Struct

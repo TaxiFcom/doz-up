@@ -1,0 +1,174 @@
+type: 'dashboard', data: dashData }));
+                ws.send(JSON.stringify({ type: 'cycle-complete', cycle: stats.totalSubmissions, success: stats.successful, failed: stats.failed }));
+            }
+        });
+
+        console.log(`[Viral] Cycle complete: ${stats.successful} success, ${stats.failed} failed`);
+    } catch (err) {
+        console.error('[Viral] Cycle error:', err.message);
+    }
+
+    viralCycleRunning = false;
+}
+
+// Start viral engine after 60 seconds, run every 5 minutes
+setTimeout(() => {
+    console.log('[Viral] Starting continuous viral engine (every 5 minutes)...');
+    runViralCycle();
+    setInterval(runViralCycle, 5 * 60 * 1000);
+}, 60000);
+
+// Broadcast viral dashboard every 15 seconds (skip if no clients connected)
+setInterval(() => {
+    if (viralWsClients.size === 0) return;
+    const dashData = viralAnalytics.getDashboard();
+    viralWsClients.forEach(ws => {
+        if (ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: 'dashboard', data: dashData }));
+        }
+    });
+}, 15000);
+
+// Broadcast stats every 30 seconds (was 10s)
+setInterval(broadcastStats, 30000);
+
+// ============ APP DASHBOARD CONNECTIONS (for real-time order notifications) ============
+const appDashboards = new Set();
+
+// Broadcast new order to all connected app dashboards
+function broadcastNewOrder(order) {
+    const message = JSON.stringify({
+        type: 'new_order',
+        order: {
+            id: order.id,
+            customerName: order.customerName || order.email || 'Customer',
+            email: order.email,
+            plan: order.plan || 'Pro',
+            amount: order.amount || 9.99,
+            status: order.status || 'active',
+            timestamp: Date.now()
+        }
+    });
+
+    // Broadcast to app dashboards via the main WebSocket
+    connectedUsers.forEach((user) => {
+        if (user.type === 'dashboard' && user.ws.readyState === WebSocket.OPEN) {
+            user.ws.send(message);
+        }
+    });
+
+    // Also broadcast to analytics WebSocket clients (admin dashboards connect here)
+    if (typeof analyticsWss !== 'undefined' && analyticsWss.clients) {
+        analyticsWss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+        console.log(`[WS App] Broadcasted new order to ${analyticsWss.clients.size} analytics clients`);
+    }
+
+    // Also broadcast to admin WebSocket clients
+    if (typeof adminWss !== 'undefined' && adminWss.clients) {
+        adminWss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    }
+
+    console.log(`[WS App] Broadcasted new order to dashboards`);
+}
+
+// Export for use in payment webhooks
+global.broadcastNewOrder = broadcastNewOrder;
+
+// ============ ADMIN NOTIFICATION WEBSOCKET ============
+const adminWss = new WebSocket.Server({ noServer: true });
+const adminConnections = new Map(); // adminId -> { ws, user, subscribedAt }
+
+adminWss.on('connection', (ws, req) => {
+    const url = new URL(req.url, `https://${HOST}`);
+    const token = url.searchParams.get('token');
+
+    // Verify admin token
+    const tokenData = securityService.verifyToken(token);
+    if (!tokenData) {
+        ws.close(4001, 'Invalid or expired token');
+        return;
+    }
+
+    // Get admin user
+    const admin = adminService.get(tokenData.userId);
+    if (!admin) {
+        ws.close(4002, 'Admin not found');
+        return;
+    }
+
+    const connectionId = uuidv4();
+
+    adminConnections.set(connectionId, {
+        ws,
+        user: admin,
+        subscribedAt: Date.now()
+    });
+
+    console.log(`[WS Admin] ${admin.username} connected - Total: ${adminConnections.size}`);
+
+    // Subscribe to notifications
+    const unsubscribe = notificationService.subscribe(admin.id, (notification) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: 'notification',
+                notification
+            }));
+        }
+    });
+
+    // Send welcome message with unread count
+    ws.send(JSON.stringify({
+        type: 'connected',
+        unreadCount: notificationService.getUnreadCount(admin.id),
+        timestamp: Date.now()
+    }));
+
+    ws.on('message', (message) => {
+        try {
+            const data = JSON.parse(message);
+
+            if (data.type === 'ping') {
+                ws.send(JSON.stringify({ type: 'pong', timestamp: Date.now() }));
+            }
+
+            if (data.type === 'mark_read' && data.notificationId) {
+                notificationService.markRead(data.notificationId, admin.id);
+                ws.send(JSON.stringify({
+                    type: 'marked_read',
+                    notificationId: data.notificationId,
+                    unreadCount: notificationService.getUnreadCount(admin.id)
+                }));
+            }
+
+            if (data.type === 'mark_all_read') {
+                const count = notificationService.markAllRead(admin.id);
+                ws.send(JSON.stringify({
+                    type: 'all_marked_read',
+                    count,
+                    unreadCount: 0
+                }));
+            }
+
+            // Admin replies to support chat user directly via WebSocket
+            if (data.type === 'support_reply' && data.fingerprintId && data.message) {
+                const client = supportClients.get(data.fingerprintId);
+                if (client && client.ws?.readyState === WebSocket.OPEN) {
+                    client.ws.send(JSON.stringify({
+                        type: 'agent_joined',
+                        agentName: admin.username || 'Support Team',
+                        message: {
+                            role: 'ASSISTANT',
+                            content: data.message,
+                            createdAt: new Date().toISOString(),
+                            fromAdmin: true
+                        }
+                    }));
+           

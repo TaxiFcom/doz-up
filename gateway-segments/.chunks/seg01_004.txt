@@ -1,0 +1,178 @@
+ body.replace('</body>', `\n    <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js?v=3.2.0').catch(function(){});<\/script>\n</body>`);
+            }
+
+            // Remove Content-Length since we modified the body size
+            res.removeHeader('content-length');
+            originalEnd.call(res, body, 'utf8');
+        } catch (e) {
+            // Fallback: send original data if injection fails
+            try { originalEnd.call(res, chunk, encoding); } catch (e2) {}
+        }
+    };
+
+    next();
+});
+
+const server = http.createServer(app);
+const httpsServer = (SSL_OPTIONS.key && SSL_OPTIONS.cert)
+    ? https.createServer(SSL_OPTIONS, app)
+    : null;
+const PORT = process.env.PORT || 3000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+const CONNECTHUB_PORT = process.env.CONNECTHUB_PORT || 3001;
+const HOST = 'doz.com';
+const SHARE_HOST = 'up.doz.com';  // For image sharing URLs - up.doz.com subdomain
+
+// ============ REAL-TIME USER TRACKING ============
+const connectedUsers = new Map(); // deviceId -> { ws, connectedAt, lastPing, type }
+let totalConnections = 0;
+
+// WebSocket server for real-time tracking
+const wss = new WebSocket.Server({ noServer: true });
+
+wss.on('connection', (ws, req) => {
+    const clientId = uuidv4();
+    const url = new URL(req.url, `https://${HOST}`);
+    const typeParam = url.searchParams.get('type');
+    const clientType = typeParam === 'desktop' ? 'desktop' : (typeParam === 'dashboard' ? 'dashboard' : 'web');
+    const deviceId = url.searchParams.get('device') || clientId;
+
+    totalConnections++;
+
+    connectedUsers.set(clientId, {
+        ws,
+        deviceId,
+        type: clientType,
+        connectedAt: Date.now(),
+        lastPing: Date.now()
+    });
+
+    if (totalConnections <= 3) console.log(`[WS] User connected: ${clientType} (${deviceId.substring(0, 8)}...) - Total: ${connectedUsers.size}`);
+
+    // Send welcome with current stats
+    ws.send(JSON.stringify({
+        type: 'welcome',
+        clientId,
+        stats: getLiveStats()
+    }));
+
+    // Broadcast updated count to all
+    broadcastStats();
+
+    // Handle messages
+    ws.on('message', (message) => {
+        try {
+            const data = JSON.parse(message);
+
+            if (data.type === 'ping') {
+                const user = connectedUsers.get(clientId);
+                if (user) user.lastPing = Date.now();
+                ws.send(JSON.stringify({ type: 'pong', timestamp: Date.now() }));
+            }
+
+            if (data.type === 'activity') {
+                // Track user activity (captures, uploads, etc.)
+                const user = connectedUsers.get(clientId);
+                if (user) {
+                    user.lastActivity = data.activity;
+                    user.lastActivityTime = Date.now();
+                }
+            }
+        } catch (e) {
+            console.error('[WS] Message parse error:', e.message);
+        }
+    });
+
+    ws.on('close', () => {
+        connectedUsers.delete(clientId);
+        broadcastStats();
+    });
+
+    ws.on('error', (error) => {
+        console.error('[WS] Connection error:', error.message);
+        connectedUsers.delete(clientId);
+    });
+});
+
+// Subscribe to AI upload fix notifications - broadcast recovery to all clients
+aiErrorInterceptor.subscribeUploadFix('ws-broadcast', (fixData) => {
+    const message = JSON.stringify({
+        type: 'upload_recovered',
+        fix: fixData.fix?.name || 'auto_fix',
+        canRetry: true,
+        timestamp: fixData.timestamp,
+        message: 'Upload service recovered. You can retry now.',
+    });
+
+    let notified = 0;
+    connectedUsers.forEach(user => {
+        if (user.ws.readyState === WebSocket.OPEN) {
+            user.ws.send(message);
+            notified++;
+        }
+    });
+
+    console.log(`[AI-Upload] Broadcast upload_recovered to ${notified} clients`);
+});
+
+// ============ SERVER-SIDE HEARTBEAT FOR CONNECTION STABILITY ============
+// Send heartbeat to all clients every 30 seconds, detect dead connections
+const HEARTBEAT_INTERVAL = 30000;  // 30 seconds
+const HEARTBEAT_TIMEOUT = 10000;   // 10 seconds to respond
+
+setInterval(() => {
+    const now = Date.now();
+    let staleConnections = 0;
+    let activeConnections = 0;
+
+    connectedUsers.forEach((user, clientId) => {
+        // Check if connection is stale (no ping in 2 minutes)
+        if (now - user.lastPing > 120000) {
+            staleConnections++;
+            try {
+                user.ws.terminate();
+                connectedUsers.delete(clientId);
+            } catch (e) {}
+            return;
+        }
+
+        // Send heartbeat ping
+        if (user.ws.readyState === WebSocket.OPEN) {
+            try {
+                user.ws.send(JSON.stringify({
+                    type: 'heartbeat',
+                    timestamp: now,
+                    serverUptime: process.uptime()
+                }));
+                activeConnections++;
+            } catch (e) {
+                connectedUsers.delete(clientId);
+            }
+        }
+    });
+
+    if (staleConnections > 0) {
+        console.log(`[Heartbeat] Cleaned ${staleConnections} stale connections. Active: ${activeConnections}`);
+    }
+}, HEARTBEAT_INTERVAL);
+
+// Log connection stats every 5 minutes
+setInterval(() => {
+    const stats = {
+        activeConnections: connectedUsers.size,
+        totalConnections,
+        uptime: Math.round(process.uptime()),
+        memory: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB'
+    };
+    console.log(`[Stats] Connections: ${stats.activeConnections} | Memory: ${stats.memory} | Uptime: ${stats.uptime}s`);
+}, 300000);
+
+// Proactive upload health monitoring - check every 60 seconds
+setInterval(async () => {
+    // Test write access to uploads directory
+    try {
+        const testFile = path.join(uploadsDir, '.health-probe-' + Date.now());
+        await fs.promises.writeFile(testFile, 'probe');
+        await fs.promises.unlink(testFile);
+    } catch (e) {
+        aiErrorInterceptor.handleError({

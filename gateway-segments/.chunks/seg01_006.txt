@@ -1,0 +1,169 @@
+ for instant link OR save locally',
+        'URL accumulator for rapid captures with +3s extend',
+        'Nokia/Modern/Silent procedural sound themes',
+        'Auto-upload and quick capture settings'
+    ],
+    downloadUrl: `https://${HOST}/download/DOZ-UP-v${DOWNLOAD_VERSION}.exe`,
+    downloadUrlMac: `https://${HOST}/download/DOZ-UP-v${DOWNLOAD_VERSION}-mac.zip`,
+    downloadUrlLinux: `https://${HOST}/download/DOZ-UP-v${DOWNLOAD_VERSION}.AppImage`,
+    downloadUrlApk: `https://${HOST}/download/DOZ-UP-v${APK_VERSION}.apk`
+};
+
+// ============ AI HEALTH MONITOR (3-HOUR CYCLE) ============
+const AI_HEALTH_REPORTS = [];
+const AI_HEALTH_MAX_REPORTS = 168; // 3 weeks of 3hr intervals
+
+// ============ RDP.DOZ.COM KASM PROXY ============
+// Route rdp.doz.com to Kasm Workspaces (port 8443)
+const KASM_BACKEND = "https://127.0.0.1:8443";
+const kasmProxy = createProxyMiddleware({
+    target: KASM_BACKEND,
+    changeOrigin: false,
+    secure: false,
+    ws: true, // WS handled separately via upgrade event
+    logLevel: "warn",
+    selfHandleResponse: false,
+    onProxyReq: (proxyReq, req) => {
+        proxyReq.setHeader("X-Forwarded-Host", req.headers.host || "rdp.doz.com");
+        proxyReq.setHeader("X-Forwarded-Proto", "https");
+        proxyReq.setHeader("Accept-Encoding", "identity");
+    },
+    onProxyRes: (proxyRes, req, res) => {
+        res.removeHeader("X-Frame-Options");
+        res.removeHeader("Content-Security-Policy");
+        res.removeHeader("X-Powered-By");
+    }
+});
+app.use((req, res, next) => {
+    const host = req.headers.host || "";
+    if (host.includes("rdp.doz.com")) {
+        return kasmProxy(req, res, next);
+    }
+    next();
+});
+
+// ============ SHARE.DOZ.COM DOMAIN ROUTING ============
+// Route share.doz.com to DOZ Share Trading Platform (port 3003)
+const SHARE_DOZ_BACKEND = "http://127.0.0.1:3003";
+const shareDozProxy = createProxyMiddleware({
+    target: SHARE_DOZ_BACKEND,
+    changeOrigin: true,
+    ws: true,
+    logLevel: "warn",
+    onProxyReq: (proxyReq, req) => {
+        proxyReq.setHeader("X-Forwarded-Host", req.headers.host || "share.doz.com");
+        proxyReq.setHeader("X-Forwarded-Proto", req.protocol);
+    }
+});
+app.use((req, res, next) => {
+    const host = req.headers.host || "";
+    if (host.includes("share.doz.com")) return shareDozProxy(req, res, next);
+    next();
+});
+// ============ API.DOZ.COM.IM DOMAIN ROUTING ============
+// Route api.doz.com.im to DOZ AI API service (port 4001)
+const DOZ_AI_API_BACKEND = 'http://127.0.0.1:4001';
+
+const dozAiApiProxy = createProxyMiddleware({
+    target: DOZ_AI_API_BACKEND,
+    changeOrigin: true,
+    ws: true,
+    logLevel: 'warn',
+    onProxyReq: (proxyReq, req) => {
+        proxyReq.setHeader('X-Forwarded-Host', req.headers.host || 'ai.doz.com');
+        proxyReq.setHeader('X-Forwarded-Proto', req.protocol);
+    }
+});
+app.use((req, res, next) => {
+    const host = req.headers.host || '';
+    if (host.includes('api.doz.com.im') || host.includes('ai.doz.com')) return dozAiApiProxy(req, res, next);
+    next();
+});
+// ============ DOZ AI DASHBOARD ============
+app.get('/doz-ai', (req, res) => {
+    res.sendFile(require('path').join(__dirname, 'public', 'user_dashboard.html'));
+});
+app.get('/user_dashboard.html', (req, res) => {
+    res.sendFile(require('path').join(__dirname, 'public', 'user_dashboard.html'));
+});
+
+// ============ DOZ AI /v1/ API PROXY ============
+// Proxy /v1/* requests to DOZ AI API (allows same-origin API calls)
+const v1ApiProxy = createProxyMiddleware({
+    target: DOZ_AI_API_BACKEND,
+    changeOrigin: true,
+    logLevel: 'warn'
+});
+app.use((req, res, next) => {
+    if (req.path.startsWith('/v1/')) return v1ApiProxy(req, res, next);
+    next();
+});
+
+// ============ GOV.DOZ.COM.IM DOMAIN ROUTING ============
+// Route gov.doz.com.im to LTRC Jordan Licensed Drivers System
+const LTRC_BACKEND = 'http://127.0.0.1:3500';
+
+const govProxy = createProxyMiddleware({
+    target: LTRC_BACKEND,
+    changeOrigin: true,
+    ws: true,
+    logLevel: 'warn',
+    onProxyReq: (proxyReq, req) => {
+        proxyReq.setHeader('X-Forwarded-Host', req.headers.host || 'gov.doz.com.im');
+        proxyReq.setHeader('X-Forwarded-Proto', req.protocol);
+    }
+});
+app.use((req, res, next) => {
+    const host = req.headers.host || '';
+    if (host.includes('gov.doz.com.im')) return govProxy(req, res, next);
+    next();
+});
+
+// ============ CORPORATE.DOZ.COM.IM DOMAIN ROUTING ============
+// Route corporate.doz.com.im to TaxiF Corporate Platform BEFORE any other routes
+const CORPORATE_BACKEND = 'http://127.0.0.1:3003';
+const CORPORATE_STATIC_DIR = 'C:/CORporate/client/dist';
+
+app.use((req, res, next) => {
+    const host = req.headers.host || '';
+    if (host.includes('corporate.doz.com.im')) {
+        // API and Socket.IO routes proxy to backend
+        if (req.path.startsWith('/api/') || req.path.startsWith('/socket.io/')) {
+            const proxy = createProxyMiddleware({
+                target: CORPORATE_BACKEND,
+                changeOrigin: true,
+                ws: true,
+                logLevel: 'warn'
+            });
+            return proxy(req, res, next);
+        }
+
+        // Static files for React app
+        if (req.path === '/') {
+            return res.sendFile(path.join(CORPORATE_STATIC_DIR, 'index.html'));
+        }
+
+        // Try to serve static file
+        const filePath = path.join(CORPORATE_STATIC_DIR, req.path);
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+            return res.sendFile(filePath);
+        }
+
+        // SPA fallback - serve index.html for client-side routing
+        return res.sendFile(path.join(CORPORATE_STATIC_DIR, 'index.html'));
+    }
+    next();
+});
+
+// Version check API
+app.get('/api/version', (req, res) => {
+    res.json(VERSION_INFO);
+});
+
+// ============ SSL STATUS API ============
+app.get('/api/ssl/status', (req, res) => {
+    const hasCA = !!SSL_CERTS.default.ca;
+    res.json({
+        success: true,
+        ssl: {
+            enabled: !!(SSL_CER

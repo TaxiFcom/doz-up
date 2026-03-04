@@ -1,0 +1,167 @@
+   if (Array.isArray(stats.uniqueVisitors)) {
+            stats.uniqueVisitors.forEach(v => totalUniqueVisitors.add(v));
+        }
+        totalSessions += stats.sessions || 0;
+        totalBounces += stats.bounces || 0;
+
+        // Merge countries
+        if (stats.countries) {
+            Object.entries(stats.countries).forEach(([country, count]) => {
+                allCountries[country] = (allCountries[country] || 0) + count;
+            });
+        }
+
+        // Merge devices
+        if (stats.devices) {
+            allDevices.desktop += stats.devices.desktop || 0;
+            allDevices.mobile += stats.devices.mobile || 0;
+            allDevices.tablet += stats.devices.tablet || 0;
+        }
+
+        // Merge browsers
+        if (stats.browsers) {
+            Object.entries(stats.browsers).forEach(([browser, count]) => {
+                allBrowsers[browser] = (allBrowsers[browser] || 0) + count;
+            });
+        }
+
+        // Merge sources
+        if (stats.sources) {
+            Object.entries(stats.sources).forEach(([source, count]) => {
+                if (allSources[source] !== undefined) {
+                    allSources[source] += count;
+                }
+            });
+        }
+
+        // Merge pages
+        if (stats.pages) {
+            Object.entries(stats.pages).forEach(([page, count]) => {
+                allPages[page] = (allPages[page] || 0) + count;
+            });
+        }
+    });
+
+    // Get today's stats from persistent data
+    const todayStats = dailyStats[today] || { pageViews: 0, uniqueVisitors: [], sessions: 0, bounces: 0 };
+
+    return {
+        total: {
+            pageViews: totalPageViews,
+            uniqueVisitors: totalUniqueVisitors.size,
+            sessions: totalSessions,
+            bounceRate: totalPageViews > 0 ? Math.round((totalBounces / totalPageViews) * 100) : 0
+        },
+        today: {
+            pageViews: todayStats.pageViews || 0,
+            uniqueVisitors: Array.isArray(todayStats.uniqueVisitors) ? todayStats.uniqueVisitors.length : 0,
+            sessions: todayStats.sessions || 0,
+            devices: todayStats.devices || { desktop: 0, mobile: 0, tablet: 0 },
+            sources: todayStats.sources || { direct: 0, organic: 0, social: 0, referral: 0, paid: 0, email: 0 },
+            countries: todayStats.countries || {},
+            pages: todayStats.pages || {},
+            browsers: todayStats.browsers || {},
+            hourlyViews: todayStats.hourlyDistribution || Array(24).fill(0)
+        },
+        historical: {
+            last7Days,
+            countries: allCountries,
+            devices: allDevices,
+            browsers: allBrowsers,
+            sources: allSources,
+            pages: allPages
+        },
+        recentPageViews: (data.pageViews || []).slice(-50).reverse()
+    };
+}
+
+// In-memory analytics storage
+const realtimeAnalytics = {
+    activeSessions: new Map(),
+    today: {
+        pageViews: 0,
+        uniqueVisitors: new Set(),
+        sessions: 0,
+        uploads: 0,
+        downloads: 0,
+        bounces: 0,
+        totalSessionDuration: 0,
+        hourlyViews: Array(24).fill(0),
+        pages: {},
+        sources: { direct: 0, organic: 0, social: 0, referral: 0, paid: 0, email: 0 },
+        countries: {},
+        cities: {},
+        devices: { desktop: 0, mobile: 0, tablet: 0 },
+        browsers: {},
+        operatingSystems: {},
+        realtimeEvents: []
+    }
+};
+
+// Broadcast analytics to connected clients
+function broadcastAnalyticsUpdate(data) {
+    analyticsWss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(data));
+        }
+    });
+}
+
+// Parse User-Agent
+function parseUA(ua) {
+    if (!ua) return { device: 'desktop', browser: 'Unknown', os: 'Unknown' };
+    const uaLower = ua.toLowerCase();
+    let device = 'desktop';
+    if (/mobile|android|iphone|ipod/i.test(uaLower)) device = 'mobile';
+    else if (/tablet|ipad/i.test(uaLower)) device = 'tablet';
+
+    let browser = 'Other';
+    if (uaLower.includes('edg/')) browser = 'Edge';
+    else if (uaLower.includes('chrome')) browser = 'Chrome';
+    else if (uaLower.includes('firefox')) browser = 'Firefox';
+    else if (uaLower.includes('safari')) browser = 'Safari';
+
+    let os = 'Other';
+    if (uaLower.includes('windows')) os = 'Windows';
+    else if (uaLower.includes('mac os')) os = 'macOS';
+    else if (uaLower.includes('linux')) os = 'Linux';
+    else if (uaLower.includes('android')) os = 'Android';
+    else if (uaLower.includes('iphone') || uaLower.includes('ipad')) os = 'iOS';
+
+    return { device, browser, os };
+}
+
+// Get traffic source
+function getSource(referrer, utmSource) {
+    if (utmSource) {
+        if (utmSource.includes('google') || utmSource.includes('bing')) return 'paid';
+        if (utmSource.includes('facebook') || utmSource.includes('twitter')) return 'social';
+        return 'referral';
+    }
+    if (!referrer) return 'direct';
+    const ref = referrer.toLowerCase();
+    if (ref.includes('google.') || ref.includes('bing.') || ref.includes('yahoo.')) return 'organic';
+    if (ref.includes('facebook.') || ref.includes('twitter.') || ref.includes('linkedin.')) return 'social';
+    return 'referral';
+}
+
+// Get GeoIP (simplified - returns random for demo, use MaxMind in production)
+// GeoIP cache to avoid blocking external HTTP calls on every pageview
+const geoIPCache = new Map();
+const GEO_CACHE_TTL = 3600000; // 1 hour
+const GEO_CACHE_MAX = 5000;
+
+async function getGeoIP(ip) {
+    if (ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168.') || ip.startsWith('10.')) {
+        return { country: 'Local', city: 'Local' };
+    }
+
+    // Check cache first
+    const cached = geoIPCache.get(ip);
+    if (cached && Date.now() - cached.ts < GEO_CACHE_TTL) {
+        return { country: cached.country, city: cached.city };
+    }
+
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 2000); // 2s ha

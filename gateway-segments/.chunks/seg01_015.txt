@@ -1,0 +1,118 @@
+ay.sessions,
+        uploadsToday: realtimeAnalytics.today.uploads,
+        downloadsToday: realtimeAnalytics.today.downloads,
+        bounceRate: realtimeAnalytics.today.sessions > 0 ? ((realtimeAnalytics.today.bounces / realtimeAnalytics.today.sessions) * 100).toFixed(1) : 0,
+        avgSessionDuration: realtimeAnalytics.today.sessions > 0 ? Math.round(realtimeAnalytics.today.totalSessionDuration / realtimeAnalytics.today.sessions) : 0,
+        topActivePages: Object.entries(pageUsers).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([page, users]) => ({ page, users })),
+        viewsPerMinute: Math.round(realtimeAnalytics.today.realtimeEvents.filter(e => new Date(e.time).getTime() > now - 300000 && e.type === 'pageview').length / 5)
+    };
+}
+
+// Get full analytics (merged with persistent data)
+function getFullRealtimeAnalytics() {
+    const realtime = getRealtimeAnalyticsStats();
+    const persistent = getAggregatedPersistentStats();
+
+    // Merge in-memory today stats with persistent today stats
+    const mergedTodayPageViews = realtimeAnalytics.today.pageViews + persistent.today.pageViews;
+    const mergedTodayVisitors = realtimeAnalytics.today.uniqueVisitors.size + persistent.today.uniqueVisitors;
+    const mergedTodaySessions = realtimeAnalytics.today.sessions + persistent.today.sessions;
+
+    // Merge devices
+    const mergedDevices = {
+        desktop: (realtimeAnalytics.today.devices.desktop || 0) + (persistent.today.devices.desktop || 0),
+        mobile: (realtimeAnalytics.today.devices.mobile || 0) + (persistent.today.devices.mobile || 0),
+        tablet: (realtimeAnalytics.today.devices.tablet || 0) + (persistent.today.devices.tablet || 0)
+    };
+
+    // Merge sources
+    const mergedSources = {};
+    Object.keys(realtimeAnalytics.today.sources).forEach(key => {
+        mergedSources[key] = (realtimeAnalytics.today.sources[key] || 0) + (persistent.today.sources[key] || 0);
+    });
+
+    // Merge pages
+    const mergedPages = { ...persistent.today.pages };
+    Object.entries(realtimeAnalytics.today.pages).forEach(([page, views]) => {
+        mergedPages[page] = (mergedPages[page] || 0) + views;
+    });
+
+    // Merge countries
+    const mergedCountries = { ...persistent.today.countries };
+    Object.entries(realtimeAnalytics.today.countries).forEach(([country, visits]) => {
+        mergedCountries[country] = (mergedCountries[country] || 0) + visits;
+    });
+
+    // Merge browsers
+    const mergedBrowsers = { ...persistent.today.browsers };
+    Object.entries(realtimeAnalytics.today.browsers).forEach(([browser, count]) => {
+        mergedBrowsers[browser] = (mergedBrowsers[browser] || 0) + count;
+    });
+
+    // Merge hourly views
+    const mergedHourlyViews = realtimeAnalytics.today.hourlyViews.map((v, i) =>
+        v + (persistent.today.hourlyViews[i] || 0)
+    );
+
+    return {
+        success: true,
+        realtime: {
+            ...realtime,
+            pageViewsToday: mergedTodayPageViews,
+            uniqueVisitorsToday: mergedTodayVisitors,
+            sessionsToday: mergedTodaySessions
+        },
+        today: {
+            pageViews: mergedTodayPageViews,
+            uniqueVisitors: mergedTodayVisitors,
+            sessions: mergedTodaySessions,
+            uploads: realtimeAnalytics.today.uploads,
+            downloads: realtimeAnalytics.today.downloads,
+            bounceRate: mergedTodaySessions > 0 ? ((realtimeAnalytics.today.bounces / mergedTodaySessions) * 100).toFixed(1) : persistent.total.bounceRate,
+            avgSessionDuration: realtime.avgSessionDuration,
+            hourlyViews: mergedHourlyViews,
+            sources: mergedSources,
+            devices: mergedDevices
+        },
+        // Total stats (all-time from persistent + today's in-memory)
+        total: {
+            pageViews: persistent.total.pageViews + realtimeAnalytics.today.pageViews,
+            uniqueVisitors: persistent.total.uniqueVisitors,
+            sessions: persistent.total.sessions + realtimeAnalytics.today.sessions,
+            bounceRate: persistent.total.bounceRate
+        },
+        // Historical data for charts
+        historical: persistent.historical,
+        topPages: Object.entries(mergedPages).sort((a, b) => b[1] - a[1]).slice(0, 20).map(([page, views]) => ({ page, views })),
+        topCountries: Object.entries(mergedCountries).sort((a, b) => b[1] - a[1]).slice(0, 20).map(([country, visits]) => ({ country, visits })),
+        topCities: Object.entries(realtimeAnalytics.today.cities).sort((a, b) => b[1] - a[1]).slice(0, 20).map(([city, visits]) => ({ city, visits })),
+        browsers: Object.entries(mergedBrowsers).sort((a, b) => b[1] - a[1]).map(([browser, count]) => ({ browser, count })),
+        operatingSystems: Object.entries(realtimeAnalytics.today.operatingSystems).sort((a, b) => b[1] - a[1]).map(([os, count]) => ({ os, count })),
+        activeSessions: Array.from(realtimeAnalytics.activeSessions.values()).map(s => ({
+            id: s.id.substring(0, 8), currentPage: s.currentPage, pageViews: s.pageViews,
+            duration: Math.round((Date.now() - s.startTime.getTime()) / 1000),
+            country: s.country, city: s.city, device: s.device, browser: s.browser, source: s.source
+        })),
+        recentEvents: realtimeAnalytics.today.realtimeEvents.slice(0, 50),
+        recentPageViews: persistent.recentPageViews
+    };
+}
+
+// Analytics WebSocket handler
+analyticsWss.on('connection', (ws) => {
+    console.log('[Analytics WS] Client connected');
+    try {
+        ws.send(JSON.stringify({ type: 'init', data: getFullRealtimeAnalytics() }));
+    } catch (err) {
+        console.error('[Analytics WS] Error sending init data:', err);
+    }
+    ws.on('close', () => console.log('[Analytics WS] Client disconnected'));
+    ws.on('error', (err) => console.error('[Analytics WS] Error:', err));
+});
+
+// Analytics API endpoints
+app.get('/api/analytics', (req, res) => {
+    try {
+        res.json(getFullRealtimeAnalytics());
+    } catch (err) {
+        console.error('[Analyti
