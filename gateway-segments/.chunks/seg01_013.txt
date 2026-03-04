@@ -1,0 +1,128 @@
+rd timeout
+        const response = await fetch(`http://ip-api.com/json/${ip}?fields=country,city`, { signal: controller.signal });
+        clearTimeout(timeout);
+        const data = await response.json();
+        const result = { country: data.country || 'Unknown', city: data.city || 'Unknown' };
+        geoIPCache.set(ip, { ...result, ts: Date.now() });
+        // Cap cache size
+        if (geoIPCache.size > GEO_CACHE_MAX) {
+            const firstKey = geoIPCache.keys().next().value;
+            geoIPCache.delete(firstKey);
+        }
+        return result;
+    } catch {
+        return { country: 'Unknown', city: 'Unknown' };
+    }
+}
+
+// Track page view
+async function trackAnalyticsPageView(req, sessionId, page) {
+    const now = new Date();
+    const hour = now.getHours();
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket?.remoteAddress || '127.0.0.1';
+    const referrer = req.headers.referer || req.body?.referrer || '';
+    const utmSource = req.query?.utm_source || '';
+    const ua = req.headers['user-agent'] || '';
+    const { device, browser, os } = parseUA(ua);
+    const source = getSource(referrer, utmSource);
+    const geo = await getGeoIP(ip);
+
+    // Get visitor ID from request body (from track.js localStorage) or use session ID
+    const visitorId = req.body?.visitorId || sessionId;
+
+    if (!realtimeAnalytics.activeSessions.has(sessionId)) {
+        realtimeAnalytics.today.sessions++;
+        realtimeAnalytics.today.uniqueVisitors.add(visitorId);
+        realtimeAnalytics.activeSessions.set(sessionId, {
+            id: sessionId, startTime: now, lastActivity: now, pageViews: 0, pages: [],
+            ip, device, browser, os, country: geo.country, city: geo.city, source
+        });
+    }
+
+    const session = realtimeAnalytics.activeSessions.get(sessionId);
+    session.lastActivity = now;
+    session.pageViews++;
+    session.pages.push({ page, time: now });
+    session.currentPage = page;
+
+    realtimeAnalytics.today.pageViews++;
+    realtimeAnalytics.today.hourlyViews[hour]++;
+    realtimeAnalytics.today.pages[page] = (realtimeAnalytics.today.pages[page] || 0) + 1;
+    realtimeAnalytics.today.sources[source]++;
+    realtimeAnalytics.today.devices[device]++;
+    realtimeAnalytics.today.browsers[browser] = (realtimeAnalytics.today.browsers[browser] || 0) + 1;
+    realtimeAnalytics.today.operatingSystems[os] = (realtimeAnalytics.today.operatingSystems[os] || 0) + 1;
+    realtimeAnalytics.today.countries[geo.country] = (realtimeAnalytics.today.countries[geo.country] || 0) + 1;
+    realtimeAnalytics.today.cities[geo.city] = (realtimeAnalytics.today.cities[geo.city] || 0) + 1;
+
+    const event = { type: 'pageview', sessionId: sessionId.substring(0, 8), page, country: geo.country, city: geo.city, device, browser, source, time: now.toISOString() };
+    realtimeAnalytics.today.realtimeEvents.push(event);
+    if (realtimeAnalytics.today.realtimeEvents.length > 100) realtimeAnalytics.today.realtimeEvents.shift();
+
+    // Also track in advancedAnalytics for persistent storage
+    try {
+        advancedAnalytics.trackPageView({
+            path: page,
+            title: req.body?.title || page,
+            referrer,
+            userAgent: ua,
+            ip,
+            visitorId,
+            sessionId,
+            country: geo.country,
+            screenWidth: req.body?.screenWidth,
+            screenHeight: req.body?.screenHeight,
+            language: req.body?.language
+        });
+    } catch (err) {
+        // Don't fail the request if advanced analytics fails
+        console.error('[Analytics] Advanced tracking error:', err.message);
+    }
+
+    broadcastAnalyticsUpdate({ type: 'pageview', data: event, realtime: getRealtimeAnalyticsStats() });
+    return event;
+}
+
+// Track event
+function trackAnalyticsEvent(sessionId, eventName, eventData = {}) {
+    const event = { type: 'event', name: eventName, sessionId: sessionId.substring(0, 8), data: eventData, time: new Date().toISOString() };
+    realtimeAnalytics.today.realtimeEvents.push(event);
+    if (realtimeAnalytics.today.realtimeEvents.length > 100) realtimeAnalytics.today.realtimeEvents.shift();
+    if (eventName === 'upload') realtimeAnalytics.today.uploads++;
+    if (eventName === 'download') realtimeAnalytics.today.downloads++;
+
+    // Track funnel stage events
+    if (eventName === 'funnel_stage' && eventData.stage && eventData.visitorId) {
+        trackFunnelEvent(eventData.visitorId, eventData.stage, eventData.page, eventData.funnelHistory);
+    }
+
+    // Track high-value checkout events
+    if (['checkout_view', 'checkout_started', 'pricing_view', 'payment_success', 'payment_cancelled', 'checkout_time'].includes(eventName)) {
+        conversionFunnel.events.push({ name: eventName, data: eventData, time: new Date().toISOString(), sessionId: sessionId.substring(0, 8) });
+        if (conversionFunnel.events.length > 500) conversionFunnel.events = conversionFunnel.events.slice(-300);
+    }
+
+    broadcastAnalyticsUpdate({ type: 'event', data: event, realtime: getRealtimeAnalyticsStats() });
+    return event;
+}
+
+// ============ CONVERSION FUNNEL TRACKING ============
+const conversionFunnel = {
+    // Per-visitor funnel progress: visitorId -> { stages: Set, firstSeen, lastSeen, pages: [] }
+    visitors: new Map(),
+    // Aggregate stage counts
+    stages: { landing: 0, features: 0, pricing: 0, checkout: 0, payment: 0, download: 0, account: 0, other: 0 },
+    // Unique visitors per stage
+    stageVisitors: { landing: new Set(), features: new Set(), pricing: new Set(), checkout: new Set(), payment: new Set(), download: new Set(), account: new Set() },
+    // Checkout detail events
+    events: [],
+    // Daily funnel snapshots
+    daily: {}
+};
+
+function trackFunnelEvent(visitorId, stage, page, funnelHistory) {
+    if (!conversionFunnel.visitors.has(visitorId)) {
+        conversionFunnel.visitors.set(visitorId, {
+            stages: new Set(),
+            firstSeen: Date.now(),
+            lastSeen: Date.now()  

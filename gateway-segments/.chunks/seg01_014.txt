@@ -1,0 +1,150 @@
+,
+            pages: []
+        });
+    }
+
+    const visitor = conversionFunnel.visitors.get(visitorId);
+    visitor.stages.add(stage);
+    visitor.lastSeen = Date.now();
+    visitor.pages.push({ page, stage, time: Date.now() });
+    if (visitor.pages.length > 50) visitor.pages = visitor.pages.slice(-30);
+
+    // Update aggregate counts
+    conversionFunnel.stages[stage] = (conversionFunnel.stages[stage] || 0) + 1;
+
+    // Track unique visitors per stage
+    if (conversionFunnel.stageVisitors[stage]) {
+        conversionFunnel.stageVisitors[stage].add(visitorId);
+    }
+
+    // Daily snapshot
+    const today = new Date().toISOString().split('T')[0];
+    if (!conversionFunnel.daily[today]) {
+        conversionFunnel.daily[today] = { landing: new Set(), features: new Set(), pricing: new Set(), checkout: new Set(), payment: new Set(), download: new Set() };
+    }
+    if (conversionFunnel.daily[today][stage]) {
+        conversionFunnel.daily[today][stage].add(visitorId);
+    }
+
+    // Limit visitor map size
+    if (conversionFunnel.visitors.size > 10000) {
+        const oldestKey = conversionFunnel.visitors.keys().next().value;
+        conversionFunnel.visitors.delete(oldestKey);
+    }
+}
+
+function getConversionFunnelStats() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayData = conversionFunnel.daily[today] || {};
+
+    // Calculate unique visitors per stage
+    const stageUniqueVisitors = {};
+    for (const [stage, visitors] of Object.entries(conversionFunnel.stageVisitors)) {
+        stageUniqueVisitors[stage] = visitors.size;
+    }
+
+    // Calculate today's unique visitors per stage
+    const todayStageVisitors = {};
+    for (const [stage, visitors] of Object.entries(todayData)) {
+        todayStageVisitors[stage] = visitors.size;
+    }
+
+    // Build funnel with drop-off rates
+    const funnelOrder = ['landing', 'features', 'pricing', 'checkout', 'payment'];
+    const funnel = [];
+    for (let i = 0; i < funnelOrder.length; i++) {
+        const stage = funnelOrder[i];
+        const visitors = stageUniqueVisitors[stage] || 0;
+        const prevVisitors = i > 0 ? (stageUniqueVisitors[funnelOrder[i - 1]] || 0) : visitors;
+        const dropOff = prevVisitors > 0 ? ((1 - visitors / prevVisitors) * 100).toFixed(1) : '0.0';
+        const conversionRate = (stageUniqueVisitors.landing || 0) > 0 ? ((visitors / stageUniqueVisitors.landing) * 100).toFixed(1) : '0.0';
+
+        funnel.push({
+            stage,
+            label: stage.charAt(0).toUpperCase() + stage.slice(1),
+            uniqueVisitors: visitors,
+            totalViews: conversionFunnel.stages[stage] || 0,
+            todayVisitors: todayStageVisitors[stage] || 0,
+            dropOffRate: i === 0 ? '0.0' : dropOff,
+            conversionFromTop: conversionRate
+        });
+    }
+
+    // Visitor journeys (recent 20)
+    const journeys = [];
+    for (const [vid, data] of conversionFunnel.visitors) {
+        journeys.push({
+            visitorId: vid.substring(0, 12) + '...',
+            stages: [...data.stages],
+            pagesVisited: data.pages.length,
+            firstSeen: new Date(data.firstSeen).toISOString(),
+            lastSeen: new Date(data.lastSeen).toISOString(),
+            reachedCheckout: data.stages.has('checkout'),
+            reachedPayment: data.stages.has('payment'),
+            lastPage: data.pages.length > 0 ? data.pages[data.pages.length - 1].page : '/'
+        });
+    }
+    journeys.sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+
+    // Checkout events detail
+    const checkoutEvents = conversionFunnel.events.slice(-30).reverse();
+
+    // Active on checkout right now
+    const activeCheckout = [];
+    for (const session of realtimeAnalytics.activeSessions.values()) {
+        const page = session.currentPage || '/';
+        if (['/checkout.html', '/order.html', '/pay.html'].includes(page)) {
+            activeCheckout.push({
+                page,
+                device: session.device,
+                country: session.country,
+                source: session.source,
+                duration: Math.round((Date.now() - session.startTime.getTime()) / 1000)
+            });
+        }
+    }
+
+    return {
+        funnel,
+        totalTrackedVisitors: conversionFunnel.visitors.size,
+        checkoutConversionRate: (stageUniqueVisitors.landing || 0) > 0
+            ? ((stageUniqueVisitors.checkout || 0) / stageUniqueVisitors.landing * 100).toFixed(1) + '%'
+            : '0.0%',
+        paymentConversionRate: (stageUniqueVisitors.landing || 0) > 0
+            ? ((stageUniqueVisitors.payment || 0) / stageUniqueVisitors.landing * 100).toFixed(1) + '%'
+            : '0.0%',
+        activeOnCheckout: activeCheckout,
+        recentCheckoutEvents: checkoutEvents,
+        visitorJourneys: journeys.slice(0, 20),
+        additionalPages: {
+            download: stageUniqueVisitors.download || 0,
+            account: stageUniqueVisitors.account || 0
+        }
+    };
+}
+
+// Get real-time stats
+function getRealtimeAnalyticsStats() {
+    const now = Date.now();
+    const activeTimeout = 5 * 60 * 1000;
+
+    for (const [id, session] of realtimeAnalytics.activeSessions) {
+        if (now - session.lastActivity.getTime() > activeTimeout) {
+            const duration = (session.lastActivity.getTime() - session.startTime.getTime()) / 1000;
+            realtimeAnalytics.today.totalSessionDuration += duration;
+            if (session.pageViews === 1) realtimeAnalytics.today.bounces++;
+            realtimeAnalytics.activeSessions.delete(id);
+        }
+    }
+
+    const pageUsers = {};
+    for (const session of realtimeAnalytics.activeSessions.values()) {
+        const page = session.currentPage || '/';
+        pageUsers[page] = (pageUsers[page] || 0) + 1;
+    }
+
+    return {
+        activeUsers: realtimeAnalytics.activeSessions.size,
+        pageViewsToday: realtimeAnalytics.today.pageViews,
+        uniqueVisitorsToday: realtimeAnalytics.today.uniqueVisitors.size,
+        sessionsToday: realtimeAnalytics.tod
