@@ -1,0 +1,126 @@
+treach');
+const schedulingService = require('./services/scheduling');
+const proposalService = require('./services/proposals');
+const securityService = require('./services/security');
+const adminService = require('./services/admin');
+const activityService = require('./services/activity');
+const webhookService = require('./services/webhooks');
+const backupService = require('./services/backup');
+const exportService = require('./services/export');
+const notificationService = require('./services/notifications');
+const analyticsService = require('./services/analytics');
+const trafficService = require('./services/traffic');
+const advancedAnalytics = require('./services/traffic-advanced');
+const heatmapFunnel = require('./services/heatmap-funnel');
+const userIntelligence = require('./services/user-intelligence');
+const aiErrorInterceptor = require('./services/ai-error-interceptor');
+const visitorIntelligence = require('./services/visitor-intelligence');
+const supportTriggers = require('./services/support-triggers');
+const aiSupportEngine = require('./services/ai-support');
+const conversionEngine = require('./services/ai-conversion-engine');
+const dozBrains = require('./services/doz-brains');
+const agentOrchestrator = require('./services/ai-agent-orchestrator');
+let orchestratorV2; try { orchestratorV2 = require('./services/orchestrator-v2'); } catch (e) { console.error('[Gateway] orchestrator-v2 not available:', e.message); orchestratorV2 = null; }
+const aiOpsCenter = require('./services/ai-ops-center');
+const dashboardStats = require('./services/dashboard-stats');
+
+const app = express();
+
+// ============ COOKIE PARSER (required before CSRF and session handling) ============
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+// ============ SECURITY PATCHES (auth, CSRF, helmet, cookies, logging) ============
+const { centralErrorHandler } = require('./src/gateway-patch')(app);
+
+// ============ CORS FOR MOBILE & CROSS-ORIGIN ============
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    const allowedOrigins = ['https://share.doz.com', 'https://doz.com', 'https://doz.com.im', 'https://up.doz.com', 'https://up.doz.com.im', 'capacitor://localhost', 'https://localhost', 'http://localhost'];
+    if (origin && allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Device-ID, X-Sync-Token, X-App-Version, X-User-Id, X-Upload-Token, X-Session-Id, X-CSRF-Token');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    next();
+});
+
+// ============ SECURITY HEADERS (early — applies to ALL responses) ============
+app.use((req, res, next) => {
+    const secHost = req.headers.host || "";
+    if (secHost.includes("share.doz.com")) return next();
+    if (secHost.includes("rdp.doz.com")) return next();
+    if (secHost.includes("ai.doz.com")) return next();
+    const headers = securityService.getSecurityHeaders();
+    for (const [key, value] of Object.entries(headers)) {
+        res.setHeader(key, value);
+    }
+    next();
+});
+
+// ============ PERFORMANCE OPTIMIZATIONS ============
+const compression = require('compression');
+app.use(compression({
+    level: 6,
+    threshold: 1024,
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) return false;
+        // Skip compression for proxied subdomains (they handle their own)
+        const host = req.headers.host || '';
+        if (host.includes('share.doz.com')) return false;
+        if (host.includes('rdp.doz.com')) return false;
+        return compression.filter(req, res);
+    }
+}));
+
+// Disable ETag for faster responses (use Cache-Control instead)
+app.set('etag', false);
+
+// Trust proxy for proper client IP detection behind Cloudflare
+app.set('trust proxy', true);
+
+// ============ DOZ UP PLATFORM REDIRECT ============
+// DOZ UP is now 100% independent at up.doz.com (198.244.138.177)
+// Redirect all /up/* requests to the dedicated DOZ UP domain (only from doz.com, not up.doz.com)
+const DOZ_UP_DOMAIN = process.env.DOZ_UP_DOMAIN || 'https://up.doz.com';
+app.use('/up', (req, res, next) => {
+    const host = req.headers.host || '';
+    // If already on up.doz.com, strip /up prefix and redirect to root path
+    if (host.includes('up.doz.com')) {
+        const stripped = req.originalUrl.replace(/^\/up\/?/, '/') || '/';
+        if (stripped !== req.originalUrl) {
+            return res.redirect(301, stripped);
+        }
+        return next();
+    }
+    // Preserve the path after /up (e.g., /up/i/image -> up.doz.com/image)
+    const newPath = req.originalUrl.replace(/^\/up/, '').replace(/^\/i\//, '/') || '/';
+    const redirectUrl = DOZ_UP_DOMAIN + newPath;
+    console.log('[DOZ-UP-Redirect]', req.originalUrl, '->', redirectUrl);
+    res.redirect(301, redirectUrl);
+});
+console.log('[Redirect] DOZ UP platform (/up/*) -> ' + DOZ_UP_DOMAIN + ' (only from doz.com)');
+
+// ============ LANDING PAGE EXTENSIONLESS URL REWRITE ============
+// Facebook ads send /lp/instant not /lp/instant.html — rewrite to .html
+app.use('/lp', (req, res, next) => {
+    // If path has no file extension and isn't a directory, append .html
+    if (req.path && !req.path.includes('.') && req.path !== '/') {
+        req.url = req.url.replace(req.path, req.path + '.html');
+    }
+    next();
+});
+
+// ============ UP.DOZ.COM IMAGE ROUTING ============
+// Handle up.doz.com/{uuid} requests - route UUID paths to image handler
+const ADMIN_COMMAND_CENTER_UUID = '9d71057b-690b-4e92-a0fa-5e88db98bcc0';
+app.use((req, res, next) => {
+    const host = req.headers.host || '';
+    // Check if this is up.doz.com or up.doz.com.im
+    if (host.includes('up.doz.com')) {
+        const pathPart = req.path.replace(/^\//, '');
+
+        // Secret admin command center - serve directly
+     
