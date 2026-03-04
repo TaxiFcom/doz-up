@@ -4,7 +4,7 @@ const pino = require('pino');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-// ─── Sensitive field names to redact ─────────────────────────────────────────────────────────
+// \u2500\u2500\u2500 Sensitive field names to redact \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 const REDACT_PATHS = [
   'password',
   'token',
@@ -23,17 +23,21 @@ const REDACT_PATHS = [
   'body.ssn',
 ];
 
-// ─── Regex patterns for inline value sanitization ───────────────────────────────────────────────
+// \u2500\u2500\u2500 Regex patterns for inline value sanitization \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 const SENSITIVE_PATTERNS = [
   // JWT tokens:  eyJ<base64>.<base64>.<base64>
   { pattern: /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/g, replacement: '[JWT_REDACTED]' },
   // Stripe secret keys: sk_live_... or sk_test_...
   { pattern: /sk_(live|test)_[A-Za-z0-9]{20,}/g, replacement: '[STRIPE_KEY_REDACTED]' },
   // Anthropic keys: sk-ant-...
-  { pattern: /sk-ant-[A-Za-z0-9\-_]{20,}/g, replacement: '[ANTHROPIC_KEY_REDACTED]' },
-  // Emails in sensitive-looking contexts (inside tokens/payloads — not in log messages generally)
-  // Only redact when prefixed with "email:" or inside a JSON-like context
-  { pattern: /"email"\s*:\s*"([^"]+@[^"]+)"/g, replacement: '"email":"[EMAIL_REDACTED]"' },
+  { pattern: /sk-ant-[A-Za-z0-9\\\-_]{20,}/g, replacement: '[ANTHROPIC_KEY_REDACTED]' },
+  // Emails in sensitive-looking contexts (inside tokens/payloads \u2014 not in log messages generally)
+  // Only redact when prefixed with \"email:\" or inside a JSON-like context
+  { pattern: /"email"\\s*:\\s*"([^"]+@[^"]+)"/g, replacement: '"email":"[EMAIL_REDACTED]"' },
+  // password=value, secret=value, token=value in query strings or plain text
+  { pattern: /(password|passwd|secret|api_key|apikey|access_token|refresh_token)=([^&\\s]{1,})/gi, replacement: '$1=[REDACTED]' },
+  // "password": "value" or 'password': 'value' in JSON-like strings
+  { pattern: /(["'](?:password|passwd|secret|api_key|apikey|access_token|refresh_token)["'])\\s*:\\s*["']([^"']*)["']/gi, replacement: '$1: "[REDACTED]"' },
 ];
 
 /**
@@ -52,7 +56,7 @@ function sanitize(value) {
   return result;
 }
 
-// ─── Pino logger instance ─────────────────────────────────────────────────────────────────────────
+// \u2500\u2500\u2500 Pino logger instance \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 const logger = pino(
   {
     level: isDev ? 'debug' : 'info',
@@ -96,7 +100,7 @@ const logger = pino(
     : process.stdout
 );
 
-// ─── HTTP request/response logger middleware ──────────────────────────────────────────────────
+// \u2500\u2500\u2500 HTTP request/response logger middleware \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 /**
  * Express middleware that logs each incoming request and its response.
  * Sensitive headers (Authorization, Cookie) are redacted by the pino redact config.
@@ -115,7 +119,7 @@ function httpLogger(req, res, next) {
     url:    sanitize(req.originalUrl || req.url),
     ip:     req.ip,
     ua:     req.headers['user-agent'],
-  }, `→ ${req.method} ${req.path}`);
+  }, `\u2192 ${req.method} ${req.path}`);
 
   // Capture response finish
   res.on('finish', () => {
@@ -130,7 +134,7 @@ function httpLogger(req, res, next) {
       url:        sanitize(req.originalUrl || req.url),
       status:     res.statusCode,
       duration_ms: ms,
-    }, `← ${req.method} ${req.path} ${res.statusCode} (${ms}ms)`);
+    }, `\u2190 ${req.method} ${req.path} ${res.statusCode} (${ms}ms)`);
   });
 
   next();
