@@ -1,8 +1,1 @@
-// Load environment variables from .env file
-require('dotenv').config();
-
-const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+PLACEHOLDER_SEG01
