@@ -1,0 +1,121 @@
+ // File not found with this extension, try next
+        }
+    }
+
+    // File not found
+    const result = { exists: false, path: null, size: 0, sizeKB: 0 };
+    fileStatsCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
+}
+
+// Preload critical resources middleware
+app.use((req, res, next) => {
+    const linkHost = req.headers.host || "";
+    if (linkHost.includes("share.doz.com")) return next();
+    // Add preload hints for critical resources on HTML pages
+    if (req.path.endsWith('.html') || req.path === '/') {
+        // Skip preload headers for Kasm proxy
+        const linkHost = req.headers.host || "";
+        if (linkHost.includes("rdp.doz.com")) return next();
+        const isLP = req.path.startsWith('/lp/');
+        const links = isLP ? [
+            '</track.js>; rel=preload; as=script',
+            '</logo.png>; rel=preload; as=image',
+            '<https://fonts.googleapis.com>; rel=preconnect',
+            '<https://fonts.gstatic.com>; rel=preconnect; crossorigin'
+        ] : [
+            '</js/server-failover.js>; rel=preload; as=script',
+            '</js/smart-error-handler.js>; rel=preload; as=script',
+            '</js/auto-auth.js>; rel=preload; as=script',
+            '</logo.png>; rel=preload; as=image',
+            '<https://fonts.googleapis.com>; rel=preconnect',
+            '<https://fonts.gstatic.com>; rel=preconnect; crossorigin'
+        ];
+        res.setHeader('Link', links.join(', '));
+    }
+    next();
+});
+
+// ============ AI SMART ERROR HANDLER INJECTION ============
+// Automatically inject scripts into ALL HTML responses
+// Uses _injectionDone guard to prevent double-call from compression middleware
+app.use((req, res, next) => {
+    // Skip share pages, proxied subdomains, and non-HTML requests
+    if (req.path.startsWith('/i/')) return next();
+    const injHost = req.headers.host || "";
+    if (injHost.includes("share.doz.com")) return next();
+    if (injHost.includes("rdp.doz.com")) return next();
+    if (!req.path.endsWith('.html') && req.path !== '/' && req.path !== '/up' && req.path !== '/up/') return next();
+
+    const originalWrite = res.write;
+    const originalEnd = res.end;
+    const chunks = [];
+
+    res.write = function (chunk, encoding) {
+        if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding || 'utf8'));
+        return true;
+    };
+
+    res.end = function (chunk, encoding) {
+        // Guard: prevent compression middleware from calling res.end twice
+        if (res._injectionDone) {
+            return originalEnd.call(res, chunk, encoding);
+        }
+        res._injectionDone = true;
+
+        try {
+            if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding || 'utf8'));
+            if (chunks.length === 0) return originalEnd.call(res, chunk, encoding);
+
+            let body = Buffer.concat(chunks).toString('utf8');
+
+            // Landing pages get minimal injection for speed
+            const isLandingPage = req.path.startsWith('/lp/');
+
+            // Only inject into HTML with <head> that doesn't already have our scripts
+            if (body.includes('<head') && !body.includes('smart-error-handler.js')) {
+                const metaPixelId = process.env.META_PIXEL_ID || '';
+                const alreadyHasPixel = body.includes('meta-pixel.js');
+                let metaPixelInjection = '';
+                if (metaPixelId && metaPixelId !== 'YOUR_PIXEL_ID_HERE') {
+                    metaPixelInjection = `\n    <script>window.META_PIXEL_ID='${metaPixelId}';<\/script>`;
+                    if (!alreadyHasPixel) {
+                        metaPixelInjection += `\n    <script src="/js/meta-pixel.js"><\/script>`;
+                    }
+                }
+                // Landing pages: only meta pixel (no failover/error-handler/upload scripts)
+                const headScripts = isLandingPage
+                    ? metaPixelInjection
+                    : `\n    <script src="/js/server-failover.js" defer><\/script>\n    <script src="/js/smart-error-handler.js" defer><\/script>\n    <script src="/js/resilient-upload.js" defer><\/script>${metaPixelInjection}`;
+                body = body.replace(
+                    /<head([^>]*)>/i,
+                    `<head$1>${headScripts}`
+                );
+            }
+
+            // Inject tracking scripts before </body>
+            if (body.includes('</body>') && !body.includes('track-advanced.js')) {
+                const isAdminPage = req.path.includes('/admin');
+                // Landing pages: only essential conversion scripts (track + exit-intent + Luna)
+                const injectedScripts = isAdminPage ? '' : isLandingPage ? `
+    <script src="/track.js" async><\/script>
+    <script src="/js/exit-intent.js" defer><\/script>
+    <script src="/support/widget.js" defer><\/script>
+    <script>document.addEventListener('DOMContentLoaded',function(){if(window.DozSupport)DozSupport.init({proactiveEnabled:true});});<\/script>
+` : `
+    <script src="/track.js" async><\/script>
+    <script src="/track-advanced.js" async><\/script>
+    <script src="/track-heatmap.js" async><\/script>
+    <script src="/js/user-intelligence.js" defer><\/script>
+    <script src="/js/exit-intent.js" defer><\/script>
+    <script src="/js/conversion-nudges.js" defer><\/script>
+    <script src="/support/widget.js" defer><\/script>
+    <script>document.addEventListener('DOMContentLoaded',function(){if(window.DozSupport)DozSupport.init({proactiveEnabled:true});});<\/script>
+    <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js?v=3.2.0').catch(function(){});<\/script>
+`;
+                body = body.replace('</body>', injectedScripts + '</body>');
+            }
+
+            // Inject SW registration on all non-admin pages (even if tracking scripts already exist)
+            if (body.includes('</body>') && !body.includes('serviceWorker.register') && !req.path.includes('/admin')) {
+                body =
