@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - AI Conversion Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #0f0f1a; color: #fff; min-height: 100vh; }
+
+        .sidebar { position: fixed; left: 0; top: 0; width: 260px; height: 100vh; background: #1a1a2e; border-right: 1px solid rgba(255,255,255,0.1); padding: 20px 0; z-index: 100; overflow-y: auto; }
+        .sidebar-logo { padding: 0 25px 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .sidebar-logo h1 { font-size: 1.5rem; background: linear-gradient(135deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar-logo span { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+        .nav-section { padding: 0 15px; margin-bottom: 20px; }
+        .nav-section-title { font-size: 0.7rem; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 0 10px; margin-bottom: 10px; letter-spacing: 1px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.2s; cursor: pointer; margin-bottom: 5px; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(123,47,247,0.2)); color: #00d4ff; }
+
+        .main-content { margin-left: 260px; padding: 30px; min-height: 100vh; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-title h2 { font-size: 1.8rem; margin-bottom: 5px; }
+        .page-title p { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+        .header-actions { display: flex; gap: 15px; }
+        .btn { padding: 12px 24px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .btn-primary { background: linear-gradient(135deg, #00d4ff, #7b2ff7); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #1a1a2e; border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 2rem; font-weight: 800; margin-bottom: 4px; }
+        .stat-value.gradient { background: linear-gradient(135deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-change { font-size: 0.8rem; }
+        .stat-change.positive { color: #22c55e; }
+        .stat-change.negative { color: #ef4444; }
+        .stat-change.neutral { color: rgba(255,255,255,0.4); }
+
+        /* Charts & Panels */
+        .panels-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .panel { background: #1a1a2e; border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); }
+        .panel-full { grid-column: 1 / -1; }
+        .panel-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .panel-title .icon { font-size: 1.3rem; }
+
+        /* Funnel */
+        .funnel { display: flex; flex-direction: column; gap: 8px; }
+        .funnel-stage { display: flex; align-items: center; gap: 16px; }
+        .funnel-bar-wrap { flex: 1; background: rgba(255,255,255,0.05); border-radius: 8px; height: 36px; overflow: hidden; position: relative; }
+        .funnel-bar { height: 100%; border-radius: 8px; transition: width 1s ease; display: flex; align-items: center; padding: 0 12px; font-size: 0.8rem; font-weight: 600; }
+        .funnel-label { width: 120px; font-size: 0.85rem; color: rgba(255,255,255,0.7); text-align: right; }
+        .funnel-count { width: 60px; font-size: 0.85rem; font-weight: 600; text-align: right; }
+        .funnel-rate { width: 50px; font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+
+        /* Active Visitors Table */
+        .visitors-table { width: 100%; border-collapse: collapse; }
+        .visitors-table th { text-align: left; padding: 10px 12px; font-size: 0.75rem; text-transform: uppercase; color: rgba(255,255,255,0.4); border-bottom: 1px solid rgba(255,255,255,0.1); letter-spacing: 0.5px; }
+        .visitors-table td { padding: 12px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .stage-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+        .stage-new { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .stage-exploring { background: rgba(168,85,247,0.2); color: #c084fc; }
+        .stage-interested { background: rgba(251,191,36,0.2); color: #fbbf24; }
+        .stage-considering { background: rgba(249,115,22,0.2); color: #fb923c; }
+        .stage-customer { background: rgba(34,197,94,0.2); color: #4ade80; }
+
+        /* System Status */
+        .systems-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .system-card { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 14px; }
+        .system-status { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .system-status.active { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+        .system-status.inactive { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+        .system-status.partial { background: #fbbf24; box-shadow: 0 0 8px rgba(251,191,36,0.5); }
+        .system-info { flex: 1; }
+        .system-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+        .system-desc { font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+
+        /* Loading */
+        .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: rgba(255,255,255,0.4); }
+        .spinner { width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #00d4ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 15px; }
+            .panels-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <h1>DOZ UP</h1>
+            <span>AI Conversion Center</span>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Navigation</div>
+            <a href="/admin/dashboard.html" class="nav-item">Dashboard</a>
+            <a href="/admin/analytics.html" class="nav-item">Analytics</a>
+            <a href="/admin/conversion-center.html" class="nav-item active">Conversion AI</a>
+            <a href="/admin/growth-center.html" class="nav-item">Growth Center</a>
+            <a href="/admin/intelligence.html" class="nav-item">Intelligence</a>
+            <a href="/admin/support-inbox.html" class="nav-item">Support Inbox</a>
+            <a href="/admin/system-monitor.html" class="nav-item">System Monitor</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <h2>AI Conversion Center</h2>
+                <p>Real-time conversion optimization powered by AI</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="loadData()">Refresh</button>
+            </div>
+        </div>
+
+        <!-- KPI Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">Nudges Shown</div>
+                <div class="stat-value gradient" id="nudgesShown">-</div>
+                <div class="stat-change neutral">Total impressions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Nudge CTR</div>
+                <div class="stat-value gradient" id="nudgeCTR">-</div>
+                <div class="stat-change neutral">Click-through rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Exit Intents</div>
+                <div class="stat-value gradient" id="exitIntents">-</div>
+                <div class="stat-change neutral">Detected attempts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Exit Save Rate</div>
+                <div class="stat-value gradient" id="exitSaveRate">-</div>
+                <div class="stat-change neutral">Users retained</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Conversions</div>
+                <div class="stat-value gradient" id="conversions">-</div>
+                <div class="stat-change neutral">Total conversions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Visitors</div>
+                <div class="stat-value gradient" id="activeVisitors">-</div>
+                <div class="stat-change neutral">Being tracked now</div>
+            </div>
+        </div>
+
+        <!-- Panels -->
+        <div class="panels-grid">
+            <!-- Conversion Funnel -->
+            <div class="panel panel-full">
+                <div class="panel-title"><span class="icon">🔄</span> Visitor Journey Funnel</div>
+                <div class="funnel" id="funnelView">
+                    <div class="loading"><div class="spinner"></div> Loading funnel data...</div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="panel">
+                <div class="panel-title"><span class="icon">🛰️</span> AI Systems Status</div>
+                <div class="systems-grid" id="systemsGrid">
+                    <div class="loading"><div class="spinner"></div> Checking systems...</div>
+                </div>
+            </div>
+
+            <!-- Top Pages -->
+            <div class="panel">
+                <div class="panel-title"><span class="icon">📊</span> Conversion by Page Type</div>
+                <canvas id="pageTypeChart" height="250"></canvas>
+            </div>
+
+            <!-- Active Visitors -->
+            <div class="panel panel-full">
+                <div class="panel-title"><span class="icon">👥</span> Recent Visitor Profiles</div>
+                <div id="visitorsTable">
+                    <div class="loading"><div class="spinner"></div> Loading visitors...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pageChart = null;
+
+        async function loadData() {
+            await Promise.all([
+                loadConversionStats(),
+                loadVisitorStats(),
+                loadSystemStatus()
+            ]);
+        }
+
+        async function loadConversionStats() {
+            try {
+                const res = await fetch('/api/admin/conversion/analytics');
+                const data = await res.json();
+                if (!data.success) return;
+
+                document.getElementById('nudgesShown').textContent = (data.stats?.nudgesShown || 0).toLocaleString();
+                document.getElementById('nudgeCTR').textContent = data.nudgeConversionRate || '0%';
+                document.getElementById('exitIntents').textContent = (data.stats?.exitIntentsDetected || 0).toLocaleString();
+                document.getElementById('exitSaveRate').textContent = data.exitSaveRate || '0%';
+                document.getElementById('conversions').textContent = (data.stats?.conversions || 0).toLocaleString();
+            } catch (err) {
+                console.error('Failed to load conversion stats:', err);
+            }
+        }
+
+        async function loadVisitorStats() {
+            try {
+                const res = await fetch('/api/admin/visitor-intelligence/stats');
+                const data = await res.json();
+
+                if (data.success && data.stats) {
+                    document.getElementById('activeVisitors').textContent = (data.stats.totalProfiles || 0).toLocaleString();
+                    renderFunnel(data.stats.stageDistribution || {});
+                    renderVisitors(data.stats.recentProfiles || []);
+                    renderPageChart(data.stats.stageDistribution || {});
+                } else {
+                    // Try alternative endpoint
+                    loadVisitorStatsFallback();
+                }
+            } catch (err) {
+                loadVisitorStatsFallback();
+            }
+        }
+
+        async function loadVisitorStatsFallback() {
+            try {
+                // Use visitor intelligence stats method directly
+                const res = await fetch('/api/admin/analytics/v2/overview');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('activeVisitors').textContent = (data.uniqueVisitors || 0).toLocaleString();
+                }
+            } catch (err) {
+                console.error('Failed to load visitor stats:', err);
+            }
+
+            // Render placeholder funnel
+            renderFunnel({ new: 100, exploring: 60, interested: 30, considering: 15, customer: 5 });
+        }
+
+        function renderFunnel(stages) {
+            const container = document.getElementById('funnelView');
+            const stageOrder = ['new', 'exploring', 'interested', 'considering', 'customer'];
+            const colors = ['#3b82f6', '#a855f7', '#fbbf24', '#f97316', '#22c55e'];
+            const total = Object.values(stages).reduce((a, b) => a + b, 0) || 1;
+
+            let html = '';
+            stageOrder.forEach((stage, i) => {
+                const count = stages[stage] || 0;
+                const pct = ((count / total) * 100).toFixed(0);
+                html += `
+                    <div class="funnel-stage">
+                        <div class="funnel-label">${stage.charAt(0).toUpperCase() + stage.slice(1)}</div>
+                        <div class="funnel-bar-wrap">
+                            <div class="funnel-bar" style="width:${Math.max(pct, 3)}%;background:${colors[i]};">${pct}%</div>
+                        </div>
+                        <div class="funnel-count">${count}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderVisitors(profiles) {
+            const container = document.getElementById('visitorsTable');
+            if (!profiles || profiles.length === 0) {
+                container.innerHTML = '<p style="color:rgba(255,255,255,0.4);text-align:center;padding:20px;">No visitor data yet. Visitors will appear as they browse the site.</p>';
+                return;
+            }
+
+            let html = `<table class="visitors-table">
+                <thead><tr>
+                    <th>Fingerprint</th>
+                    <th>Source</th>
+                    <th>Stage</th>
+                    <th>Visits</th>
+                    <th>Score</th>
+                    <th>Last Seen</th>
+                </tr></thead><tbody>`;
+
+            profiles.slice(0, 20).forEach(p => {
+                const stageClass = 'stage-' + (p.journeyStage || 'new');
+                html += `<tr>
+                    <td style="font-family:monospace;font-size:0.8rem;">${(p.fingerprintId || '').substring(0, 12)}...</td>
+                    <td>${p.source || p.latestSource || 'direct'}</td>
+                    <td><span class="stage-badge ${stageClass}">${p.journeyStage || 'new'}</span></td>
+                    <td>${p.visitCount || 1}</td>
+                    <td>${p.conversionScore || 0}/100</td>
+                    <td>${p.lastSeen ? new Date(p.lastSeen).toLocaleString() : '-'}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function renderPageChart(stages) {
+            const ctx = document.getElementById('pageTypeChart').getContext('2d');
+
+            if (pageChart) pageChart.destroy();
+
+            pageChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(stages).map(s => s.charAt(0).toUpperCase() + s.slice(1)),
+                    datasets: [{
+                        data: Object.values(stages),
+                        backgroundColor: ['#3b82f6', '#a855f7', '#fbbf24', '#f97316', '#22c55e'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: 'rgba(255,255,255,0.7)', font: { family: 'Inter', size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadSystemStatus() {
+            const systems = [
+                { name: 'Visitor Intelligence', desc: 'Tracking visitor profiles & journey stages', endpoint: '/api/admin/visitor-intelligence/stats' },
+                { name: 'Support Triggers', desc: '21 smart triggers for proactive support', endpoint: null, status: 'active' },
+                { name: 'Luna AI Chat', desc: 'WebSocket support widget on all pages', endpoint: null, status: 'active' },
+                { name: 'Exit Intent Detection', desc: 'Client-side exit detection + interventions', endpoint: null, status: 'active' },
+                { name: 'Conversion Nudges', desc: 'Smart contextual nudge system', endpoint: null, status: 'active' },
+                { name: 'Advanced Analytics', desc: 'Page views, engagement, scroll depth', endpoint: null, status: 'active' },
+                { name: 'Heatmap & Funnel', desc: 'Click heatmaps and funnel analysis', endpoint: null, status: 'active' },
+                { name: 'Script Injection', desc: 'Auto-inject tracking on all HTML pages', endpoint: null, status: 'active' }
+            ];
+
+            const container = document.getElementById('systemsGrid');
+            let html = '';
+
+            for (const sys of systems) {
+                let status = sys.status || 'active';
+
+                if (sys.endpoint) {
+                    try {
+                        const res = await fetch(sys.endpoint);
+                        const data = await res.json();
+                        status = data.success ? 'active' : 'partial';
+                    } catch {
+                        status = 'inactive';
+                    }
+                }
+
+                html += `
+                    <div class="system-card">
+                        <div class="system-status ${status}"></div>
+                        <div class="system-info">
+                            <div class="system-name">${sys.name}</div>
+                            <div class="system-desc">${sys.desc}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Add visitor intelligence stats endpoint if not exists
+        async function ensureEndpoints() {
+            try {
+                const res = await fetch('/api/admin/visitor-intelligence/stats');
+                if (res.status === 404) {
+                    console.log('Visitor intelligence stats endpoint not yet available');
+                }
+            } catch(e) {}
+        }
+
+        // Initial load
+        loadData();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

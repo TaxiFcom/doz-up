@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - DOZ UP</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+
+    <!-- Preload Stripe for speed -->
+    <link rel="preconnect" href="https://js.stripe.com">
+    <link rel="dns-prefetch" href="https://js.stripe.com">
+    <script src="https://js.stripe.com/v3/" async></script>
+
+    <!-- Google Ads Tag -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-441083115"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-441083115');
+    </script>
+
+    <!-- Meta Pixel (Facebook) Conversion Tracking -->
+    <script src="/js/meta-pixel.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --bg: #0a0a1a;
+            --card: rgba(255,255,255,0.05);
+            --border: rgba(255,255,255,0.1);
+            --text: #ffffff;
+            --text-muted: #94a3b8;
+            --error: #ef4444;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .checkout-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .checkout-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .checkout-logo svg { width: 32px; height: 32px; }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .secure-badge svg { color: var(--primary); }
+
+        .checkout-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 24px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 40px;
+        }
+
+        @media (max-width: 800px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 20px 16px;
+            }
+            .order-summary { order: -1; }
+        }
+
+        .checkout-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .checkout-card-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checkout-card-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .checkout-card-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .checkout-content { padding: 24px; }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: rgba(0,0,0,0.3);
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-input::placeholder { color: #64748b; }
+
+        #payment-element {
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: rgba(0,0,0,0.3);
+            min-height: 120px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .order-summary {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-summary h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-item-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .order-item-details { flex: 1; }
+        .order-item-name { font-weight: 600; margin-bottom: 4px; }
+        .order-item-desc { font-size: 0.85rem; color: var(--text-muted); }
+        .order-item-price { font-weight: 600; text-align: right; }
+        .order-item-interval { font-size: 0.75rem; color: var(--text-muted); }
+
+        .order-totals { padding-top: 16px; }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .order-row.total {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding-top: 16px;
+            margin-top: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        .order-row.monthly-equiv {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .order-savings {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--primary);
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-top: 16px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .coupon-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .coupon-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .coupon-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: rgba(0,0,0,0.3);
+            color: var(--text);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .coupon-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .coupon-input::placeholder { color: #64748b; text-transform: none; }
+
+        .coupon-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .coupon-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: var(--primary);
+        }
+
+        .coupon-message {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .coupon-message.success {
+            display: block;
+            color: var(--primary);
+        }
+
+        .coupon-message.error {
+            display: block;
+            color: var(--error);
+        }
+
+        .coupon-applied {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            margin-top: 8px;
+        }
+
+        .coupon-applied-text {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .coupon-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: underline;
+        }
+
+        .coupon-remove:hover { color: var(--error); }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 16px 0;
+            margin-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .trust-badge svg { width: 14px; height: 14px; color: var(--primary); }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .error-message.show { display: block; }
+
+        .checkout-success {
+            text-align: center;
+            padding: 40px 24px;
+            display: none;
+        }
+
+        .checkout-success.show { display: block; }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--primary);
+        }
+
+        .success-icon svg { width: 35px; height: 35px; }
+
+        .checkout-success h2 { font-size: 1.4rem; margin-bottom: 8px; }
+        .checkout-success p { color: var(--text-muted); margin-bottom: 24px; }
+
+        .loading-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            color: var(--text-muted);
+        }
+
+        .checkout-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .checkout-footer a { color: var(--text-muted); }
+
+        .account-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+
+        .account-banner.logged-in {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: var(--primary);
+        }
+
+        .account-banner svg { flex-shrink: 0; }
+
+        .account-banner a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .account-banner a:hover { text-decoration: underline; }
+
+        .account-banner .account-email { font-weight: 600; color: var(--text); }
+
+        /* Express Checkout Styles */
+        #stripe-express-checkout {
+            margin-bottom: 16px;
+            min-height: 48px;
+        }
+
+        .express-checkout-section {
+            margin-bottom: 24px;
+        }
+
+        .express-label {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .express-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .express-divider::before,
+        .express-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+    </style>
+</head>
+<body>
+    <header class="checkout-header">
+        <a href="/up" class="checkout-logo">
+            <svg viewBox="0 0 100 100" fill="none">
+                <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#lg)"/>
+                <path d="M25 62 C25 62 22 62 22 58 C22 52 28 50 32 50 C32 42 40 36 50 36 C60 36 68 42 68 50 C72 50 78 52 78 58 C78 62 75 62 75 62" fill="white" opacity="0.95"/>
+                <path d="M50 28 L62 44 L54 44 L54 68 L46 68 L46 44 L38 44 Z" fill="#059669"/>
+                <defs><linearGradient id="lg" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#059669"/></linearGradient></defs>
+            </svg>
+            DOZ UP
+        </a>
+        <div class="secure-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Secure Checkout
+        </div>
+    </header>
+
+    <main class="checkout-container">
+        <div class="checkout-main">
+            <div class="checkout-card">
+                <div class="checkout-card-header">
+                    <h1>Complete your order</h1>
+                    <p>Secure payment powered by Stripe</p>
+                </div>
+
+                <div class="checkout-content">
+                    <div class="error-message" id="errorMessage"></div>
+
+                    <div id="checkout-form">
+                        <!-- Stripe Express Checkout (Link, Apple Pay, Google Pay) -->
+                        <div class="express-checkout-section" id="expressCheckoutSection">
+                            <div class="express-label">Express Checkout</div>
+                            <div id="stripe-express-checkout"><div style="text-align:center;padding:12px;color:var(--text-muted,#94a3b8);font-size:0.8rem;">Loading express checkout...</div></div>
+                            <div class="express-divider" id="expressDivider">or pay with card</div>
+                        </div>
+
+                        <div id="accountBanner" class="account-banner guest" style="display: none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            <span id="accountBannerText"></span>
+                        </div>
+
+                        <!-- Link Authentication - email + Link one-click -->
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <div id="link-authentication-element"></div>
+                            <input type="email" class="form-input" id="email" placeholder="your@email.com" required style="display:none;">
+                        </div>
+
+                        <!-- Coupon code (inline) -->
+                        <div class="form-group" id="inlineCouponSection">
+                            <label class="form-label">Coupon code</label>
+                            <div style="display:flex;gap:8px;">
+                                <input type="text" class="form-input" id="inlineCouponInput" placeholder="Enter coupon code" maxlength="20" style="flex:1;text-transform:uppercase;">
+                                <button type="button" class="btn" id="inlineCouponBtn" onclick="applyCouponInline()" style="padding:10px 20px;font-size:0.85rem;min-width:auto;">Apply</button>
+                            </div>
+                            <div id="inlineCouponMsg" style="margin-top:8px;font-size:0.85rem;"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Payment method</label>
+                            <div id="payment-element">
+                                <div class="loading-placeholder">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn" id="submitBtn" onclick="handleSubmit()">
+                            <span id="btnText">Pay Now</span>
+                            <span id="btnSpinner" class="spinner" style="display: none;"></span>
+                        </button>
+
+                        <p style="text-align: center; margin-top: 16px; font-size: 0.8rem; color: var(--text-muted);">
+                            By confirming, you agree to our <a href="/terms" style="color: var(--primary);">Terms</a> and <a href="/privacy" style="color: var(--primary);">Privacy Policy</a>
+                        </p>
+                    </div>
+
+                    <div class="checkout-success" id="checkout-success">
+                        <div class="success-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <h2>Payment successful!</h2>
+                        <p>Thank you for your purchase. Your account has been upgraded.</p>
+                        <button class="btn" onclick="window.location.href='/cabinet.html'">Go to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkout-footer">
+                <a href="/up">Return to DOZ UP</a> &bull; <a href="/help-center.html">Help</a>
+            </div>
+        </div>
+
+        <div class="order-summary">
+            <h2>Order summary</h2>
+
+            <div class="order-item">
+                <div class="order-item-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="order-item-details">
+                    <div class="order-item-name" id="planName">Pro Plan (Annual)</div>
+                    <div class="order-item-desc" id="planDesc">Unlimited storage, all devices</div>
+                </div>
+                <div class="order-item-price">
+                    <div id="planPrice">$119.88</div>
+                    <div class="order-item-interval" id="planInterval">/year</div>
+                </div>
+            </div>
+
+            <div class="order-totals">
+                <div class="order-row monthly-equiv" id="monthlyEquivRow">
+                    <span>Monthly equivalent</span>
+                    <span id="monthlyEquiv">$9.99/month</span>
+                </div>
+                <div class="order-row total" style="background: rgba(16,185,129,0.15); padding: 12px; border-radius: 8px; margin-top: 10px;">
+                    <span style="font-weight: 700; color: #10b981;">You will be charged</span>
+                    <span id="total" style="font-size: 1.3rem; font-weight: 700; color: #10b981;">$119.88</span>
+                </div>
+            </div>
+
+            <div class="coupon-section">
+                <div class="coupon-row" id="couponRow">
+                    <input type="text" class="coupon-input" id="couponInput" placeholder="Coupon code" maxlength="20">
+                    <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+                </div>
+                <div class="coupon-message" id="couponMessage"></div>
+                <div class="coupon-applied" id="couponApplied" style="display:none;">
+                    <span class="coupon-applied-text" id="couponAppliedText"></span>
+                    <button class="coupon-remove" onclick="removeCoupon()">Remove</button>
+                </div>
+            </div>
+
+            <div class="order-savings" id="savingsNote">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                <span id="savingsText">You're saving 33% with annual billing!</span>
+            </div>
+
+            <div class="trust-badges">
+                <div class="trust-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    SSL Secure
+                </div>
+                <div class="trust-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    30-day guarantee
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ============ CONFIGURATION ============
+        let stripe = null;
+        let elements = null;
+        let paymentElement = null;
+        let clientSecret = null;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const planId = urlParams.get('plan') || 'pro_yearly';
+
+        // Plan configurations - CORRECT yearly pricing
+        const PLANS = {
+            starter_monthly: { name: 'Starter', price: 4.99, interval: 'month', desc: '5 GB storage, links never expire', monthlyEquiv: 4.99 },
+            starter_yearly: { name: 'Starter (Annual)', price: 39.96, interval: 'year', desc: '5 GB storage, links never expire', monthlyEquiv: 3.33, savings: 33 },
+            pro_monthly: { name: 'Pro', price: 14.99, interval: 'month', desc: 'Unlimited storage, all devices', monthlyEquiv: 14.99 },
+            pro_yearly: { name: 'Pro (Annual)', price: 119.88, interval: 'year', desc: 'Unlimited storage, all devices', monthlyEquiv: 9.99, savings: 33 },
+            team_monthly: { name: 'Team', price: 39.99, interval: 'month', desc: 'Team workspace, admin dashboard', monthlyEquiv: 39.99, currency: '€' },
+            team_yearly: { name: 'Team (Annual)', price: 359.88, interval: 'year', desc: 'Team workspace, admin dashboard', monthlyEquiv: 29.99, savings: 25, currency: '€' },
+            enterprise_monthly: { name: 'Enterprise', price: 99.99, interval: 'month', desc: 'SSO & SAML, dedicated support', monthlyEquiv: 99.99, currency: '€' },
+            enterprise_yearly: { name: 'Enterprise (Annual)', price: 932.40, interval: 'year', desc: 'SSO & SAML, dedicated support', monthlyEquiv: 77.70, savings: 22, currency: '€' }
+        };
+
+        // ============ USER ACCOUNT DETECTION ============
+        let loggedInUserId = null;
+        let loggedInEmail = null;
+        let loggedInName = null;
+
+        function detectLoggedInUser() {
+            const userId = localStorage.getItem('dozup_user_id') || localStorage.getItem('doz_userId');
+            const email = localStorage.getItem('doz_email');
+            const userStr = localStorage.getItem('doz_user');
+
+            if (userId && email) {
+                loggedInUserId = userId;
+                loggedInEmail = email;
+                try {
+                    const user = JSON.parse(userStr);
+                    loggedInName = user && user.name ? user.name : email.split('@')[0];
+                } catch (e) {
+                    loggedInName = email.split('@')[0];
+                }
+            }
+        }
+
+        function showAccountBanner() {
+            const banner = document.getElementById('accountBanner');
+            const bannerText = document.getElementById('accountBannerText');
+
+            if (loggedInEmail) {
+                banner.className = 'account-banner logged-in';
+                bannerText.innerHTML = 'Purchasing as <span class="account-email">' + loggedInEmail + '</span>';
+                banner.style.display = 'flex';
+
+                // Pre-fill the email field
+                document.getElementById('email').value = loggedInEmail;
+            }
+        }
+
+        // ============ SHARE CONTEXT DETECTION ============
+        let shareContext = null;
+
+        async function detectShareLinkContext() {
+            // Check URL param: ?share=UUID
+            const shareParam = urlParams.get('share');
+
+            // Check referrer: /i/UUID
+            const referrer = document.referrer;
+            let referrerFilename = null;
+            if (referrer && referrer.includes('/i/')) {
+                const match = referrer.match(/\/i\/([a-f0-9-]+)/i);
+                if (match) referrerFilename = match[1];
+            }
+
+            // Check sessionStorage
+            let storedFilename = null;
+            try {
+                const stored = sessionStorage.getItem('doz_share_checkout');
+                if (stored) {
+                    const ctx = JSON.parse(stored);
+                    // Only use if less than 30 minutes old
+                    if (Date.now() - ctx.timestamp < 30 * 60 * 1000) {
+                        storedFilename = ctx.filename;
+                    }
+                }
+            } catch (e) {}
+
+            const filename = shareParam || referrerFilename || storedFilename;
+            if (!filename) return null;
+
+            // Fetch owner info from backend
+            try {
+                const res = await fetch('/api/checkout/owner/' + filename);
+                const data = await res.json();
+
+                if (data.success && data.found && data.hasCustomer && data.paymentPreferences) {
+                    shareContext = {
+                        filename: filename,
+                        customerId: data.customerId,
+                        paymentPreferences: data.paymentPreferences
+                    };
+
+                    // Pre-fill email if available
+                    if (data.paymentPreferences.email) {
+                        loggedInEmail = data.paymentPreferences.email;
+                        document.getElementById('email').value = data.paymentPreferences.email;
+                    }
+
+                    // Show express checkout if user has saved payment method
+                    if (data.paymentPreferences.hasPreferred) {
+                        showExpressCheckout(data.paymentPreferences);
+                    }
+
+                    return shareContext;
+                }
+            } catch (e) {
+                console.error('[Checkout] Share context lookup failed:', e);
+            }
+
+            return null;
+        }
+
+        // Express checkout is now handled by Stripe Express Checkout Element
+        // which automatically supports Link, Apple Pay, and Google Pay
+
+        // ============ IMMEDIATE INITIALIZATION ============
+        let expressCheckoutElement = null;
+
+        (async function init() {
+            // Detect logged-in user first
+            detectLoggedInUser();
+
+            // Update order summary immediately
+            updateOrderSummary();
+
+            // Track Meta Pixel InitiateCheckout
+            if (window.DOZPixel) {
+                window.DOZPixel.trackInitiateCheckout(planId);
+            }
+
+            // Show account banner
+            showAccountBanner();
+
+            // Check if returning from successful payment
+            if (urlParams.get('success') === 'true') {
+                showSuccess();
+                return;
+            }
+
+            // Detect share link context (for /i/ links)
+            await detectShareLinkContext();
+
+            // Wait for Stripe.js to load
+            await waitForStripe();
+
+            // Get config and initialize immediately
+            try {
+                const configRes = await fetch('/api/stripe/config');
+                const config = await configRes.json();
+
+                if (!config.publishableKey) {
+                    showError('Payment system unavailable.');
+                    return;
+                }
+
+                stripe = Stripe(config.publishableKey);
+
+                // Get share filename for linking checkout to owner
+                const shareFilename = shareContext?.filename || urlParams.get('share') || null;
+
+                // Create checkout session - use real email if logged in
+                const checkoutEmail = loggedInEmail || 'checkout@temp.com';
+                const checkoutBody = { planId: planId, email: checkoutEmail };
+                if (loggedInUserId) checkoutBody.userId = loggedInUserId;
+                if (loggedInName) checkoutBody.customerName = loggedInName;
+                if (shareFilename) checkoutBody.shareFilename = shareFilename;
+
+                const sessionRes = await fetch('/api/stripe/create-inline-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(checkoutBody)
+                });
+
+                const session = await sessionRes.json();
+
+                if (!session.success || !session.clientSecret) {
+                    showError('Could not initialize payment. Please refresh.');
+                    return;
+                }
+
+                clientSecret = session.clientSecret;
+
+                // Initialize Stripe Elements
+                elements = stripe.elements({
+                    clientSecret: clientSecret,
+                    appearance: {
+                        theme: 'night',
+                        variables: {
+                            colorPrimary: '#10b981',
+                            colorBackground: 'rgba(0,0,0,0.3)',
+                            colorText: '#ffffff',
+                            colorDanger: '#ef4444',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+                            borderRadius: '12px'
+                        }
+                    }
+                });
+
+                // Mount Link Authentication Element - enables Link pre-auth with saved cards
+                const linkAuthElement = elements.create('linkAuthentication', {
+                    defaultValues: {
+                        email: loggedInEmail || ''
+                    }
+                });
+                document.getElementById('link-authentication-element').innerHTML = '';
+                linkAuthElement.mount('#link-authentication-element');
+
+                // When email changes in Link Auth, sync to hidden email field
+                linkAuthElement.on('change', (event) => {
+                    if (event.value && event.value.email) {
+                        document.getElementById('email').value = event.value.email;
+                    }
+                });
+
+                // Mount Payment Element - Link shown first
+                paymentElement = elements.create('payment', {
+                    layout: {
+                        type: 'tabs',
+                        defaultCollapsed: false
+                    },
+                    paymentMethodOrder: ['link', 'card'],
+                    wallets: { applePay: 'never', googlePay: 'never' },
+                    defaultValues: {
+                        billingDetails: {
+                            email: loggedInEmail || ''
+                        }
+                    }
+                });
+                document.getElementById('payment-element').innerHTML = '';
+                paymentElement.mount('#payment-element');
+
+                // Mount Express Checkout Element (Link, Apple Pay, Google Pay)
+                try {
+                    expressCheckoutElement = elements.create('expressCheckout', {
+                        layout: { maxColumns: 3, maxRows: 1 }
+                    });
+
+                    expressCheckoutElement.on('confirm', async (event) => {
+                        const { error } = await stripe.confirmPayment({
+                            elements,
+                            clientSecret: clientSecret,
+                            confirmParams: {
+                                return_url: window.location.origin + '/payment/success.html?plan=' + planId +
+                                    (loggedInUserId ? '&userId=' + loggedInUserId : '')
+                            },
+                            redirect: 'if_required'
+                        });
+
+                        if (error) {
+                            showError(error.message);
+                        } else {
+                            showSuccess();
+                        }
+                    });
+
+                    expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => {
+                        console.log('[Checkout] Express checkout ready:', JSON.stringify(availablePaymentMethods));
+                        if (!availablePaymentMethods) {
+                            document.getElementById('expressCheckoutSection').style.display = 'none';
+                        }
+                    });
+
+                    expressCheckoutElement.mount('#stripe-express-checkout');
+                } catch (e) {
+                    console.log('[Checkout] Express checkout error:', e.message);
+                    document.getElementById('expressCheckoutSection').style.display = 'none';
+                }
+
+                // Update button text with price
+                const plan = PLANS[planId] || PLANS.pro_yearly;
+                const currency = plan.currency || '$';
+                document.getElementById('btnText').textContent = `Pay ${currency}${plan.price.toFixed(2)}`;
+
+            } catch (error) {
+                console.error('Init error:', error);
+                showError('Failed to initialize. Please refresh.');
+            }
+        })();
+
+        // Wait for Stripe.js
+        function waitForStripe() {
+            return new Promise((resolve) => {
+                if (window.Stripe) {
+                    resolve();
+                } else {
+                    const check = setInterval(() => {
+                        if (window.Stripe) {
+                            clearInterval(check);
+                            resolve();
+                        }
+                    }, 50);
+                }
+            });
+        }
+
+        // ============ ORDER SUMMARY ============
+        function updateOrderSummary() {
+            const plan = PLANS[planId] || PLANS.pro_yearly;
+            const currency = plan.currency || '$';
+            const isYearly = planId.includes('yearly');
+
+            document.getElementById('planName').textContent = plan.name + ' Plan';
+            document.getElementById('planDesc').textContent = plan.desc;
+            document.getElementById('planPrice').textContent = currency + plan.price.toFixed(2);
+            document.getElementById('planInterval').textContent = '/' + plan.interval;
+            document.getElementById('total').textContent = currency + plan.price.toFixed(2);
+
+            // Show monthly equivalent for yearly plans
+            if (isYearly && plan.monthlyEquiv) {
+                document.getElementById('monthlyEquivRow').style.display = 'flex';
+                document.getElementById('monthlyEquiv').textContent = currency + plan.monthlyEquiv.toFixed(2) + '/month';
+                document.getElementById('savingsNote').style.display = 'flex';
+                document.getElementById('savingsText').textContent = `You're saving ${plan.savings}% with annual billing!`;
+            } else {
+                document.getElementById('monthlyEquivRow').style.display = 'none';
+                document.getElementById('savingsNote').style.display = 'none';
+            }
+        }
+
+        // ============ FORM SUBMISSION ============
+        async function handleSubmit() {
+            const email = document.getElementById('email').value.trim();
+
+            if (!email || !email.includes('@')) {
+                showError('Please enter a valid email address.');
+                return;
+            }
+
+            if (!elements) {
+                showError('Payment is still loading. Please wait.');
+                return;
+            }
+
+            setLoading(true);
+            hideError();
+
+            // Track Meta Pixel AddPaymentInfo
+            if (window.DOZPixel) {
+                window.DOZPixel.trackAddPaymentInfo(planId);
+            }
+
+            try {
+                const returnUrl = window.location.origin + '/payment/success.html?plan=' + planId +
+                    (loggedInUserId ? '&userId=' + loggedInUserId : '');
+
+                const { error } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: returnUrl,
+                        receipt_email: email
+                    }
+                });
+
+                if (error) {
+                    showError(error.message);
+                    setLoading(false);
+                }
+            } catch (error) {
+                showError('Payment failed. Please try again.');
+                setLoading(false);
+            }
+        }
+
+        // ============ UI HELPERS ============
+        function setLoading(loading) {
+            const btn = document.getElementById('submitBtn');
+            const text = document.getElementById('btnText');
+            const spinner = document.getElementById('btnSpinner');
+
+            btn.disabled = loading;
+            text.style.display = loading ? 'none' : 'inline';
+            spinner.style.display = loading ? 'inline-block' : 'none';
+        }
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = message;
+            el.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        // ============ COUPON SYSTEM ============
+        let appliedCouponCode = null;
+
+        async function applyCoupon() {
+            const input = document.getElementById('couponInput');
+            const message = document.getElementById('couponMessage');
+            const code = input.value.trim().toUpperCase();
+
+            if (!code) {
+                message.textContent = 'Please enter a coupon code.';
+                message.className = 'coupon-message error';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/stripe/validate-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, planId })
+                });
+                const result = await res.json();
+
+                if (!result.valid) {
+                    message.textContent = result.error || 'Invalid coupon code.';
+                    message.className = 'coupon-message error';
+                    return;
+                }
+
+                // Coupon is valid - apply it
+                appliedCouponCode = code;
+                message.className = 'coupon-message';
+                message.style.display = 'none';
+
+                // Show applied badge
+                document.getElementById('couponRow').style.display = 'none';
+                document.getElementById('couponApplied').style.display = 'flex';
+                document.getElementById('couponAppliedText').textContent = `${code} - ${result.description}`;
+
+                // Update price display
+                const currency = PLANS[planId]?.currency || '$';
+                const discountedPrice = (result.discountedAmount / 100).toFixed(2);
+                const originalPrice = (result.originalAmount / 100).toFixed(2);
+
+                document.getElementById('planPrice').innerHTML = `<span class="original-price">${currency}${originalPrice}</span> ${currency}${discountedPrice}`;
+                document.getElementById('total').textContent = `${currency}${discountedPrice}`;
+                document.getElementById('btnText').textContent = `Pay ${currency}${discountedPrice}`;
+
+                // Re-create PaymentIntent with discounted amount
+                await recreatePaymentWithCoupon(code);
+
+            } catch (err) {
+                message.textContent = 'Failed to validate coupon. Please try again.';
+                message.className = 'coupon-message error';
+            }
+        }
+
+        async function removeCoupon() {
+            appliedCouponCode = null;
+
+            // Restore UI
+            document.getElementById('couponRow').style.display = 'flex';
+            document.getElementById('couponApplied').style.display = 'none';
+            document.getElementById('couponInput').value = '';
+            document.getElementById('couponMessage').style.display = 'none';
+
+            // Restore original price
+            updateOrderSummary();
+            const plan = PLANS[planId] || PLANS.pro_yearly;
+            const currency = plan.currency || '$';
+            document.getElementById('btnText').textContent = `Pay ${currency}${plan.price.toFixed(2)}`;
+
+            // Re-create PaymentIntent without coupon
+            await recreatePaymentWithCoupon(null);
+        }
+
+        // Inline coupon (in main checkout flow)
+        async function applyCouponInline() {
+            const input = document.getElementById('inlineCouponInput');
+            const msg = document.getElementById('inlineCouponMsg');
+            const code = input.value.trim().toUpperCase();
+            if (!code) { msg.innerHTML = '<span style="color:#ef4444;">Please enter a coupon code.</span>'; return; }
+
+            try {
+                const res = await fetch('/api/stripe/validate-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, planId })
+                });
+                const result = await res.json();
+                if (!result.valid) { msg.innerHTML = '<span style="color:#ef4444;">' + (result.error || 'Invalid coupon code.') + '</span>'; return; }
+
+                // Apply coupon
+                appliedCouponCode = code;
+                const currency = PLANS[planId]?.currency || '$';
+                const discountedPrice = (result.discountedAmount / 100).toFixed(2);
+                const originalPrice = (result.originalAmount / 100).toFixed(2);
+
+                msg.innerHTML = '<span style="color:#10b981;">&#10003; ' + code + ' applied - ' + result.description + ' (now ' + currency + discountedPrice + ')</span>';
+                input.disabled = true;
+                document.getElementById('inlineCouponBtn').textContent = 'Applied';
+                document.getElementById('inlineCouponBtn').disabled = true;
+
+                // Sync sidebar coupon display
+                document.getElementById('couponInput').value = code;
+                document.getElementById('couponRow').style.display = 'none';
+                document.getElementById('couponApplied').style.display = 'flex';
+                document.getElementById('couponAppliedText').textContent = code + ' - ' + result.description;
+                document.getElementById('planPrice').innerHTML = '<span class="original-price">' + currency + originalPrice + '</span> ' + currency + discountedPrice;
+                document.getElementById('total').textContent = currency + discountedPrice;
+                document.getElementById('btnText').textContent = 'Pay ' + currency + discountedPrice;
+
+                await recreatePaymentWithCoupon(code);
+            } catch (err) {
+                msg.innerHTML = '<span style="color:#ef4444;">Failed to validate coupon.</span>';
+            }
+        }
+
+        // Enter key on inline coupon
+        document.getElementById('inlineCouponInput')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); applyCouponInline(); }
+        });
+
+        async function recreatePaymentWithCoupon(couponCode) {
+            try {
+                const checkoutEmail = loggedInEmail || document.getElementById('email').value || 'checkout@temp.com';
+                const checkoutBody = { planId, email: checkoutEmail };
+                if (loggedInUserId) checkoutBody.userId = loggedInUserId;
+                if (loggedInName) checkoutBody.customerName = loggedInName;
+                if (couponCode) checkoutBody.couponCode = couponCode;
+
+                const sessionRes = await fetch('/api/stripe/create-inline-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(checkoutBody)
+                });
+                const session = await sessionRes.json();
+
+                if (!session.success || !session.clientSecret) return;
+
+                clientSecret = session.clientSecret;
+
+                // Recreate elements with new clientSecret
+                elements = stripe.elements({
+                    clientSecret: clientSecret,
+                    appearance: {
+                        theme: 'night',
+                        variables: {
+                            colorPrimary: '#10b981',
+                            colorBackground: 'rgba(0,0,0,0.3)',
+                            colorText: '#ffffff',
+                            colorDanger: '#ef4444',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+                            borderRadius: '12px'
+                        }
+                    }
+                });
+
+                // Remount Link Authentication Element
+                const currentEmail = loggedInEmail || document.getElementById('email').value || '';
+                document.getElementById('link-authentication-element').innerHTML = '';
+                const newLinkAuth = elements.create('linkAuthentication', {
+                    defaultValues: { email: currentEmail }
+                });
+                newLinkAuth.mount('#link-authentication-element');
+                newLinkAuth.on('change', (event) => {
+                    if (event.value && event.value.email) {
+                        document.getElementById('email').value = event.value.email;
+                    }
+                });
+
+                // Remount Payment Element with Link first
+                document.getElementById('payment-element').innerHTML = '';
+                paymentElement = elements.create('payment', {
+                    layout: { type: 'tabs', defaultCollapsed: false },
+                    paymentMethodOrder: ['link', 'card'],
+                    wallets: { applePay: 'never', googlePay: 'never' },
+                    defaultValues: { billingDetails: { email: currentEmail } }
+                });
+                paymentElement.mount('#payment-element');
+
+                // Remount Express Checkout
+                try {
+                    document.getElementById('stripe-express-checkout').innerHTML = '';
+                    document.getElementById('expressCheckoutSection').style.display = '';
+                    expressCheckoutElement = elements.create('expressCheckout', {
+                        layout: { maxColumns: 3, maxRows: 1 }
+                    });
+                    expressCheckoutElement.on('confirm', async (event) => {
+                        const { error } = await stripe.confirmPayment({
+                            elements,
+                            clientSecret: clientSecret,
+                            confirmParams: {
+                                return_url: window.location.origin + '/payment/success.html?plan=' + planId +
+                                    (loggedInUserId ? '&userId=' + loggedInUserId : '')
+                            },
+                            redirect: 'if_required'
+                        });
+                        if (error) showError(error.message);
+                        else showSuccess();
+                    });
+                    expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => {
+                        if (!availablePaymentMethods) {
+                            document.getElementById('expressCheckoutSection').style.display = 'none';
+                        }
+                    });
+                    expressCheckoutElement.mount('#stripe-express-checkout');
+                } catch (e) {
+                    console.log('[Checkout] Express checkout remount:', e.message);
+                    document.getElementById('expressCheckoutSection').style.display = 'none';
+                }
+
+            } catch (err) {
+                console.error('[Checkout] Coupon payment recreation failed:', err);
+            }
+        }
+
+        // Handle Enter key on coupon input
+        document.getElementById('couponInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); applyCoupon(); }
+        });
+
+        function showSuccess() {
+            document.getElementById('checkout-form').style.display = 'none';
+            document.getElementById('checkout-success').classList.add('show');
+        }
+    </script>
+</body>
+</html>

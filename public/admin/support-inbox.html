@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - AI Support Inbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #1a1a2e;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-logo span {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .nav-section {
+            padding: 0 15px;
+            margin-bottom: 20px;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            padding: 0 10px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(123,47,247,0.2));
+            color: #00d4ff;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .nav-badge.success {
+            background: #10b981;
+        }
+
+        /* Main Content - 3 Column Layout */
+        .main-content {
+            margin-left: 260px;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* Column 1: Conversation List */
+        .inbox-list {
+            width: 340px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .inbox-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .inbox-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .inbox-header h2 .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .inbox-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(0,212,255,0.2);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .filter-btn .count {
+            margin-left: 5px;
+            opacity: 0.7;
+        }
+
+        .inbox-search {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .inbox-search input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        .inbox-search input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .conversation-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .conversation-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .conversation-item:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .conversation-item.active {
+            background: rgba(0,212,255,0.1);
+            border-left: 3px solid #00d4ff;
+        }
+
+        .conversation-item.unread {
+            background: rgba(0,212,255,0.05);
+        }
+
+        .conversation-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: #00d4ff;
+            border-radius: 50%;
+        }
+
+        .conv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .conv-visitor {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .conv-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .conv-badge.ai {
+            background: rgba(123,47,247,0.2);
+            color: #a855f7;
+        }
+
+        .conv-badge.human {
+            background: rgba(0,212,255,0.2);
+            color: #00d4ff;
+        }
+
+        .conv-badge.escalated {
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+        }
+
+        .conv-time {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .conv-preview {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 8px;
+        }
+
+        .conv-meta {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .conv-page {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .priority-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+        }
+
+        .priority-indicator.urgent { background: #ef4444; }
+        .priority-indicator.high { background: #f97316; }
+        .priority-indicator.medium { background: #eab308; }
+        .priority-indicator.low { background: #10b981; }
+
+        /* Column 2: Conversation Thread */
+        .conversation-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #0a0a14;
+        }
+
+        .conversation-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .conv-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .conv-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .conv-details h3 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .conv-details p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .conv-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .conv-status.active { background: rgba(16,185,129,0.2); color: #10b981; }
+        .conv-status.waiting { background: rgba(249,115,22,0.2); color: #f97316; }
+        .conv-status.escalated { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .conv-status.resolved { background: rgba(0,212,255,0.2); color: #00d4ff; }
+
+        .conv-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            border: none;
+            color: #fff;
+        }
+
+        .action-btn.danger {
+            border-color: rgba(239,68,68,0.3);
+            color: #ef4444;
+        }
+
+        .action-btn.danger:hover {
+            background: rgba(239,68,68,0.2);
+        }
+
+        /* Messages Area */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message-group {
+            margin-bottom: 20px;
+        }
+
+        .message-date {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .message-date span {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            margin-left: auto;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, #7b2ff7, #a855f7);
+        }
+
+        .message.agent .message-avatar {
+            background: linear-gradient(135deg, #00d4ff, #0ea5e9);
+        }
+
+        .message.user .message-avatar {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .message.system .message-avatar {
+            background: rgba(249,115,22,0.2);
+            color: #f97316;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .message-sender {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .message-confidence {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(123,47,247,0.2);
+            color: #a855f7;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .message.ai .message-bubble,
+        .message.agent .message-bubble {
+            background: #1a1a2e;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+        }
+
+        .message.system .message-bubble {
+            background: rgba(249,115,22,0.1);
+            border: 1px solid rgba(249,115,22,0.3);
+            color: #f97316;
+            font-size: 0.8rem;
+        }
+
+        .message-suggestions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .suggestion-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(0,212,255,0.3);
+            background: transparent;
+            color: #00d4ff;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-btn:hover {
+            background: rgba(0,212,255,0.2);
+        }
+
+        /* Reply Area */
+        .reply-area {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: #1a1a2e;
+        }
+
+        .quick-replies {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quick-reply {
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-reply:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .reply-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .reply-input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px 15px;
+            color: #fff;
+            font-size: 0.9rem;
+            resize: none;
+            min-height: 50px;
+            max-height: 120px;
+        }
+
+        .reply-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .send-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,212,255,0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Column 3: Customer Details */
+        .customer-panel {
+            width: 360px;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .customer-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .customer-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 15px;
+        }
+
+        .customer-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .customer-email {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+        }
+
+        .customer-tags {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .customer-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .customer-tag.pro { background: rgba(0,212,255,0.2); color: #00d4ff; }
+        .customer-tag.new { background: rgba(16,185,129,0.2); color: #10b981; }
+        .customer-tag.returning { background: rgba(123,47,247,0.2); color: #a855f7; }
+
+        .customer-section {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .info-value {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .info-value.link {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        /* AI Insights Section */
+        .ai-insights {
+            background: rgba(123,47,247,0.1);
+            border: 1px solid rgba(123,47,247,0.3);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .ai-insights-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .ai-insights-header .icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #7b2ff7, #a855f7);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .ai-insights-header h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .insight-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+        }
+
+        .insight-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .insight-label {
+            color: rgba(255,255,255,0.5);
+            min-width: 80px;
+        }
+
+        .insight-value {
+            flex: 1;
+        }
+
+        .sentiment-positive { color: #10b981; }
+        .sentiment-neutral { color: #eab308; }
+        .sentiment-negative { color: #ef4444; }
+
+        /* History Timeline */
+        .history-timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .history-timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .history-item {
+            position: relative;
+            margin-bottom: 15px;
+            padding-left: 5px;
+        }
+
+        .history-item::before {
+            content: '';
+            position: absolute;
+            left: -18px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00d4ff;
+            border: 2px solid #0f0f1a;
+        }
+
+        .history-title {
+            font-size: 0.85rem;
+            margin-bottom: 3px;
+        }
+
+        .history-time {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* Ticket Info */
+        .ticket-card {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .ticket-number {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .ticket-subject {
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Empty States */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+
+        /* Analytics Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a2e;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+        }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            max-height: calc(90vh - 80px);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .analytics-card {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .analytics-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .analytics-value.cyan { color: #00d4ff; }
+        .analytics-value.green { color: #10b981; }
+        .analytics-value.purple { color: #a855f7; }
+        .analytics-value.orange { color: #f97316; }
+
+        .analytics-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .chart-container {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.4; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-4px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .customer-panel {
+                width: 300px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .customer-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .inbox-list {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h1>DOZ UP</h1>
+            <span>Admin Dashboard</span>
+        </div>
+
+        <nav class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <a href="/admin/dashboard.html" class="nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+                Dashboard
+            </a>
+            <a href="/admin/support-inbox.html" class="nav-item active">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+                AI Support Inbox
+                <span class="nav-badge" id="liveConversations">0</span>
+            </a>
+        </nav>
+
+        <nav class="nav-section">
+            <div class="nav-section-title">Management</div>
+            <a href="/admin/dashboard.html#users" class="nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                Users
+            </a>
+            <a href="/admin/dashboard.html#revenue" class="nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Revenue
+            </a>
+            <a href="/admin/dashboard.html#uploads" class="nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Uploads
+            </a>
+        </nav>
+
+        <nav class="nav-section">
+            <div class="nav-section-title">Settings</div>
+            <a href="/admin/dashboard.html#settings" class="nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Column 1: Inbox List -->
+        <section class="inbox-list">
+            <div class="inbox-header">
+                <h2>
+                    <span class="live-dot"></span>
+                    Support Inbox
+                </h2>
+                <div class="inbox-filters">
+                    <button class="filter-btn active" data-filter="all">All <span class="count" id="filterAll">0</span></button>
+                    <button class="filter-btn" data-filter="active">Active <span class="count" id="filterActive">0</span></button>
+                    <button class="filter-btn" data-filter="escalated">Escalated <span class="count" id="filterEscalated">0</span></button>
+                    <button class="filter-btn" data-filter="resolved">Resolved <span class="count" id="filterResolved">0</span></button>
+                </div>
+            </div>
+            <div class="inbox-search">
+                <input type="text" id="searchInput" placeholder="Search conversations...">
+            </div>
+            <div class="conversation-list" id="conversationList">
+                <!-- Conversations loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- Column 2: Conversation Panel -->
+        <section class="conversation-panel" id="conversationPanel">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon">💬</div>
+                <h3>Select a conversation</h3>
+                <p>Choose a conversation from the list to view messages and respond</p>
+            </div>
+
+            <div class="conversation-view" id="conversationView" style="display: none;">
+                <div class="conversation-header">
+                    <div class="conv-info">
+                        <div class="conv-avatar" id="convAvatar">V</div>
+                        <div class="conv-details">
+                            <h3 id="convName">Visitor</h3>
+                            <p id="convPage">Loading...</p>
+                        </div>
+                        <span class="conv-status active" id="convStatus">Active</span>
+                    </div>
+                    <div class="conv-actions">
+                        <button class="action-btn" onclick="showAnalytics()">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            Analytics
+                        </button>
+                        <button class="action-btn" id="claimBtn" onclick="claimConversation()">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            Claim
+                        </button>
+                        <button class="action-btn primary" id="resolveBtn" onclick="resolveConversation()">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Resolve
+                        </button>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Messages loaded dynamically -->
+                </div>
+
+                <div class="reply-area">
+                    <div class="quick-replies">
+                        <button class="quick-reply" onclick="insertQuickReply('Thank you for contacting DOZ UP support!')">Thanks for contacting</button>
+                        <button class="quick-reply" onclick="insertQuickReply('I understand your concern and I\'m here to help.')">I understand</button>
+                        <button class="quick-reply" onclick="insertQuickReply('Is there anything else I can help you with?')">Anything else?</button>
+                        <button class="quick-reply" onclick="insertQuickReply('I\'ve escalated this to our technical team.')">Escalated</button>
+                    </div>
+                    <div class="reply-input-container">
+                        <textarea class="reply-input" id="replyInput" placeholder="Type your message..." rows="1"></textarea>
+                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Column 3: Customer Details -->
+        <aside class="customer-panel" id="customerPanel" style="display: none;">
+            <div class="customer-header">
+                <div class="customer-avatar" id="customerAvatar">V</div>
+                <div class="customer-name" id="customerName">Visitor</div>
+                <div class="customer-email" id="customerEmail">Not logged in</div>
+                <div class="customer-tags" id="customerTags">
+                    <span class="customer-tag new">New Visitor</span>
+                </div>
+            </div>
+
+            <div class="customer-section">
+                <div class="section-title">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Session Info
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Current Page</span>
+                        <span class="info-value" id="infoPage">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Time on Page</span>
+                        <span class="info-value" id="infoTime">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Device</span>
+                        <span class="info-value" id="infoDevice">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Location</span>
+                        <span class="info-value" id="infoLocation">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="customer-section">
+                <div class="section-title">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    AI Insights
+                </div>
+                <div class="ai-insights">
+                    <div class="ai-insights-header">
+                        <div class="icon">🤖</div>
+                        <h4>Luna's Analysis</h4>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-label">Sentiment:</span>
+                        <span class="insight-value sentiment-neutral" id="insightSentiment">Neutral</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-label">Intent:</span>
+                        <span class="insight-value" id="insightIntent">General inquiry</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-label">Confidence:</span>
+                        <span class="insight-value" id="insightConfidence">-</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-label">Suggested:</span>
+                        <span class="insight-value" id="insightSuggested">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="customer-section">
+                <div class="section-title">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    History
+                </div>
+                <div class="history-timeline" id="historyTimeline">
+                    <div class="history-item">
+                        <div class="history-title">Conversation started</div>
+                        <div class="history-time">Just now</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="customer-section" id="ticketSection" style="display: none;">
+                <div class="section-title">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                    </svg>
+                    Associated Ticket
+                </div>
+                <div class="ticket-card">
+                    <div class="ticket-number" id="ticketNumber">TKT-000000</div>
+                    <div class="ticket-subject" id="ticketSubject">-</div>
+                    <div class="ticket-meta">
+                        <span id="ticketStatus">Open</span>
+                        <span id="ticketPriority">Medium</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Analytics Modal -->
+    <div class="modal-overlay" id="analyticsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Support Analytics</h2>
+                <button class="modal-close" onclick="closeAnalytics()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-value cyan" id="statTotal">0</div>
+                        <div class="analytics-label">Total Conversations</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-value green" id="statResolved">0</div>
+                        <div class="analytics-label">Resolved by AI</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-value purple" id="statAvgTime">0m</div>
+                        <div class="analytics-label">Avg. Resolution</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-value orange" id="statSatisfaction">0%</div>
+                        <div class="analytics-label">Satisfaction</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Conversations Over Time</h3>
+                    <canvas id="conversationsChart" height="200"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Resolution Rate by Category</h3>
+                    <canvas id="categoryChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let conversations = [];
+        let currentConversation = null;
+        let ws = null;
+        let adminToken = localStorage.getItem('adminToken');
+
+        // DOM Elements
+        const conversationList = document.getElementById('conversationList');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const replyInput = document.getElementById('replyInput');
+        const emptyState = document.getElementById('emptyState');
+        const conversationView = document.getElementById('conversationView');
+        const customerPanel = document.getElementById('customerPanel');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check admin auth
+            if (!adminToken) {
+                // For demo, create a mock token
+                adminToken = 'demo-admin-token';
+                localStorage.setItem('adminToken', adminToken);
+            }
+
+            loadConversations();
+            connectWebSocket();
+            setupEventListeners();
+        });
+
+        // WebSocket Connection
+        function connectWebSocket() {
+            const token = localStorage.getItem('admin_token');
+            if (!token) {
+                console.log('[Admin] No admin token - WebSocket skipped');
+                return;
+            }
+
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/admin`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('[Admin] WebSocket connected');
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    token: adminToken
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+
+            ws.onclose = () => {
+                console.log('[Admin] WebSocket disconnected, reconnecting...');
+                setTimeout(connectWebSocket, 3000);
+            };
+
+            ws.onerror = (error) => {
+                console.warn('[Admin] WebSocket error:', error);
+            };
+        }
+
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'support_new_conversation':
+                    addConversation(data.conversation);
+                    break;
+                case 'support_new_message':
+                    addMessage(data.conversationId, data.message);
+                    break;
+                case 'support_status_change':
+                    updateConversationStatus(data.conversationId, data.status);
+                    break;
+                case 'support_typing':
+                    showTypingIndicator(data.conversationId);
+                    break;
+                default:
+                    console.log('[Admin] Unknown message type:', data.type);
+            }
+        }
+
+        // Load Conversations
+        async function loadConversations() {
+            try {
+                const response = await fetch('/api/admin/support/inbox', {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    conversations = data.conversations || [];
+                    renderConversationList();
+                    updateFilterCounts();
+                } else {
+                    // Demo data for development
+                    conversations = generateDemoConversations();
+                    renderConversationList();
+                    updateFilterCounts();
+                }
+            } catch (error) {
+                console.error('[Admin] Failed to load conversations:', error);
+                // Use demo data
+                conversations = generateDemoConversations();
+                renderConversationList();
+                updateFilterCounts();
+            }
+        }
+
+        function generateDemoConversations() {
+            return [
+                {
+                    id: 'conv-001',
+                    visitorId: 'v-abc123',
+                    status: 'ACTIVE',
+                    aiHandled: true,
+                    aiConfidence: 0.92,
+                    pageUrl: '/pay',
+                    lastMessage: 'What payment methods do you accept?',
+                    lastMessageTime: new Date(Date.now() - 2 * 60000).toISOString(),
+                    unread: true,
+                    priority: 'medium',
+                    messages: [
+                        { role: 'USER', content: 'Hi, I have a question about pricing', timestamp: new Date(Date.now() - 5 * 60000).toISOString() },
+                        { role: 'ASSISTANT', content: 'Hello! I\'d be happy to help with pricing. DOZ UP offers several plans - Basic, Pro, and Enterprise. Which one interests you?', aiGenerated: true, aiConfidence: 0.95, timestamp: new Date(Date.now() - 4 * 60000).toISOString() },
+                        { role: 'USER', content: 'What payment methods do you accept?', timestamp: new Date(Date.now() - 2 * 60000).toISOString() }
+                    ]
+                },
+                {
+                    id: 'conv-002',
+                    visitorId: 'v-def456',
+                    userId: 'user-123',
+                    email: 'john@example.com',
+                    status: 'ESCALATED',
+                    aiHandled: false,
+                    escalatedAt: new Date(Date.now() - 10 * 60000).toISOString(),
+                    pageUrl: '/my-account',
+                    lastMessage: 'I want to speak to a human please',
+                    lastMessageTime: new Date(Date.now() - 10 * 60000).toISOString(),
+                    unread: true,
+                    priority: 'high',
+                    messages: [
+                        { role: 'USER', content: 'My uploads are not working', timestamp: new Date(Date.now() - 15 * 60000).toISOString() },
+                        { role: 'ASSISTANT', content: 'I\'m sorry to hear that! Let me help troubleshoot. Can you tell me what error message you\'re seeing?', aiGenerated: true, aiConfidence: 0.88, timestamp: new Date(Date.now() - 14 * 60000).toISOString() },
+                        { role: 'USER', content: 'I want to speak to a human please', timestamp: new Date(Date.now() - 10 * 60000).toISOString() },
+                        { role: 'SYSTEM', content: 'Conversation escalated to human support', timestamp: new Date(Date.now() - 10 * 60000).toISOString() }
+                    ]
+                },
+                {
+                    id: 'conv-003',
+                    visitorId: 'v-ghi789',
+                    status: 'RESOLVED',
+                    aiHandled: true,
+                    aiConfidence: 0.97,
+                    pageUrl: '/download',
+                    lastMessage: 'Thanks, that worked!',
+                    lastMessageTime: new Date(Date.now() - 30 * 60000).toISOString(),
+                    rating: 5,
+                    priority: 'low',
+                    messages: [
+                        { role: 'USER', content: 'How do I install the desktop app?', timestamp: new Date(Date.now() - 35 * 60000).toISOString() },
+                        { role: 'ASSISTANT', content: 'Great question! To install DOZ UP desktop:\n\n1. Click the "Download for Windows" button\n2. Run the installer (.exe file)\n3. Follow the setup wizard\n4. Log in with your DOZ UP account\n\nNeed any help with any of these steps?', aiGenerated: true, aiConfidence: 0.97, timestamp: new Date(Date.now() - 34 * 60000).toISOString() },
+                        { role: 'USER', content: 'Thanks, that worked!', timestamp: new Date(Date.now() - 30 * 60000).toISOString() }
+                    ]
+                }
+            ];
+        }
+
+        function renderConversationList() {
+            const filter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            let filtered = conversations;
+
+            // Apply filter
+            if (filter !== 'all') {
+                filtered = filtered.filter(c => {
+                    if (filter === 'active') return c.status === 'ACTIVE' || c.status === 'WAITING_USER';
+                    if (filter === 'escalated') return c.status === 'ESCALATED';
+                    if (filter === 'resolved') return c.status === 'RESOLVED' || c.status === 'CLOSED';
+                    return true;
+                });
+            }
+
+            // Apply search
+            if (search) {
+                filtered = filtered.filter(c =>
+                    c.lastMessage?.toLowerCase().includes(search) ||
+                    c.email?.toLowerCase().includes(search) ||
+                    c.visitorId?.toLowerCase().includes(search)
+                );
+            }
+
+            // Sort by time (most recent first)
+            filtered.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
+
+            if (filtered.length === 0) {
+                conversationList.innerHTML = `
+                    <div class="empty-state" style="padding: 40px 20px;">
+                        <div class="empty-state-icon" style="width: 60px; height: 60px; font-size: 1.5rem;">📭</div>
+                        <h3 style="font-size: 1rem;">No conversations</h3>
+                        <p style="font-size: 0.8rem;">Conversations will appear here when visitors reach out</p>
+                    </div>
+                `;
+                return;
+            }
+
+            conversationList.innerHTML = filtered.map(conv => `
+                <div class="conversation-item ${conv.unread ? 'unread' : ''} ${currentConversation?.id === conv.id ? 'active' : ''}"
+                     onclick="selectConversation('${conv.id}')">
+                    <div class="conv-header">
+                        <div class="conv-visitor">
+                            ${conv.email ? conv.email.split('@')[0] : `Visitor ${conv.visitorId.slice(-4)}`}
+                            <span class="conv-badge ${conv.aiHandled ? 'ai' : 'human'}">
+                                ${conv.aiHandled ? '🤖 AI' : '👤 Human'}
+                            </span>
+                            ${conv.status === 'ESCALATED' ? '<span class="conv-badge escalated">Escalated</span>' : ''}
+                        </div>
+                        <span class="conv-time">${formatTime(conv.lastMessageTime)}</span>
+                    </div>
+                    <div class="conv-preview">${escapeHtml(conv.lastMessage || 'No messages')}</div>
+                    <div class="conv-meta">
+                        <div class="priority-indicator ${conv.priority || 'medium'}"></div>
+                        <div class="conv-page">📄 ${getPageName(conv.pageUrl)}</div>
+                        ${conv.rating ? `<div class="conv-page">⭐ ${conv.rating}/5</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            // Update live count
+            document.getElementById('liveConversations').textContent =
+                conversations.filter(c => c.status === 'ACTIVE' || c.status === 'ESCALATED').length;
+        }
+
+        function updateFilterCounts() {
+            document.getElementById('filterAll').textContent = conversations.length;
+            document.getElementById('filterActive').textContent =
+                conversations.filter(c => c.status === 'ACTIVE' || c.status === 'WAITING_USER').length;
+            document.getElementById('filterEscalated').textContent =
+                conversations.filter(c => c.status === 'ESCALATED').length;
+            document.getElementById('filterResolved').textContent =
+                conversations.filter(c => c.status === 'RESOLVED' || c.status === 'CLOSED').length;
+        }
+
+        function selectConversation(id) {
+            currentConversation = conversations.find(c => c.id === id);
+            if (!currentConversation) return;
+
+            // Mark as read
+            currentConversation.unread = false;
+
+            // Update UI
+            emptyState.style.display = 'none';
+            conversationView.style.display = 'flex';
+            conversationView.style.flexDirection = 'column';
+            conversationView.style.height = '100vh';
+            customerPanel.style.display = 'flex';
+            customerPanel.style.flexDirection = 'column';
+
+            renderConversationList();
+            renderMessages();
+            updateCustomerPanel();
+        }
+
+        function renderMessages() {
+            if (!currentConversation?.messages) {
+                messagesContainer.innerHTML = '<div class="empty-state"><p>No messages yet</p></div>';
+                return;
+            }
+
+            messagesContainer.innerHTML = currentConversation.messages.map(msg => {
+                const roleClass = msg.role === 'USER' ? 'user' :
+                                  msg.role === 'SYSTEM' ? 'system' :
+                                  msg.aiGenerated ? 'ai' : 'agent';
+                const sender = msg.role === 'USER' ? 'Visitor' :
+                               msg.role === 'SYSTEM' ? 'System' :
+                               msg.aiGenerated ? 'Luna (AI)' : 'Agent';
+                const avatar = msg.role === 'USER' ? 'V' :
+                               msg.role === 'SYSTEM' ? '!' :
+                               msg.aiGenerated ? '🤖' : 'A';
+
+                return `
+                    <div class="message ${roleClass}">
+                        <div class="message-avatar">${avatar}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">${sender}</span>
+                                <span class="message-time">${formatTime(msg.timestamp)}</span>
+                                ${msg.aiConfidence ? `<span class="message-confidence">${Math.round(msg.aiConfidence * 100)}% confident</span>` : ''}
+                            </div>
+                            <div class="message-bubble">${formatMessage(msg.content)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function updateCustomerPanel() {
+            if (!currentConversation) return;
+
+            const conv = currentConversation;
+            const initial = conv.email ? conv.email[0].toUpperCase() : 'V';
+
+            document.getElementById('convAvatar').textContent = initial;
+            document.getElementById('convName').textContent = conv.email ? conv.email.split('@')[0] : `Visitor ${conv.visitorId.slice(-4)}`;
+            document.getElementById('convPage').textContent = conv.pageUrl || 'Unknown page';
+
+            // Status
+            const statusEl = document.getElementById('convStatus');
+            statusEl.textContent = conv.status;
+            statusEl.className = 'conv-status ' + conv.status.toLowerCase();
+
+            // Customer panel
+            document.getElementById('customerAvatar').textContent = initial;
+            document.getElementById('customerName').textContent = conv.email ? conv.email.split('@')[0] : `Visitor ${conv.visitorId.slice(-4)}`;
+            document.getElementById('customerEmail').textContent = conv.email || 'Not logged in';
+
+            // Tags
+            const tagsEl = document.getElementById('customerTags');
+            let tags = [];
+            if (conv.userId) tags.push('<span class="customer-tag pro">Registered</span>');
+            else tags.push('<span class="customer-tag new">New Visitor</span>');
+            if (conv.rating) tags.push(`<span class="customer-tag returning">Rated ${conv.rating}⭐</span>`);
+            tagsEl.innerHTML = tags.join('');
+
+            // Session info
+            document.getElementById('infoPage').textContent = getPageName(conv.pageUrl);
+            document.getElementById('infoTime').textContent = formatDuration(conv.createdAt || conv.lastMessageTime);
+            document.getElementById('infoDevice').textContent = 'Desktop';
+            document.getElementById('infoLocation').textContent = 'Unknown';
+
+            // AI Insights
+            const avgConfidence = conv.messages
+                ?.filter(m => m.aiConfidence)
+                .reduce((sum, m, _, arr) => sum + m.aiConfidence / arr.length, 0) || 0;
+
+            document.getElementById('insightSentiment').textContent =
+                conv.status === 'ESCALATED' ? 'Frustrated' :
+                conv.rating >= 4 ? 'Positive' : 'Neutral';
+            document.getElementById('insightSentiment').className =
+                'insight-value sentiment-' + (conv.status === 'ESCALATED' ? 'negative' : conv.rating >= 4 ? 'positive' : 'neutral');
+
+            document.getElementById('insightIntent').textContent =
+                conv.pageUrl?.includes('pay') ? 'Pricing inquiry' :
+                conv.pageUrl?.includes('download') ? 'Installation help' :
+                'General support';
+
+            document.getElementById('insightConfidence').textContent =
+                avgConfidence > 0 ? `${Math.round(avgConfidence * 100)}%` : 'N/A';
+
+            document.getElementById('insightSuggested').textContent =
+                conv.status === 'ESCALATED' ? 'Human follow-up needed' :
+                'Continue with AI';
+
+            // History timeline
+            const timeline = document.getElementById('historyTimeline');
+            let events = [
+                { title: 'Conversation started', time: conv.messages?.[0]?.timestamp || conv.createdAt }
+            ];
+            if (conv.escalatedAt) {
+                events.push({ title: 'Escalated to human', time: conv.escalatedAt });
+            }
+            if (conv.status === 'RESOLVED') {
+                events.push({ title: 'Resolved', time: conv.lastMessageTime });
+            }
+            timeline.innerHTML = events.map(e => `
+                <div class="history-item">
+                    <div class="history-title">${e.title}</div>
+                    <div class="history-time">${formatTime(e.time)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Actions
+        async function sendMessage() {
+            const content = replyInput.value.trim();
+            if (!content || !currentConversation) return;
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/admin/support/conversation/${currentConversation.id}/message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addMessage(currentConversation.id, data.message);
+                } else {
+                    // Demo mode - add locally
+                    const newMessage = {
+                        role: 'AGENT',
+                        content,
+                        aiGenerated: false,
+                        timestamp: new Date().toISOString()
+                    };
+                    currentConversation.messages.push(newMessage);
+                    currentConversation.lastMessage = content;
+                    currentConversation.lastMessageTime = newMessage.timestamp;
+                    currentConversation.aiHandled = false;
+                    renderMessages();
+                    renderConversationList();
+                }
+
+                replyInput.value = '';
+            } catch (error) {
+                console.error('Failed to send message:', error);
+                // Demo mode fallback
+                const newMessage = {
+                    role: 'AGENT',
+                    content,
+                    aiGenerated: false,
+                    timestamp: new Date().toISOString()
+                };
+                currentConversation.messages.push(newMessage);
+                currentConversation.lastMessage = content;
+                currentConversation.lastMessageTime = newMessage.timestamp;
+                renderMessages();
+                renderConversationList();
+                replyInput.value = '';
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        async function claimConversation() {
+            if (!currentConversation) return;
+
+            try {
+                const response = await fetch(`/api/admin/support/conversation/${currentConversation.id}/claim`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    currentConversation.aiHandled = false;
+                    currentConversation.status = 'ACTIVE';
+                    renderConversationList();
+                    updateCustomerPanel();
+                } else {
+                    // Demo mode
+                    currentConversation.aiHandled = false;
+                    renderConversationList();
+                    updateCustomerPanel();
+                }
+            } catch (error) {
+                console.error('Failed to claim:', error);
+                currentConversation.aiHandled = false;
+                renderConversationList();
+                updateCustomerPanel();
+            }
+        }
+
+        async function resolveConversation() {
+            if (!currentConversation) return;
+
+            try {
+                const response = await fetch(`/api/admin/support/conversation/${currentConversation.id}/resolve`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                if (response.ok || true) { // Demo mode fallback
+                    currentConversation.status = 'RESOLVED';
+
+                    // Add system message
+                    currentConversation.messages.push({
+                        role: 'SYSTEM',
+                        content: 'Conversation marked as resolved',
+                        timestamp: new Date().toISOString()
+                    });
+
+                    renderMessages();
+                    renderConversationList();
+                    updateFilterCounts();
+                    updateCustomerPanel();
+                }
+            } catch (error) {
+                console.error('Failed to resolve:', error);
+            }
+        }
+
+        function insertQuickReply(text) {
+            replyInput.value = text;
+            replyInput.focus();
+        }
+
+        // Utility functions
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            return date.toLocaleDateString();
+        }
+
+        function formatDuration(timestamp) {
+            if (!timestamp) return '-';
+            const diff = Date.now() - new Date(timestamp).getTime();
+            const minutes = Math.floor(diff / 60000);
+            if (minutes < 1) return 'Just started';
+            if (minutes < 60) return `${minutes}m`;
+            return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+        }
+
+        function getPageName(url) {
+            if (!url) return 'Unknown';
+            if (url.includes('pay')) return 'Pricing';
+            if (url.includes('download')) return 'Download';
+            if (url.includes('help')) return 'Help Center';
+            if (url.includes('account')) return 'Account';
+            return url.split('/').pop() || 'Home';
+        }
+
+        function formatMessage(content) {
+            return escapeHtml(content).replace(/\n/g, '<br>');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function addConversation(conv) {
+            const existing = conversations.findIndex(c => c.id === conv.id);
+            if (existing >= 0) {
+                conversations[existing] = conv;
+            } else {
+                conversations.unshift(conv);
+            }
+            renderConversationList();
+            updateFilterCounts();
+        }
+
+        function addMessage(conversationId, message) {
+            const conv = conversations.find(c => c.id === conversationId);
+            if (!conv) return;
+
+            conv.messages = conv.messages || [];
+            conv.messages.push(message);
+            conv.lastMessage = message.content;
+            conv.lastMessageTime = message.timestamp;
+
+            if (currentConversation?.id === conversationId) {
+                renderMessages();
+            }
+            renderConversationList();
+        }
+
+        function updateConversationStatus(conversationId, status) {
+            const conv = conversations.find(c => c.id === conversationId);
+            if (conv) {
+                conv.status = status;
+                renderConversationList();
+                updateFilterCounts();
+                if (currentConversation?.id === conversationId) {
+                    updateCustomerPanel();
+                }
+            }
+        }
+
+        function showTypingIndicator(conversationId) {
+            if (currentConversation?.id !== conversationId) return;
+
+            const existing = messagesContainer.querySelector('.typing-indicator');
+            if (existing) return;
+
+            const indicator = document.createElement('div');
+            indicator.className = 'message ai';
+            indicator.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(indicator);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            setTimeout(() => indicator.remove(), 3000);
+        }
+
+        // Analytics
+        function showAnalytics() {
+            document.getElementById('analyticsModal').classList.add('active');
+            loadAnalytics();
+        }
+
+        function closeAnalytics() {
+            document.getElementById('analyticsModal').classList.remove('active');
+        }
+
+        async function loadAnalytics() {
+            // Demo data
+            document.getElementById('statTotal').textContent = conversations.length;
+            document.getElementById('statResolved').textContent =
+                conversations.filter(c => c.status === 'RESOLVED' && c.aiHandled).length;
+            document.getElementById('statAvgTime').textContent = '4m';
+            document.getElementById('statSatisfaction').textContent = '94%';
+
+            // Charts
+            const ctx1 = document.getElementById('conversationsChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Conversations',
+                        data: [12, 19, 15, 25, 22, 18, 30],
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: 'rgba(255,255,255,0.5)' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: 'rgba(255,255,255,0.5)' } }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('categoryChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pricing', 'Technical', 'Account', 'Other'],
+                    datasets: [{
+                        data: [35, 28, 22, 15],
+                        backgroundColor: ['#00d4ff', '#7b2ff7', '#10b981', '#f97316']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: 'rgba(255,255,255,0.7)' } }
+                    }
+                }
+            });
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderConversationList();
+                });
+            });
+
+            // Search
+            document.getElementById('searchInput').addEventListener('input', () => {
+                renderConversationList();
+            });
+
+            // Reply input - Enter to send
+            replyInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Auto-resize textarea
+            replyInput.addEventListener('input', () => {
+                replyInput.style.height = 'auto';
+                replyInput.style.height = Math.min(replyInput.scrollHeight, 120) + 'px';
+            });
+
+            // Close modal on overlay click
+            document.getElementById('analyticsModal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    closeAnalytics();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

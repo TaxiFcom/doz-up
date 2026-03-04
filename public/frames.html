@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Photo Frames & Borders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .header-btn.primary {
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            color: #fff;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 66px);
+        }
+
+        .sidebar {
+            width: 320px;
+            background: rgba(0,0,0,0.4);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .upload-area {
+            padding: 40px;
+            background: rgba(255,255,255,0.03);
+            border: 2px dashed rgba(255,255,255,0.15);
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: #06b6d4;
+        }
+
+        .upload-area svg {
+            width: 40px;
+            height: 40px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .frames-categories {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .category-btn.active {
+            background: #06b6d4;
+            border-color: #06b6d4;
+            color: #fff;
+        }
+
+        .frames-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .frame-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .frame-item:hover {
+            transform: scale(1.05);
+        }
+
+        .frame-item.active {
+            border-color: #06b6d4;
+        }
+
+        .frame-preview {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .frame-preview-inner {
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .frame-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 5px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            font-size: 0.7rem;
+            text-align: center;
+        }
+
+        /* Frame Styles */
+        .frame-item[data-frame="none"] .frame-preview { padding: 0; }
+        .frame-item[data-frame="white"] .frame-preview { background: #fff; }
+        .frame-item[data-frame="black"] .frame-preview { background: #000; }
+        .frame-item[data-frame="polaroid"] .frame-preview { background: #fff; padding: 8px 8px 30px 8px; }
+        .frame-item[data-frame="vintage"] .frame-preview { background: linear-gradient(135deg, #f4e4bc, #d4c4a0); padding: 12px; }
+        .frame-item[data-frame="wood"] .frame-preview { background: linear-gradient(135deg, #8b4513, #654321); padding: 15px; }
+        .frame-item[data-frame="gold"] .frame-preview { background: linear-gradient(135deg, #ffd700, #b8860b); padding: 12px; }
+        .frame-item[data-frame="silver"] .frame-preview { background: linear-gradient(135deg, #c0c0c0, #808080); padding: 12px; }
+        .frame-item[data-frame="neon-pink"] .frame-preview { background: #0a0a1a; border: 4px solid #ec4899; box-shadow: 0 0 15px #ec4899, inset 0 0 15px rgba(236, 72, 153, 0.3); }
+        .frame-item[data-frame="neon-cyan"] .frame-preview { background: #0a0a1a; border: 4px solid #06b6d4; box-shadow: 0 0 15px #06b6d4, inset 0 0 15px rgba(6, 182, 212, 0.3); }
+        .frame-item[data-frame="gradient-1"] .frame-preview { background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 10px; }
+        .frame-item[data-frame="gradient-2"] .frame-preview { background: linear-gradient(135deg, #06b6d4, #10b981); padding: 10px; }
+        .frame-item[data-frame="gradient-3"] .frame-preview { background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 10px; }
+        .frame-item[data-frame="rounded"] .frame-preview { padding: 0; }
+        .frame-item[data-frame="rounded"] .frame-preview-inner { border-radius: 50%; }
+        .frame-item[data-frame="heart"] .frame-preview { padding: 0; }
+        .frame-item[data-frame="star"] .frame-preview { padding: 0; }
+        .frame-item[data-frame="film"] .frame-preview { background: #1a1a1a; padding: 8px 20px; }
+        .frame-item[data-frame="instant"] .frame-preview { background: #fff; padding: 10px 10px 40px 10px; border-radius: 4px; }
+
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='20' height='20' fill='%230a0a1a'/%3E%3Crect x='0' y='0' width='10' height='10' fill='%230f0f1f'/%3E%3Crect x='10' y='10' width='10' height='10' fill='%230f0f1f'/%3E%3C/svg%3E");
+        }
+
+        .preview-container {
+            position: relative;
+        }
+
+        #frameCanvas {
+            display: block;
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 5px;
+        }
+
+        .empty-preview {
+            width: 500px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.02);
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 15px;
+        }
+
+        .empty-preview svg {
+            width: 60px;
+            height: 60px;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .empty-preview h3 {
+            margin-bottom: 5px;
+        }
+
+        .empty-preview p {
+            color: #64748b;
+        }
+
+        .right-panel {
+            width: 280px;
+            background: rgba(0,0,0,0.3);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .option-group {
+            margin-bottom: 20px;
+        }
+
+        .option-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.1);
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #06b6d4;
+            cursor: pointer;
+        }
+
+        .color-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: #fff;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .text-input::placeholder {
+            color: #64748b;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .preset-btn {
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        #photoInput { display: none; }
+
+        @media (max-width: 1200px) {
+            .right-panel { display: none; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; max-height: 200px; }
+            .frames-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    </style>
+    <!-- Time-Based Theme Styles -->
+    <link rel="stylesheet" href="/css/time-theme.css">
+</head>
+<body>
+    <header class="header">
+        <a href="/up" class="logo" style="text-decoration: none;">
+            <h1>DOZ Frames</h1>
+        </a>
+        <div class="header-actions">
+            <button class="header-btn secondary" onclick="resetFrame()">Reset</button>
+            <button class="header-btn secondary" onclick="downloadImage()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/></svg>
+                Download
+            </button>
+            <button class="header-btn primary" onclick="saveAndShare()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+                Save & Share
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h4 class="section-title">Upload Photo</h4>
+                <div class="upload-area" onclick="document.getElementById('photoInput').click()">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+                    <p>Click or drag to upload</p>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4 class="section-title">Frame Categories</h4>
+                <div class="frames-categories">
+                    <button class="category-btn active" onclick="filterFrames('all')">All</button>
+                    <button class="category-btn" onclick="filterFrames('basic')">Basic</button>
+                    <button class="category-btn" onclick="filterFrames('classic')">Classic</button>
+                    <button class="category-btn" onclick="filterFrames('neon')">Neon</button>
+                    <button class="category-btn" onclick="filterFrames('gradient')">Gradient</button>
+                    <button class="category-btn" onclick="filterFrames('shapes')">Shapes</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4 class="section-title">Choose Frame</h4>
+                <div class="frames-grid" id="framesGrid">
+                    <div class="frame-item active" data-frame="none" data-category="basic" onclick="selectFrame('none')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">None</span>
+                    </div>
+                    <div class="frame-item" data-frame="white" data-category="basic" onclick="selectFrame('white')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">White</span>
+                    </div>
+                    <div class="frame-item" data-frame="black" data-category="basic" onclick="selectFrame('black')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Black</span>
+                    </div>
+                    <div class="frame-item" data-frame="polaroid" data-category="classic" onclick="selectFrame('polaroid')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Polaroid</span>
+                    </div>
+                    <div class="frame-item" data-frame="instant" data-category="classic" onclick="selectFrame('instant')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Instant</span>
+                    </div>
+                    <div class="frame-item" data-frame="vintage" data-category="classic" onclick="selectFrame('vintage')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Vintage</span>
+                    </div>
+                    <div class="frame-item" data-frame="wood" data-category="classic" onclick="selectFrame('wood')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Wood</span>
+                    </div>
+                    <div class="frame-item" data-frame="gold" data-category="classic" onclick="selectFrame('gold')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Gold</span>
+                    </div>
+                    <div class="frame-item" data-frame="silver" data-category="classic" onclick="selectFrame('silver')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Silver</span>
+                    </div>
+                    <div class="frame-item" data-frame="neon-pink" data-category="neon" onclick="selectFrame('neon-pink')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Neon Pink</span>
+                    </div>
+                    <div class="frame-item" data-frame="neon-cyan" data-category="neon" onclick="selectFrame('neon-cyan')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Neon Cyan</span>
+                    </div>
+                    <div class="frame-item" data-frame="gradient-1" data-category="gradient" onclick="selectFrame('gradient-1')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Pink Purple</span>
+                    </div>
+                    <div class="frame-item" data-frame="gradient-2" data-category="gradient" onclick="selectFrame('gradient-2')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Cyan Green</span>
+                    </div>
+                    <div class="frame-item" data-frame="gradient-3" data-category="gradient" onclick="selectFrame('gradient-3')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Orange Red</span>
+                    </div>
+                    <div class="frame-item" data-frame="rounded" data-category="shapes" onclick="selectFrame('rounded')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Circle</span>
+                    </div>
+                    <div class="frame-item" data-frame="film" data-category="classic" onclick="selectFrame('film')">
+                        <div class="frame-preview"><div class="frame-preview-inner"></div></div>
+                        <span class="frame-name">Film Strip</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="canvas-area">
+            <div class="preview-container">
+                <div class="empty-preview" id="emptyPreview">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                    <h3>Add Photo Frame</h3>
+                    <p>Upload an image to get started</p>
+                </div>
+                <canvas id="frameCanvas" style="display: none;"></canvas>
+            </div>
+        </main>
+
+        <aside class="right-panel">
+            <div class="option-group">
+                <h4 class="section-title">Frame Settings</h4>
+                <div class="option-label">
+                    <span>Border Width</span>
+                    <span id="borderValue">30px</span>
+                </div>
+                <input type="range" class="slider" id="borderSlider" min="10" max="80" value="30" oninput="updateBorderWidth(this.value)">
+            </div>
+
+            <div class="option-group">
+                <div class="option-label">
+                    <span>Corner Radius</span>
+                    <span id="radiusValue">0px</span>
+                </div>
+                <input type="range" class="slider" id="radiusSlider" min="0" max="50" value="0" oninput="updateRadius(this.value)">
+            </div>
+
+            <div class="option-group">
+                <div class="option-label">
+                    <span>Shadow</span>
+                    <span id="shadowValue">20px</span>
+                </div>
+                <input type="range" class="slider" id="shadowSlider" min="0" max="50" value="20" oninput="updateShadow(this.value)">
+            </div>
+
+            <div class="option-group">
+                <h4 class="section-title">Custom Color</h4>
+                <div class="color-row">
+                    <div class="color-option" style="background: #ffffff;" onclick="setCustomColor('#ffffff')"></div>
+                    <div class="color-option" style="background: #000000; border: 1px solid rgba(255,255,255,0.3);" onclick="setCustomColor('#000000')"></div>
+                    <div class="color-option" style="background: #ef4444;" onclick="setCustomColor('#ef4444')"></div>
+                    <div class="color-option" style="background: #f59e0b;" onclick="setCustomColor('#f59e0b')"></div>
+                    <div class="color-option" style="background: #10b981;" onclick="setCustomColor('#10b981')"></div>
+                    <div class="color-option" style="background: #3b82f6;" onclick="setCustomColor('#3b82f6')"></div>
+                    <div class="color-option" style="background: #8b5cf6;" onclick="setCustomColor('#8b5cf6')"></div>
+                    <div class="color-option" style="background: #ec4899;" onclick="setCustomColor('#ec4899')"></div>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <h4 class="section-title">Caption</h4>
+                <input type="text" class="text-input" id="captionInput" placeholder="Add a caption..." oninput="updateCaption(this.value)">
+            </div>
+
+            <div class="option-group">
+                <h4 class="section-title">Quick Presets</h4>
+                <div class="preset-buttons">
+                    <button class="preset-btn" onclick="applyPreset('instagram')">Instagram</button>
+                    <button class="preset-btn" onclick="applyPreset('story')">Story</button>
+                    <button class="preset-btn" onclick="applyPreset('minimal')">Minimal</button>
+                    <button class="preset-btn" onclick="applyPreset('bold')">Bold</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <input type="file" id="photoInput" accept="image/*" onchange="handleUpload(event)">
+
+    <script>
+        let canvas, ctx;
+        let originalImage = null;
+        let currentFrame = 'none';
+        let settings = {
+            borderWidth: 30,
+            radius: 0,
+            shadow: 20,
+            customColor: null,
+            caption: ''
+        };
+
+        const frameConfigs = {
+            'none': { padding: 0, color: 'transparent' },
+            'white': { padding: 30, color: '#ffffff' },
+            'black': { padding: 30, color: '#000000' },
+            'polaroid': { padding: [15, 15, 60, 15], color: '#ffffff' },
+            'instant': { padding: [20, 20, 80, 20], color: '#ffffff' },
+            'vintage': { padding: 25, color: '#f4e4bc', texture: true },
+            'wood': { padding: 30, gradient: ['#8b4513', '#654321'] },
+            'gold': { padding: 25, gradient: ['#ffd700', '#b8860b'] },
+            'silver': { padding: 25, gradient: ['#c0c0c0', '#808080'] },
+            'neon-pink': { padding: 20, color: '#0a0a1a', glow: '#ec4899' },
+            'neon-cyan': { padding: 20, color: '#0a0a1a', glow: '#06b6d4' },
+            'gradient-1': { padding: 20, gradient: ['#ec4899', '#8b5cf6'] },
+            'gradient-2': { padding: 20, gradient: ['#06b6d4', '#10b981'] },
+            'gradient-3': { padding: 20, gradient: ['#f59e0b', '#ef4444'] },
+            'rounded': { padding: 0, shape: 'circle' },
+            'film': { padding: [15, 40, 15, 40], color: '#1a1a1a', holes: true }
+        };
+
+        function init() {
+            canvas = document.getElementById('frameCanvas');
+            ctx = canvas.getContext('2d');
+        }
+
+        function handleUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    renderFrame();
+                    document.getElementById('emptyPreview').style.display = 'none';
+                    canvas.style.display = 'block';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function selectFrame(frame) {
+            currentFrame = frame;
+            document.querySelectorAll('.frame-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.frame === frame);
+            });
+            renderFrame();
+        }
+
+        function filterFrames(category) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase() === category);
+            });
+
+            document.querySelectorAll('.frame-item').forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function renderFrame() {
+            if (!originalImage) return;
+
+            const config = frameConfigs[currentFrame];
+            let padding = config.padding;
+
+            if (typeof padding === 'number') {
+                padding = settings.customColor ? settings.borderWidth : padding;
+                padding = [padding, padding, padding, padding];
+            }
+
+            const imgWidth = originalImage.width;
+            const imgHeight = originalImage.height;
+
+            // Scale down if too large
+            let scale = 1;
+            const maxDim = 800;
+            if (imgWidth > maxDim || imgHeight > maxDim) {
+                scale = Math.min(maxDim / imgWidth, maxDim / imgHeight);
+            }
+
+            const scaledWidth = imgWidth * scale;
+            const scaledHeight = imgHeight * scale;
+
+            canvas.width = scaledWidth + padding[1] + padding[3];
+            canvas.height = scaledHeight + padding[0] + padding[2];
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw shadow
+            if (settings.shadow > 0) {
+                ctx.shadowColor = 'rgba(0,0,0,0.4)';
+                ctx.shadowBlur = settings.shadow;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = settings.shadow / 2;
+            }
+
+            // Draw frame background
+            ctx.fillStyle = settings.customColor || config.color || '#fff';
+
+            if (config.gradient) {
+                const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, config.gradient[0]);
+                grad.addColorStop(1, config.gradient[1]);
+                ctx.fillStyle = grad;
+            }
+
+            // Draw rounded rect or shape
+            if (config.shape === 'circle') {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = Math.min(scaledWidth, scaledHeight) / 2;
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Reset shadow for image
+                ctx.shadowColor = 'transparent';
+
+                // Clip for image
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(originalImage, centerX - radius, centerY - radius, radius * 2, radius * 2);
+                ctx.restore();
+            } else {
+                roundedRect(ctx, 0, 0, canvas.width, canvas.height, settings.radius);
+                ctx.fill();
+
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+
+                // Draw neon glow
+                if (config.glow) {
+                    ctx.strokeStyle = config.glow;
+                    ctx.lineWidth = 4;
+                    ctx.shadowColor = config.glow;
+                    ctx.shadowBlur = 20;
+                    roundedRect(ctx, padding[3], padding[0], scaledWidth, scaledHeight, 0);
+                    ctx.stroke();
+                    ctx.shadowColor = 'transparent';
+                }
+
+                // Draw film holes
+                if (config.holes) {
+                    ctx.fillStyle = '#333';
+                    for (let i = 0; i < canvas.height; i += 25) {
+                        ctx.beginPath();
+                        ctx.arc(15, i + 12, 5, 0, Math.PI * 2);
+                        ctx.arc(canvas.width - 15, i + 12, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                // Draw image
+                ctx.drawImage(originalImage, padding[3], padding[0], scaledWidth, scaledHeight);
+            }
+
+            // Draw caption
+            if (settings.caption && (currentFrame === 'polaroid' || currentFrame === 'instant')) {
+                ctx.fillStyle = '#333';
+                ctx.font = 'italic 16px Georgia, serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(settings.caption, canvas.width / 2, canvas.height - 25);
+            }
+        }
+
+        function roundedRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function updateBorderWidth(value) {
+            settings.borderWidth = parseInt(value);
+            document.getElementById('borderValue').textContent = value + 'px';
+            renderFrame();
+        }
+
+        function updateRadius(value) {
+            settings.radius = parseInt(value);
+            document.getElementById('radiusValue').textContent = value + 'px';
+            renderFrame();
+        }
+
+        function updateShadow(value) {
+            settings.shadow = parseInt(value);
+            document.getElementById('shadowValue').textContent = value + 'px';
+            renderFrame();
+        }
+
+        function setCustomColor(color) {
+            settings.customColor = color;
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.toggle('active', opt.style.background === color || opt.style.backgroundColor === color);
+            });
+            renderFrame();
+        }
+
+        function updateCaption(text) {
+            settings.caption = text;
+            renderFrame();
+        }
+
+        function applyPreset(preset) {
+            const presets = {
+                instagram: { borderWidth: 0, radius: 0, shadow: 0 },
+                story: { borderWidth: 20, radius: 30, shadow: 30, customColor: '#ffffff' },
+                minimal: { borderWidth: 5, radius: 0, shadow: 10, customColor: '#ffffff' },
+                bold: { borderWidth: 40, radius: 0, shadow: 30, customColor: '#000000' }
+            };
+
+            const p = presets[preset];
+            settings = { ...settings, ...p };
+
+            document.getElementById('borderSlider').value = p.borderWidth;
+            document.getElementById('borderValue').textContent = p.borderWidth + 'px';
+            document.getElementById('radiusSlider').value = p.radius;
+            document.getElementById('radiusValue').textContent = p.radius + 'px';
+            document.getElementById('shadowSlider').value = p.shadow;
+            document.getElementById('shadowValue').textContent = p.shadow + 'px';
+
+            renderFrame();
+        }
+
+        function resetFrame() {
+            currentFrame = 'none';
+            settings = { borderWidth: 30, radius: 0, shadow: 20, customColor: null, caption: '' };
+            document.querySelectorAll('.frame-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.frame === 'none');
+            });
+            renderFrame();
+        }
+
+        function downloadImage() {
+            if (!originalImage) return;
+            const link = document.createElement('a');
+            link.download = `doz-framed-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        async function saveAndShare() {
+            if (!originalImage) return;
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const formData = new FormData();
+            formData.append('screenshot', blob, 'framed.png');
+            formData.append('deviceId', generateFingerprint());
+
+            // Get userId if logged in
+            const userId = localStorage.getItem('doz_userId');
+            const headers = {};
+            if (userId) headers['X-User-ID'] = userId;
+
+            try {
+                const res = await fetch('/upload', { method: 'POST', headers: headers, body: formData });
+                const data = await res.json();
+                if (data.url) {
+                    navigator.clipboard.writeText(data.url);
+                    alert('Uploaded! Link copied:\n' + data.url);
+                }
+            } catch (e) {
+                alert('Upload failed');
+            }
+        }
+
+        function generateFingerprint() {
+            const nav = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height].join('|');
+            let hash = 0;
+            for (let i = 0; i < nav.length; i++) { hash = ((hash << 5) - hash) + nav.charCodeAt(i); hash = hash & hash; }
+            return 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+        }
+
+        init();
+    </script>
+
+</body>
+</html>

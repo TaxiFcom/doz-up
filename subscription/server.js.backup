@@ -1,0 +1,668 @@
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+const app = express();
+const PORT = process.env.PORT || 4000;
+const DOMAIN = process.env.DOMAIN || 'up.doz.com.im';
+const BASE_PATH = '/v2';
+
+// Middleware
+app.use(express.json());
+
+// Serve static files under /v2 path
+app.use('/v2', express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// CORS for development
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+    next();
+});
+
+// Data paths
+const DATA_DIR = path.join(__dirname, 'data');
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const ANALYTICS_FILE = path.join(DATA_DIR, 'analytics.json');
+const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// Helper functions
+function readJsonFile(filePath, defaultValue = []) {
+    try {
+        if (fs.existsSync(filePath)) {
+            return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        }
+    } catch (e) {
+        console.error(`Error reading ${filePath}:`, e.message);
+    }
+    return defaultValue;
+}
+
+function writeJsonFile(filePath, data) {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+}
+
+function generateId() {
+    return crypto.randomBytes(8).toString('hex');
+}
+
+function hashPassword(password) {
+    return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+// Pricing configuration
+const PRICING = {
+    personal_monthly: { price: 3.33, storage: 1024, name: 'Personal Monthly' },
+    personal_yearly: { price: 13.33, storage: 1024, name: 'Personal Yearly' },
+    pro_monthly: { price: 6.99, storage: 10240, name: 'Pro Monthly' },
+    pro_yearly: { price: 24.99, storage: 10240, name: 'Pro Yearly' },
+    business_monthly: { price: 19.99, storage: 102400, name: 'Business Monthly' },
+    business_yearly: { price: 99.99, storage: 102400, name: 'Business Yearly' }
+};
+
+// ============================================
+// PUBLIC API ENDPOINTS
+// ============================================
+
+// Subscribe endpoint
+app.post('/api/subscribe', (req, res) => {
+    try {
+        const { name, email, password, plan, utm_source, utm_campaign } = req.body;
+
+        if (!name || !email || !password || !plan) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const users = readJsonFile(USERS_FILE, []);
+
+        // Check if email already exists
+        if (users.find(u => u.email === email)) {
+            return res.status(400).json({ error: 'Email already registered' });
+        }
+
+        const planConfig = PRICING[plan];
+        if (!planConfig) {
+            return res.status(400).json({ error: 'Invalid plan selected' });
+        }
+
+        const newUser = {
+            id: generateId(),
+            name,
+            email,
+            password: hashPassword(password),
+            plan,
+            planName: planConfig.name,
+            price: planConfig.price,
+            storageLimit: planConfig.storage,
+            storageUsed: 0,
+            status: 'active',
+            source: utm_source || 'direct',
+            campaign: utm_campaign || null,
+            joined: new Date().toISOString(),
+            lastLogin: null,
+            subscriptionStart: new Date().toISOString(),
+            subscriptionEnd: plan.includes('yearly')
+                ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+                : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        };
+
+        users.push(newUser);
+        writeJsonFile(USERS_FILE, users);
+
+        // Track conversion
+        trackEvent('subscription_completed', {
+            userId: newUser.id,
+            plan,
+            price: planConfig.price,
+            source: utm_source
+        });
+
+        res.json({
+            success: true,
+            message: 'Subscription successful',
+            userId: newUser.id
+        });
+
+    } catch (error) {
+        console.error('Subscribe error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Login endpoint
+app.post('/api/login', (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const users = readJsonFile(USERS_FILE, []);
+
+        const user = users.find(u => u.email === email && u.password === hashPassword(password));
+
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Update last login
+        user.lastLogin = new Date().toISOString();
+        writeJsonFile(USERS_FILE, users);
+
+        res.json({
+            success: true,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                plan: user.plan,
+                storageUsed: user.storageUsed,
+                storageLimit: user.storageLimit
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ============================================
+// ANALYTICS ENDPOINTS
+// ============================================
+
+app.post('/api/analytics/pageview', (req, res) => {
+    try {
+        const { page, referrer, utm_source, utm_campaign, utm_medium } = req.body;
+
+        trackEvent('pageview', {
+            page,
+            referrer,
+            utm_source,
+            utm_campaign,
+            utm_medium,
+            ip: req.ip,
+            userAgent: req.headers['user-agent']
+        });
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/api/analytics/event', (req, res) => {
+    try {
+        const { event, data, timestamp, url } = req.body;
+
+        trackEvent(event, {
+            ...data,
+            url,
+            timestamp,
+            ip: req.ip
+        });
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+function trackEvent(eventType, data) {
+    const analytics = readJsonFile(ANALYTICS_FILE, { events: [], daily: {} });
+
+    const event = {
+        id: generateId(),
+        type: eventType,
+        data,
+        timestamp: new Date().toISOString()
+    };
+
+    analytics.events.push(event);
+
+    // Keep only last 10000 events
+    if (analytics.events.length > 10000) {
+        analytics.events = analytics.events.slice(-10000);
+    }
+
+    // Update daily stats
+    const today = new Date().toISOString().split('T')[0];
+    if (!analytics.daily[today]) {
+        analytics.daily[today] = {
+            pageviews: 0,
+            signups: 0,
+            conversions: 0,
+            revenue: 0,
+            sources: {}
+        };
+    }
+
+    if (eventType === 'pageview') {
+        analytics.daily[today].pageviews++;
+        const source = data.utm_source || 'direct';
+        analytics.daily[today].sources[source] = (analytics.daily[today].sources[source] || 0) + 1;
+    }
+
+    if (eventType === 'subscription_completed') {
+        analytics.daily[today].signups++;
+        analytics.daily[today].conversions++;
+        analytics.daily[today].revenue += data.price || 0;
+    }
+
+    writeJsonFile(ANALYTICS_FILE, analytics);
+}
+
+// ============================================
+// ADMIN API ENDPOINTS
+// ============================================
+
+// Simple admin auth middleware
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'dozup-admin-2025';
+
+function adminAuth(req, res, next) {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (token !== ADMIN_TOKEN) {
+        // For development, allow access
+        // In production, uncomment: return res.status(401).json({ error: 'Unauthorized' });
+    }
+    next();
+}
+
+// Dashboard stats
+app.get('/api/admin/dashboard', adminAuth, (req, res) => {
+    try {
+        const users = readJsonFile(USERS_FILE, []);
+        const analytics = readJsonFile(ANALYTICS_FILE, { events: [], daily: {} });
+
+        const today = new Date().toISOString().split('T')[0];
+        const todayStats = analytics.daily[today] || { pageviews: 0, signups: 0, revenue: 0 };
+
+        // Calculate stats
+        const totalUsers = users.length;
+        const activeSubscribers = users.filter(u => u.status === 'active').length;
+        const todayRevenue = todayStats.revenue;
+
+        // Conversion rate (signups / pageviews)
+        const totalPageviews = Object.values(analytics.daily).reduce((sum, d) => sum + d.pageviews, 0) || 1;
+        const totalSignups = Object.values(analytics.daily).reduce((sum, d) => sum + d.signups, 0);
+        const conversionRate = (totalSignups / totalPageviews) * 100;
+
+        // Signups by day (last 7 days)
+        const signupsByDay = [];
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            signupsByDay.push(analytics.daily[date]?.signups || 0);
+        }
+
+        // Plan distribution
+        const planDistribution = {
+            personal: users.filter(u => u.plan?.includes('personal')).length,
+            pro: users.filter(u => u.plan?.includes('pro')).length,
+            business: users.filter(u => u.plan?.includes('business')).length
+        };
+
+        // Recent users (last 10)
+        const recentUsers = users
+            .sort((a, b) => new Date(b.joined) - new Date(a.joined))
+            .slice(0, 10)
+            .map(u => ({
+                name: u.name,
+                email: u.email,
+                plan: u.plan,
+                source: u.source,
+                date: u.joined.split('T')[0],
+                status: u.status
+            }));
+
+        res.json({
+            totalUsers,
+            activeSubscribers,
+            todayRevenue,
+            conversionRate,
+            signupsByDay,
+            planDistribution,
+            recentUsers
+        });
+
+    } catch (error) {
+        console.error('Dashboard error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all users
+app.get('/api/admin/users', adminAuth, (req, res) => {
+    try {
+        const users = readJsonFile(USERS_FILE, []);
+
+        // Remove sensitive data
+        const safeUsers = users.map(u => ({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            plan: u.plan,
+            storageUsed: u.storageUsed,
+            storageLimit: u.storageLimit,
+            joined: u.joined?.split('T')[0],
+            status: u.status,
+            source: u.source
+        }));
+
+        res.json(safeUsers);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Create user
+app.post('/api/admin/users', adminAuth, (req, res) => {
+    try {
+        const { name, email, plan, status } = req.body;
+        const users = readJsonFile(USERS_FILE, []);
+
+        const planConfig = PRICING[plan] || PRICING.personal_monthly;
+
+        const newUser = {
+            id: generateId(),
+            name,
+            email,
+            password: hashPassword('temp123'), // Temporary password
+            plan,
+            planName: planConfig.name,
+            price: planConfig.price,
+            storageLimit: planConfig.storage,
+            storageUsed: 0,
+            status: status || 'active',
+            source: 'admin',
+            joined: new Date().toISOString(),
+            subscriptionStart: new Date().toISOString(),
+            subscriptionEnd: plan.includes('yearly')
+                ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+                : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        };
+
+        users.push(newUser);
+        writeJsonFile(USERS_FILE, users);
+
+        res.json({ success: true, user: newUser });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Update user
+app.put('/api/admin/users', adminAuth, (req, res) => {
+    try {
+        const { id, name, email, plan, status } = req.body;
+        const users = readJsonFile(USERS_FILE, []);
+
+        const userIndex = users.findIndex(u => u.id === id);
+        if (userIndex === -1) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const planConfig = PRICING[plan] || PRICING[users[userIndex].plan];
+
+        users[userIndex] = {
+            ...users[userIndex],
+            name,
+            email,
+            plan,
+            planName: planConfig.name,
+            storageLimit: planConfig.storage,
+            status
+        };
+
+        writeJsonFile(USERS_FILE, users);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete user
+app.delete('/api/admin/users/:id', adminAuth, (req, res) => {
+    try {
+        const { id } = req.params;
+        let users = readJsonFile(USERS_FILE, []);
+
+        users = users.filter(u => u.id !== id);
+        writeJsonFile(USERS_FILE, users);
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Traffic analytics
+app.get('/api/admin/traffic', adminAuth, (req, res) => {
+    try {
+        const analytics = readJsonFile(ANALYTICS_FILE, { events: [], daily: {} });
+        const period = req.query.period || '7days';
+
+        let days = 7;
+        if (period === 'today') days = 1;
+        if (period === '30days') days = 30;
+        if (period === '90days') days = 90;
+
+        const trafficData = [];
+        const sources = {};
+
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            const dayData = analytics.daily[date] || { pageviews: 0, signups: 0, sources: {} };
+
+            trafficData.push({
+                date,
+                pageviews: dayData.pageviews,
+                signups: dayData.signups
+            });
+
+            // Aggregate sources
+            Object.entries(dayData.sources || {}).forEach(([source, count]) => {
+                sources[source] = (sources[source] || 0) + count;
+            });
+        }
+
+        const totalVisitors = trafficData.reduce((sum, d) => sum + d.pageviews, 0);
+        const totalSignups = trafficData.reduce((sum, d) => sum + d.signups, 0);
+
+        res.json({
+            trafficData,
+            sources,
+            totalVisitors,
+            uniqueVisitors: Math.floor(totalVisitors * 0.7), // Estimate
+            totalSignups,
+            conversionRate: totalVisitors > 0 ? (totalSignups / totalVisitors * 100).toFixed(2) : 0
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Revenue analytics
+app.get('/api/admin/revenue', adminAuth, (req, res) => {
+    try {
+        const users = readJsonFile(USERS_FILE, []);
+        const analytics = readJsonFile(ANALYTICS_FILE, { events: [], daily: {} });
+
+        const today = new Date().toISOString().split('T')[0];
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+        // Calculate revenue
+        let todayRevenue = 0;
+        let weekRevenue = 0;
+        let monthRevenue = 0;
+
+        Object.entries(analytics.daily).forEach(([date, data]) => {
+            if (date === today) todayRevenue += data.revenue || 0;
+            if (date >= weekAgo) weekRevenue += data.revenue || 0;
+            if (date >= monthAgo) monthRevenue += data.revenue || 0;
+        });
+
+        // MRR calculation
+        const mrr = users
+            .filter(u => u.status === 'active')
+            .reduce((sum, u) => {
+                const isYearly = u.plan?.includes('yearly');
+                return sum + (isYearly ? u.price / 12 : u.price);
+            }, 0);
+
+        // Revenue by plan
+        const revenueByPlan = {
+            personal: { subscribers: 0, monthlyRev: 0, yearlyRev: 0 },
+            pro: { subscribers: 0, monthlyRev: 0, yearlyRev: 0 },
+            business: { subscribers: 0, monthlyRev: 0, yearlyRev: 0 }
+        };
+
+        users.filter(u => u.status === 'active').forEach(u => {
+            const planType = u.plan?.split('_')[0] || 'personal';
+            const isYearly = u.plan?.includes('yearly');
+
+            if (revenueByPlan[planType]) {
+                revenueByPlan[planType].subscribers++;
+                if (isYearly) {
+                    revenueByPlan[planType].yearlyRev += u.price;
+                } else {
+                    revenueByPlan[planType].monthlyRev += u.price;
+                }
+            }
+        });
+
+        res.json({
+            todayRevenue,
+            weekRevenue,
+            monthRevenue,
+            mrr,
+            revenueByPlan
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Conversion funnel
+app.get('/api/admin/conversions', adminAuth, (req, res) => {
+    try {
+        const analytics = readJsonFile(ANALYTICS_FILE, { events: [], daily: {} });
+
+        // Count events by type
+        const eventCounts = {};
+        analytics.events.forEach(e => {
+            eventCounts[e.type] = (eventCounts[e.type] || 0) + 1;
+        });
+
+        res.json({
+            landingViews: eventCounts.pageview || 0,
+            screenshotsViewed: eventCounts.screenshot_viewed || 0,
+            paywallShown: eventCounts.paywall_shown || 0,
+            signupFormOpened: eventCounts.signup_form_opened || 0,
+            subscriptionCompleted: eventCounts.subscription_completed || 0
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Settings
+app.get('/api/admin/settings', adminAuth, (req, res) => {
+    try {
+        const settings = readJsonFile(SETTINGS_FILE, {
+            pricing: PRICING,
+            googleAds: { conversionId: '', conversionLabel: '' }
+        });
+        res.json(settings);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/api/admin/settings', adminAuth, (req, res) => {
+    try {
+        const settings = req.body;
+        writeJsonFile(SETTINGS_FILE, settings);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ============================================
+// STATIC ROUTES
+// ============================================
+
+// Admin panel - both paths
+app.get('/v2/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
+});
+
+app.get('/v2/admin/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
+});
+
+// Dashboard redirect for subscribers
+app.get('/v2/dashboard', (req, res) => {
+    res.redirect('/v2');
+});
+
+app.get('/dashboard', (req, res) => {
+    res.redirect('/v2');
+});
+
+// V2 landing page
+app.get('/v2', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Catch-all for SPA
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ============================================
+// START SERVER
+// ============================================
+
+app.listen(PORT, () => {
+    console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║                                                           ║
+║     DOZ Subscription Server v2                            ║
+║     Domain: https://up.doz.com.im/v2                      ║
+║                                                           ║
+║     Local URLs:                                           ║
+║     Landing Page:  http://localhost:${PORT}/v2               ║
+║     Admin Panel:   http://localhost:${PORT}/v2/admin         ║
+║                                                           ║
+║     Production URLs:                                      ║
+║     Landing Page:  https://up.doz.com.im/v2               ║
+║     Admin Panel:   https://up.doz.com.im/v2/admin         ║
+║                                                           ║
+║     API Endpoints:                                        ║
+║     - POST /api/subscribe                                 ║
+║     - POST /api/login                                     ║
+║     - POST /api/analytics/pageview                        ║
+║     - POST /api/analytics/event                           ║
+║     - GET  /api/admin/dashboard                           ║
+║     - GET  /api/admin/users                               ║
+║     - GET  /api/admin/traffic                             ║
+║     - GET  /api/admin/revenue                             ║
+║     - GET  /api/admin/conversions                         ║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+    `);
+});
+
+module.exports = app;

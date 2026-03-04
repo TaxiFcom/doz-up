@@ -1,0 +1,2318 @@
+/**
+ * DOZ UP - Time-Based Theme Styles
+ * Dynamic light mode colors & floating widget
+ */
+
+/* ============ TIME-BASED CSS VARIABLES ============ */
+:root {
+    --time-bg: #fffef5;
+    --time-accent: #ffb347;
+    --time-glow: rgba(255, 179, 71, 0.3);
+}
+
+/* ============ ENHANCED LIGHT MODE ============ */
+[data-theme="light"] {
+    --bg-dark: var(--time-bg, #fffef5);
+    --bg-card: rgba(255, 255, 255, 0.95);
+    --bg-card-hover: rgba(255, 255, 255, 0.9);
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a5a;
+    --text-muted: #7a7a8a;
+    --border: #e8e8f0;
+    --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+
+    /* Time-based accent */
+    --primary: var(--time-accent, #ffb347);
+    --primary-light: var(--time-glow, rgba(255, 179, 71, 0.5));
+}
+
+[data-theme="light"] body {
+    background: linear-gradient(135deg, var(--time-bg) 0%, rgba(255, 255, 250, 0.95) 50%, var(--time-bg) 100%);
+}
+
+/* ============ FLOATING WIDGET ============ */
+.doz-floating-widget {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 280px;
+    background: var(--bg-card, rgba(26, 26, 46, 0.95));
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px var(--time-glow, rgba(255, 179, 71, 0.1));
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.doz-floating-widget.collapsed {
+    width: 200px;
+}
+
+.doz-floating-widget.dragging {
+    opacity: 0.9;
+    cursor: grabbing;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+}
+
+/* Widget Header */
+.widget-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, var(--time-accent, #ffb347) 0%, rgba(255, 126, 103, 0.8) 100%);
+    color: white;
+    cursor: default;
+}
+
+.widget-drag-handle {
+    cursor: grab;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    padding: 5px;
+}
+
+.widget-drag-handle:hover {
+    opacity: 1;
+}
+
+.widget-drag-handle:active {
+    cursor: grabbing;
+}
+
+.widget-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.widget-collapse-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.widget-collapse-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Widget Content */
+.widget-content {
+    padding: 15px;
+}
+
+/* Clock Styles */
+.widget-clock {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 15px;
+}
+
+.clock-face {
+    width: 100%;
+    height: 100%;
+}
+
+.clock-markers text {
+    font-family: 'Georgia', serif;
+}
+
+.clock-hands line {
+    transition: none;
+}
+
+/* Digital Time Display */
+.widget-time-display {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.digital-time {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    color: var(--text-primary, #ffffff);
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px var(--time-glow, rgba(255, 179, 71, 0.3));
+}
+
+.digital-date {
+    font-size: 13px;
+    color: var(--text-secondary, #a0a0b2);
+    margin-top: 5px;
+}
+
+.time-period {
+    display: inline-block;
+    font-size: 11px;
+    color: white;
+    background: linear-gradient(135deg, var(--time-accent, #ffb347), rgba(255, 126, 103, 0.8));
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Divider */
+.widget-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border, rgba(255, 255, 255, 0.1)), transparent);
+    margin: 15px 0;
+}
+
+/* Quick Actions */
+.widget-actions {
+    margin-bottom: 10px;
+}
+
+.actions-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted, #6b6b80);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 8px;
+    background: var(--bg-card-hover, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    color: var(--text-primary, #ffffff);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 10px;
+}
+
+.action-btn:hover {
+    background: var(--time-glow, rgba(255, 179, 71, 0.2));
+    border-color: var(--time-accent, #ffb347);
+    transform: translateY(-2px);
+}
+
+.action-btn svg {
+    stroke: var(--time-accent, #ffb347);
+}
+
+.action-btn span {
+    color: var(--text-secondary, #a0a0b2);
+}
+
+/* Settings */
+.widget-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.setting-label {
+    font-size: 12px;
+    color: var(--text-secondary, #a0a0b2);
+    min-width: 60px;
+}
+
+/* Theme Buttons */
+.theme-buttons {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+}
+
+.theme-btn {
+    flex: 1;
+    padding: 8px;
+    background: var(--bg-card-hover, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 8px;
+    color: var(--text-secondary, #a0a0b2);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-btn:hover {
+    border-color: var(--time-accent, #ffb347);
+    color: var(--time-accent, #ffb347);
+}
+
+.theme-btn.active {
+    background: linear-gradient(135deg, var(--time-accent, #ffb347), rgba(255, 126, 103, 0.8));
+    border-color: transparent;
+    color: white;
+}
+
+/* Sound Select */
+.sound-select {
+    flex: 1;
+    padding: 8px 10px;
+    background: var(--bg-card-hover, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 8px;
+    color: var(--text-primary, #ffffff);
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+}
+
+.sound-select:focus {
+    border-color: var(--time-accent, #ffb347);
+}
+
+.sound-select option {
+    background: var(--bg-card, #1a1a2e);
+    color: var(--text-primary, #ffffff);
+}
+
+.test-sound-btn {
+    padding: 8px 10px;
+    background: var(--time-accent, #ffb347);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.test-sound-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px var(--time-glow, rgba(255, 179, 71, 0.4));
+}
+
+/* Bell Schedule */
+.bell-schedule {
+    flex-wrap: wrap;
+}
+
+.bell-hours {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.bell-hour-check {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-secondary, #a0a0b2);
+    cursor: pointer;
+}
+
+.bell-hour-check input {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--time-accent, #ffb347);
+    cursor: pointer;
+}
+
+/* ============ THEME TOGGLE TIME DISPLAY ============ */
+.theme-toggle {
+    position: relative;
+}
+
+.theme-toggle.showing-time {
+    overflow: visible;
+}
+
+.theme-toggle-time {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--time-accent, #ffb347), rgba(255, 126, 103, 0.9));
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    white-space: nowrap;
+    animation: pulseGlow 2s ease-in-out infinite;
+    box-shadow: 0 4px 15px var(--time-glow, rgba(255, 179, 71, 0.4));
+    z-index: 100;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 4px 15px var(--time-glow, rgba(255, 179, 71, 0.4));
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        box-shadow: 0 4px 25px var(--time-glow, rgba(255, 179, 71, 0.6));
+        transform: translateX(-50%) scale(1.05);
+    }
+}
+
+/* ============ BELL PROMPT MODAL ============ */
+.doz-bell-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.bell-prompt-content {
+    background: var(--bg-card, #1a1a2e);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+    max-width: 380px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.bell-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, var(--time-accent, #ffb347), rgba(255, 126, 103, 0.8));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bellRing 1s ease-in-out infinite;
+}
+
+@keyframes bellRing {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+}
+
+.bell-icon svg {
+    color: white;
+}
+
+.bell-prompt-content h3 {
+    font-size: 22px;
+    color: var(--text-primary, #ffffff);
+    margin: 0 0 10px;
+}
+
+.bell-prompt-content p {
+    color: var(--text-secondary, #a0a0b2);
+    margin: 0 0 25px;
+    font-size: 14px;
+}
+
+.bell-prompt-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.bell-btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.bell-btn-yes {
+    background: linear-gradient(135deg, var(--time-accent, #ffb347), rgba(255, 126, 103, 0.9));
+    color: white;
+}
+
+.bell-btn-yes:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--time-glow, rgba(255, 179, 71, 0.4));
+}
+
+.bell-btn-no {
+    background: var(--bg-card-hover, rgba(255, 255, 255, 0.1));
+    color: var(--text-secondary, #a0a0b2);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.bell-btn-no:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary, #ffffff);
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+    .doz-floating-widget {
+        width: 260px;
+        right: 10px;
+        top: 80px;
+    }
+
+    .widget-clock {
+        width: 140px;
+        height: 140px;
+    }
+
+    .digital-time {
+        font-size: 24px;
+    }
+
+    .action-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .doz-floating-widget {
+        width: calc(100% - 20px);
+        left: 10px;
+        right: 10px;
+    }
+
+    .doz-floating-widget.collapsed {
+        width: 180px;
+        left: auto;
+    }
+}
+
+/* ============ LIGHT MODE SPECIFIC ============ */
+[data-theme="light"] .doz-floating-widget {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 40px var(--time-glow);
+}
+
+[data-theme="light"] .widget-header {
+    background: linear-gradient(135deg, var(--time-accent), var(--time-glow));
+}
+
+[data-theme="light"] .action-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .action-btn:hover {
+    background: var(--time-glow);
+}
+
+[data-theme="light"] .theme-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .sound-select {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .sound-select option {
+    background: white;
+    color: #1a1a2e;
+}
+
+[data-theme="light"] .bell-prompt-content {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ============ NEW MINI CLOCK WIDGET ============ */
+.doz-mini-clock {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--bg-card, rgba(26, 26, 46, 0.95));
+    border: 2px solid var(--time-accent, #6366f1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 20px var(--time-glow, rgba(99, 102, 241, 0.2));
+    z-index: 9998;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow: visible;
+}
+
+.doz-mini-clock:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4), 0 0 30px var(--time-glow, rgba(99, 102, 241, 0.3));
+}
+
+.doz-mini-clock .mini-clock-face {
+    width: 100%;
+    height: 100%;
+}
+
+.doz-mini-clock .mini-weather-icon {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    background: var(--bg-card, rgba(26, 26, 46, 0.95));
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.doz-mini-clock .mini-settings-gear {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 22px;
+    height: 22px;
+    background: var(--time-accent, #6366f1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.doz-mini-clock:hover .mini-settings-gear {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.doz-mini-clock .mini-settings-gear:hover {
+    background: var(--primary, #8b5cf6);
+}
+
+/* ============ CLOCK MODAL ============ */
+.doz-clock-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 380px;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 40px);
+    background: var(--bg-card, rgba(26, 26, 46, 0.98));
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 24px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 0 60px var(--time-glow, rgba(99, 102, 241, 0.15));
+    z-index: 10000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.doz-clock-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.doz-clock-modal.dragging {
+    opacity: 0.95;
+    cursor: grabbing;
+    transition: none;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, var(--time-accent, #6366f1) 0%, #8b5cf6 100%);
+    color: white;
+}
+
+.modal-drag-handle {
+    cursor: grab;
+    opacity: 0.7;
+    padding: 5px;
+    transition: opacity 0.2s;
+}
+
+.modal-drag-handle:hover {
+    opacity: 1;
+}
+
+.modal-drag-handle:active {
+    cursor: grabbing;
+}
+
+.modal-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+}
+
+.modal-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.modal-pin-btn,
+.modal-close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-pin-btn:hover,
+.modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.modal-pin-btn.pinned {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Modal Content */
+.modal-content {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 140px);
+}
+
+/* Clock Section with Sun Compass */
+.modal-clock-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.clock-compass-container {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 15px;
+}
+
+.modal-clock-face {
+    width: 100%;
+    height: 100%;
+}
+
+.time-info {
+    margin-top: 10px;
+}
+
+.digital-time-large {
+    font-size: 36px;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    color: var(--text-primary, #ffffff);
+    letter-spacing: 3px;
+    text-shadow: 0 2px 15px var(--time-glow, rgba(99, 102, 241, 0.3));
+}
+
+.date-display {
+    font-size: 14px;
+    color: var(--text-secondary, #a0a0b2);
+    margin-top: 5px;
+}
+
+.time-period-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: white;
+    background: linear-gradient(135deg, var(--time-accent, #6366f1), #8b5cf6);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-top: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.period-icon {
+    font-size: 14px;
+}
+
+/* Weather Panel */
+.modal-weather-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+}
+
+.weather-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.weather-icon {
+    font-size: 28px;
+}
+
+.weather-temp {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+}
+
+.weather-condition {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-secondary, #a0a0b2);
+    text-transform: capitalize;
+}
+
+.weather-toggle {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary, #a0a0b2);
+    cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--time-accent, #6366f1);
+}
+
+/* Recording Panel */
+.modal-recording-panel {
+    margin-bottom: 15px;
+}
+
+.recording-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.record-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 10px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    color: var(--text-primary, #fff);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-width: 70px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.record-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.5s ease;
+}
+
+.record-btn:hover::before {
+    left: 100%;
+}
+
+.record-btn:hover {
+    background: linear-gradient(145deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.15));
+    border-color: var(--time-accent, #6366f1);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25), 0 0 0 1px rgba(99, 102, 241, 0.1);
+}
+
+.record-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+}
+
+.record-btn svg {
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.record-btn:hover svg {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 4px var(--time-accent, #6366f1));
+}
+
+.record-btn span {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary, #a0a0b2);
+    transition: color 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.record-btn:hover span {
+    color: var(--text-primary, #fff);
+}
+
+.recording-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.recording-indicator {
+    width: 12px;
+    height: 12px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.recording-time {
+    font-family: 'SF Mono', monospace;
+    font-size: 14px;
+    color: #ef4444;
+}
+
+.stop-recording-btn {
+    margin-left: auto;
+    padding: 6px 12px;
+    background: #ef4444;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.stop-recording-btn:hover {
+    background: #dc2626;
+}
+
+/* Promotion Panel */
+.modal-promo-panel {
+    position: relative;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.promo-badge {
+    position: absolute;
+    top: -8px;
+    right: 15px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+.promo-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.promo-icon {
+    font-size: 28px;
+}
+
+.promo-text strong {
+    display: block;
+    color: var(--text-primary, #fff);
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.promo-text span {
+    font-size: 12px;
+    color: var(--text-secondary, #a0a0b2);
+}
+
+.promo-install-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+    background-size: 200% 200%;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.promo-install-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.promo-install-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5), 0 0 40px rgba(139, 92, 246, 0.3);
+}
+
+.promo-install-btn:active {
+    transform: translateY(-1px) scale(1);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.promo-dismiss {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: var(--text-muted, #6b6b80);
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.promo-dismiss:hover {
+    opacity: 1;
+}
+
+/* Account Panel */
+.modal-account-panel {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.account-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary, #a0a0b2);
+    margin-bottom: 12px;
+}
+
+.account-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.account-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.3px;
+}
+
+.account-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.4s ease;
+}
+
+.account-btn:hover::before {
+    left: 100%;
+}
+
+.account-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.account-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
+}
+
+.account-btn.secondary {
+    background: transparent;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: var(--text-primary, #fff);
+    backdrop-filter: blur(4px);
+}
+
+.account-btn.secondary::before {
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.15), transparent);
+}
+
+.account-btn.secondary:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--time-accent, #6366f1);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+}
+
+/* Settings Toggle */
+.modal-settings-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary, #a0a0b2);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.modal-settings-toggle:hover {
+    background: linear-gradient(145deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+    border-color: rgba(99, 102, 241, 0.2);
+    color: var(--text-primary, #fff);
+}
+
+.modal-settings-toggle svg {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.modal-settings-toggle:hover svg:first-child {
+    transform: rotate(45deg);
+    color: var(--time-accent, #6366f1);
+}
+
+.modal-settings-toggle .chevron {
+    margin-left: auto;
+    transition: transform 0.2s;
+}
+
+.modal-settings-toggle.expanded .chevron {
+    transform: rotate(180deg);
+}
+
+/* Settings Panel */
+.modal-settings-panel {
+    margin-top: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+}
+
+.modal-settings-panel .setting-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.05));
+}
+
+.modal-settings-panel .setting-row:last-child {
+    border-bottom: none;
+}
+
+.modal-settings-panel .setting-label {
+    font-size: 12px;
+    color: var(--text-secondary, #a0a0b2);
+    min-width: 80px;
+}
+
+.modal-settings-panel .theme-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.modal-settings-panel .theme-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    color: var(--text-secondary, #a0a0b2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modal-settings-panel .theme-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-settings-panel .theme-btn.active {
+    background: var(--time-accent, #6366f1);
+    border-color: var(--time-accent, #6366f1);
+    color: white;
+}
+
+.modal-settings-panel .sound-select {
+    flex: 1;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 6px;
+    color: var(--text-primary, #fff);
+    font-size: 12px;
+}
+
+.modal-settings-panel .test-sound-btn {
+    padding: 6px 10px;
+    background: var(--time-accent, #6366f1);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.modal-settings-panel .bell-hours {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-settings-panel .bell-hours label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-secondary, #a0a0b2);
+    cursor: pointer;
+}
+
+.modal-settings-panel .bell-hours input {
+    accent-color: var(--time-accent, #6366f1);
+}
+
+/* Light Mode Adjustments for New Widget */
+[data-theme="light"] .doz-mini-clock {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--time-accent, #6366f1);
+}
+
+[data-theme="light"] .doz-mini-clock .mini-weather-icon {
+    background: white;
+}
+
+[data-theme="light"] .doz-clock-modal {
+    background: rgba(255, 255, 255, 0.98);
+}
+
+[data-theme="light"] .modal-content {
+    color: var(--text-primary, #1a1a2e);
+}
+
+[data-theme="light"] .modal-weather-panel,
+[data-theme="light"] .modal-account-panel,
+[data-theme="light"] .modal-settings-toggle,
+[data-theme="light"] .modal-settings-panel {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .record-btn {
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.01));
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .record-btn:hover {
+    background: linear-gradient(145deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.08));
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .record-btn span {
+    color: #555;
+}
+
+[data-theme="light"] .record-btn:hover span {
+    color: #1a1a2e;
+}
+
+[data-theme="light"] .modal-settings-toggle {
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.01));
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .modal-settings-toggle:hover {
+    background: linear-gradient(145deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.04));
+    border-color: rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .account-btn.secondary {
+    border-color: rgba(99, 102, 241, 0.3);
+    color: #333;
+}
+
+[data-theme="light"] .account-btn.secondary:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+[data-theme="light"] .modal-settings-panel .setting-row {
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .doz-mini-clock {
+        top: 10px;
+        left: 10px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .doz-clock-modal {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+        border-radius: 16px;
+    }
+
+    .clock-compass-container {
+        width: 160px;
+        height: 160px;
+    }
+
+    .digital-time-large {
+        font-size: 28px;
+    }
+
+    .recording-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ============ LUXURY CLOCK ENHANCEMENTS ============ */
+
+/* Luxury Color Palette */
+:root {
+    --luxury-gold: #D4AF37;
+    --luxury-rose-gold: #B76E79;
+    --luxury-platinum: #E5E4E2;
+    --luxury-ivory: #FFFFF0;
+    --luxury-deep-blue: #1a1a2e;
+    --glow-red: rgba(239, 68, 68, 0.8);
+    --glow-blue: rgba(59, 130, 246, 0.6);
+    --glow-gold: rgba(212, 175, 55, 0.7);
+}
+
+/* Luxury Clock Bezel */
+.luxury-clock-bezel {
+    background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-rose-gold) 50%, var(--luxury-gold) 100%);
+    border-radius: 50%;
+    padding: 3px;
+    box-shadow:
+        0 0 20px rgba(212, 175, 55, 0.4),
+        inset 0 0 10px rgba(255, 255, 255, 0.3),
+        0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.doz-mini-clock.luxury {
+    border: none;
+    background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-rose-gold) 50%, var(--luxury-gold) 100%);
+    padding: 3px;
+}
+
+.doz-mini-clock.luxury .mini-clock-inner {
+    background: var(--bg-card, rgba(26, 26, 46, 0.95));
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="light"] .doz-mini-clock.luxury .mini-clock-inner {
+    background: var(--luxury-ivory);
+}
+
+/* Illuminated Clock Hands */
+.clock-hand-second,
+.mini-clock-second {
+    filter: drop-shadow(0 0 4px var(--glow-red));
+}
+
+.clock-hand-minute,
+.mini-clock-minute {
+    filter: drop-shadow(0 0 5px var(--glow-blue));
+}
+
+.clock-hand-hour,
+.mini-clock-hour {
+    filter: drop-shadow(0 0 6px var(--glow-gold));
+}
+
+/* Second Hand Glow Animation */
+@keyframes second-glow-pulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 3px var(--glow-red));
+    }
+    50% {
+        filter: drop-shadow(0 0 8px var(--glow-red));
+    }
+}
+
+.clock-hand-second.animated,
+.mini-clock-second.animated {
+    animation: second-glow-pulse 1s ease-in-out infinite;
+}
+
+/* Minute Hand Pulse (every 15 seconds) */
+@keyframes minute-glow-pulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 4px var(--glow-blue));
+    }
+    50% {
+        filter: drop-shadow(0 0 12px var(--glow-blue));
+    }
+}
+
+.clock-hand-minute.pulse {
+    animation: minute-glow-pulse 0.5s ease-in-out;
+}
+
+/* Hour Hand Intensify (near completion) */
+@keyframes hour-intensify {
+    0% {
+        filter: drop-shadow(0 0 5px var(--glow-gold));
+    }
+    100% {
+        filter: drop-shadow(0 0 15px var(--glow-gold));
+    }
+}
+
+.clock-hand-hour.intensifying {
+    animation: hour-intensify 5s ease-in forwards;
+}
+
+/* Minute Completion Pulse */
+.minute-complete-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--luxury-gold) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes minute-complete-ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(8);
+        opacity: 0;
+    }
+}
+
+.minute-complete-pulse.active {
+    animation: minute-complete-ripple 0.8s ease-out forwards;
+}
+
+/* Hour Completion Shimmer */
+.hour-complete-shimmer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(212, 175, 55, 0.4) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes hour-shimmer-sweep {
+    0% {
+        background-position: -200% 0;
+        opacity: 1;
+    }
+    100% {
+        background-position: 200% 0;
+        opacity: 0;
+    }
+}
+
+.hour-complete-shimmer.active {
+    animation: hour-shimmer-sweep 1.5s ease-out forwards;
+}
+
+/* All Hands Pulse on Hour */
+@keyframes all-hands-pulse {
+    0%, 100% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(1.5) drop-shadow(0 0 10px var(--luxury-gold));
+    }
+}
+
+.clock-hands.hour-complete line {
+    animation: all-hands-pulse 0.5s ease-in-out 3;
+}
+
+/* Jewel Center Pivot */
+.clock-center-jewel {
+    fill: url(#goldGradient);
+    filter: drop-shadow(0 0 4px var(--luxury-gold));
+}
+
+/* Diamond Tick Marks */
+.clock-tick-diamond {
+    fill: var(--luxury-gold);
+    filter: drop-shadow(0 0 2px var(--glow-gold));
+}
+
+/* Roman Numeral Styling */
+.clock-roman-numeral {
+    font-family: 'Times New Roman', 'Georgia', serif;
+    font-weight: 500;
+    fill: var(--luxury-gold);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .clock-roman-numeral {
+    fill: var(--luxury-deep-blue);
+}
+
+/* Mini Clock Hover Controls */
+.mini-clock-controls {
+    position: absolute;
+    inset: -8px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.doz-mini-clock:hover .mini-clock-controls {
+    opacity: 1;
+}
+
+.mini-control-btn {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg-card, rgba(26, 26, 46, 0.95));
+    border: 2px solid var(--luxury-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+    font-size: 11px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mini-control-btn:hover {
+    transform: scale(1.15);
+    background: var(--luxury-gold);
+    color: white;
+}
+
+.mini-control-btn.bell-btn {
+    top: -6px;
+    left: -6px;
+}
+
+.mini-control-btn.voice-btn {
+    top: -6px;
+    right: -6px;
+}
+
+.mini-control-btn.settings-btn {
+    bottom: -6px;
+    right: -6px;
+}
+
+/* Control Active/Inactive States */
+.mini-control-btn.active {
+    background: var(--luxury-gold);
+    color: white;
+}
+
+.mini-control-btn.inactive {
+    opacity: 0.5;
+    border-color: #666;
+}
+
+.mini-control-btn.inactive:hover {
+    opacity: 1;
+    background: #666;
+}
+
+[data-theme="light"] .mini-control-btn {
+    background: white;
+}
+
+/* Voice & Bell Status Indicator */
+.control-status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 1px solid white;
+}
+
+.control-status-dot.off {
+    background: #ef4444;
+}
+
+/* Modal Luxury Enhancements */
+.modal-clock-section.luxury {
+    position: relative;
+}
+
+.modal-clock-section.luxury::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Sound Controls Panel */
+.modal-sound-controls {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+}
+
+[data-theme="light"] .modal-sound-controls {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.sound-control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sound-control-row:last-child {
+    border-bottom: none;
+}
+
+[data-theme="light"] .sound-control-row {
+    border-bottom-color: rgba(0, 0, 0, 0.05);
+}
+
+.sound-control-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-primary, #fff);
+}
+
+.sound-control-label svg {
+    width: 20px;
+    height: 20px;
+    color: var(--luxury-gold);
+}
+
+/* Toggle Switch */
+.luxury-toggle {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 13px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.luxury-toggle.active {
+    background: linear-gradient(135deg, var(--luxury-gold), var(--luxury-rose-gold));
+}
+
+.luxury-toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.luxury-toggle.active .luxury-toggle-thumb {
+    transform: translateX(22px);
+}
+
+/* Volume Slider */
+.luxury-volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+}
+
+.luxury-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, var(--luxury-gold), var(--luxury-rose-gold));
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+}
+
+.luxury-volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, var(--luxury-gold), var(--luxury-rose-gold));
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+}
+
+/* Style Selector */
+.clock-style-selector {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.style-option {
+    flex: 1;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: var(--text-secondary, #a0a0b2);
+    font-size: 13px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.style-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.style-option.active {
+    border-color: var(--luxury-gold);
+    color: var(--luxury-gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* Illumination Slider */
+.illumination-control {
+    margin-top: 12px;
+}
+
+.illumination-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-secondary, #a0a0b2);
+}
+
+.illumination-value {
+    color: var(--luxury-gold);
+    font-weight: 600;
+}
+
+/* Test Sound Button */
+.test-sound-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    background: linear-gradient(135deg, var(--luxury-gold), var(--luxury-rose-gold));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.test-sound-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.test-sound-btn:active {
+    transform: translateY(0);
+}
+
+/* Contextual Greeting Display */
+.greeting-display {
+    text-align: center;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(183, 110, 121, 0.1));
+    border-radius: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.greeting-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--luxury-gold);
+    margin-bottom: 4px;
+}
+
+.greeting-time {
+    font-size: 13px;
+    color: var(--text-secondary, #a0a0b2);
+}
+
+/* Voice Speaking Indicator */
+.voice-speaking-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--luxury-gold);
+}
+
+.voice-wave {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+}
+
+.voice-wave span {
+    width: 3px;
+    background: var(--luxury-gold);
+    border-radius: 2px;
+    animation: voice-wave-bar 0.5s ease-in-out infinite;
+}
+
+.voice-wave span:nth-child(1) { animation-delay: 0s; height: 4px; }
+.voice-wave span:nth-child(2) { animation-delay: 0.1s; height: 8px; }
+.voice-wave span:nth-child(3) { animation-delay: 0.2s; height: 12px; }
+.voice-wave span:nth-child(4) { animation-delay: 0.3s; height: 6px; }
+
+@keyframes voice-wave-bar {
+    0%, 100% { transform: scaleY(0.5); }
+    50% { transform: scaleY(1); }
+}
+
+/* ============================================
+   ENHANCED SETTINGS PANEL STYLES
+   ============================================ */
+
+/* Settings Sections */
+.settings-section {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+[data-theme="light"] .settings-section {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.settings-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--luxury-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.settings-section-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Setting Rows */
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    gap: 12px;
+}
+
+.setting-row:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .setting-row:not(:last-child) {
+    border-bottom-color: rgba(0, 0, 0, 0.05);
+}
+
+.setting-label {
+    font-size: 13px;
+    color: var(--text-secondary, #a0a0b2);
+}
+
+/* Input-based Luxury Toggle */
+.luxury-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.luxury-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.luxury-toggle .toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    transition: all 0.3s ease;
+}
+
+.luxury-toggle .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.luxury-toggle input:checked + .toggle-slider {
+    background: linear-gradient(135deg, var(--luxury-gold), var(--luxury-rose-gold));
+}
+
+.luxury-toggle input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+[data-theme="light"] .luxury-toggle .toggle-slider {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Luxury Slider */
+.luxury-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+    margin: 0 10px;
+}
+
+.luxury-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, var(--luxury-gold), var(--luxury-rose-gold));
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+    transition: transform 0.2s ease;
+}
+
+.luxury-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.luxury-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, var(--luxury-gold), var(--luxury-rose-gold));
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+}
+
+[data-theme="light"] .luxury-slider {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.volume-value,
+.illumination-value {
+    min-width: 40px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--luxury-gold);
+    font-weight: 600;
+}
+
+/* Style Buttons */
+.style-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.style-btn {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 20px;
+    color: var(--text-secondary, #a0a0b2);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.style-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.style-btn.active {
+    border-color: var(--luxury-gold);
+    color: var(--luxury-gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+[data-theme="light"] .style-btn {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .style-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* Test Buttons Section */
+.test-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.test-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    color: var(--luxury-gold);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.test-btn:hover {
+    background: rgba(212, 175, 55, 0.2);
+    transform: translateY(-1px);
+}
+
+.test-btn:active {
+    transform: translateY(0);
+}
+
+.test-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Sound Select in Settings */
+.modal-settings-panel .sound-select {
+    flex: 1;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-primary, #fff);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+[data-theme="light"] .modal-settings-panel .sound-select {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--text-primary, #1a1a2e);
+}
+
+.modal-settings-panel .test-sound-btn {
+    width: auto;
+    padding: 6px 12px;
+    margin: 0;
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+/* Bell Hours */
+.modal-settings-panel .bell-hours {
+    display: flex;
+    gap: 8px;
+}
+
+.modal-settings-panel .bell-hours label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary, #a0a0b2);
+    cursor: pointer;
+}
+
+.modal-settings-panel .bell-hours input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--luxury-gold);
+}
+
+/* Toast Animation */
+@keyframes toastFade {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    10%, 80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+/* Speaking State for Voice Button */
+.mini-control-btn.voice-btn.speaking {
+    animation: speaking-pulse 0.6s ease-in-out infinite;
+}
+
+@keyframes speaking-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(212, 175, 55, 0);
+    }
+}
+
+/* Hour Shimmer Active State */
+.luxury-clock-face.hour-shimmer-active,
+.mini-clock-face.hour-shimmer-active {
+    animation: clock-face-glow 2s ease-out;
+}
+
+@keyframes clock-face-glow {
+    0% { filter: brightness(1); }
+    25% { filter: brightness(1.3) saturate(1.2); }
+    50% { filter: brightness(1.5) saturate(1.4); }
+    75% { filter: brightness(1.3) saturate(1.2); }
+    100% { filter: brightness(1); }
+}
+
+/* Modal Bezel Enhancement */
+.modal-bezel {
+    padding: 5px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Dark Theme Clock Face Adjustments */
+[data-theme="dark"] .clock-numeral {
+    fill: var(--luxury-gold);
+}
+
+[data-theme="dark"] .clock-hand-minute {
+    stroke: var(--luxury-platinum, #E5E4E2);
+}
+
+/* Light Theme Clock Face Adjustments */
+[data-theme="light"] .luxury-clock-bezel {
+    box-shadow:
+        0 0 20px rgba(212, 175, 55, 0.2),
+        inset 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="light"] .mini-clock-face circle:first-of-type,
+[data-theme="light"] .modal-clock-face circle:first-of-type {
+    fill: var(--luxury-ivory, #FFFFF0);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+    .settings-section {
+        padding: 12px;
+    }
+
+    .test-buttons {
+        flex-direction: column;
+    }
+
+    .test-btn {
+        justify-content: center;
+    }
+
+    .style-buttons {
+        flex-wrap: wrap;
+    }
+}
+
+/* ============ PERFORMANCE: REDUCED MOTION ============ */
+/* Disable all animations for users who prefer reduced motion or on low-end devices */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+    }
+}

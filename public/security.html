@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Settings - DOZ UP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.15); }
+
+        .security-score {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#10b981 var(--score-percent), rgba(255,255,255,0.1) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .score-inner {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #0a0a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .score-value { font-size: 2rem; font-weight: 800; color: #10b981; }
+        .score-label { font-size: 0.75rem; color: #64748b; }
+        .score-text { color: #94a3b8; margin-bottom: 15px; }
+
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+        }
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-enabled { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .badge-disabled { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        .option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .option:last-child { border-bottom: none; }
+        .option-info h4 { margin-bottom: 5px; }
+        .option-info p { color: #64748b; font-size: 0.9rem; }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4); }
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.3); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .toggle {
+            width: 50px;
+            height: 28px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .toggle.active { background: #10b981; }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s;
+        }
+        .toggle.active::after { left: 25px; }
+
+        .device-list { margin-top: 15px; }
+        .device-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .device-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .device-name { font-weight: 600; }
+        .device-meta { font-size: 0.8rem; color: #64748b; }
+        .device-trusted {
+            padding: 4px 10px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .session-list { margin-top: 15px; }
+        .session-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .session-current {
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1a1a3e;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal h3 { margin-bottom: 15px; }
+        .modal p { color: #94a3b8; margin-bottom: 25px; }
+        .qr-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .secret-key {
+            background: rgba(0,0,0,0.3);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+        .code-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .code-input input {
+            width: 45px;
+            height: 55px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+        .code-input input:focus {
+            border-color: #10b981;
+            outline: none;
+        }
+
+        /* Login Request Notification */
+        .login-request {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .login-request h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+        .login-request .device-details {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .login-request .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .login-request .btn-approve {
+            flex: 1;
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .login-request .btn-deny {
+            flex: 1;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Biometric Setup */
+        .biometric-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .option {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .code-input input {
+                width: 40px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <svg width="32" height="32" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                Security Settings
+            </h1>
+            <a href="/my-account.html" class="back-btn">Back to Account</a>
+        </header>
+
+        <!-- Security Score -->
+        <div class="security-score">
+            <div class="score-circle" id="scoreCircle" style="--score-percent: 40%;">
+                <div class="score-inner">
+                    <span class="score-value" id="scoreValue">40</span>
+                    <span class="score-label">Security Score</span>
+                </div>
+            </div>
+            <p class="score-text" id="scoreText">Your account security can be improved</p>
+            <div id="recommendations"></div>
+        </div>
+
+        <!-- Pending Login Requests -->
+        <div id="loginRequests" style="display: none;"></div>
+
+        <!-- Biometric Authentication -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <span>Biometric Authentication</span>
+                </div>
+                <span class="badge badge-disabled" id="biometricBadge">Not Set Up</span>
+            </div>
+            <p style="color: #94a3b8; margin-bottom: 20px;">Use Face ID, Touch ID, or Windows Hello to instantly unlock your account - just like opening a door with your face.</p>
+
+            <div class="option">
+                <div class="option-info">
+                    <h4>Enable Biometric Login</h4>
+                    <p>Sign in with your face, fingerprint, or device PIN</p>
+                </div>
+                <button class="btn btn-primary" id="setupBiometricBtn" onclick="setupBiometric()">
+                    Set Up
+                </button>
+            </div>
+
+            <div id="biometricCredentials" style="display: none;">
+                <h4 style="margin: 20px 0 10px;">Registered Methods</h4>
+                <div id="credentialsList"></div>
+            </div>
+        </div>
+
+        <!-- Google Authenticator / TOTP -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <span>Authenticator App</span>
+                </div>
+                <span class="badge badge-disabled" id="totpBadge">Not Set Up</span>
+            </div>
+            <p style="color: #94a3b8; margin-bottom: 20px;">Add an extra layer of security with Google Authenticator, Authy, or any TOTP app.</p>
+
+            <div class="option">
+                <div class="option-info">
+                    <h4>Two-Factor Authentication</h4>
+                    <p>Require a code from your authenticator app when signing in</p>
+                </div>
+                <button class="btn btn-primary" id="setupTotpBtn" onclick="setupTOTP()">
+                    Set Up
+                </button>
+            </div>
+        </div>
+
+        <!-- Trusted Devices -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <span>Trusted Devices</span>
+                </div>
+                <span class="badge badge-enabled" id="deviceCount">0 devices</span>
+            </div>
+            <p style="color: #94a3b8; margin-bottom: 20px;">Devices you've trusted won't require additional verification. New devices will need approval from a trusted device.</p>
+
+            <div class="option">
+                <div class="option-info">
+                    <h4>Require Device Confirmation</h4>
+                    <p>When someone tries to login from a new device, confirm it from your phone or trusted device</p>
+                </div>
+                <div class="toggle active" id="deviceConfirmToggle" onclick="toggleDeviceConfirm()"></div>
+            </div>
+
+            <div class="device-list" id="deviceList"></div>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <span>Active Sessions</span>
+                </div>
+                <button class="btn btn-danger" onclick="logoutAllSessions()">Logout All</button>
+            </div>
+            <div class="session-list" id="sessionList"></div>
+        </div>
+    </div>
+
+    <!-- TOTP Setup Modal -->
+    <div class="modal" id="totpModal">
+        <div class="modal-content">
+            <h3>Set Up Authenticator</h3>
+            <p>Scan this QR code with Google Authenticator, Authy, or any TOTP app:</p>
+            <div class="qr-container">
+                <img id="qrCode" src="" alt="QR Code" width="180" height="180">
+            </div>
+            <p style="font-size: 0.85rem;">Or enter this code manually:</p>
+            <div class="secret-key" id="secretKey">XXXX XXXX XXXX XXXX</div>
+            <p>Enter the 6-digit code from your app to verify:</p>
+            <div class="code-input" id="totpCodeInput">
+                <input type="text" maxlength="1" data-index="0">
+                <input type="text" maxlength="1" data-index="1">
+                <input type="text" maxlength="1" data-index="2">
+                <input type="text" maxlength="1" data-index="3">
+                <input type="text" maxlength="1" data-index="4">
+                <input type="text" maxlength="1" data-index="5">
+            </div>
+            <button class="btn btn-primary" onclick="verifyTOTP()" style="width: 100%; margin-bottom: 10px;">Verify & Enable</button>
+            <button class="btn btn-secondary" onclick="closeTOTPModal()" style="width: 100%;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Biometric Setup Modal -->
+    <div class="modal" id="biometricModal">
+        <div class="modal-content">
+            <div class="biometric-icon">&#x1F9D1;</div>
+            <h3>Set Up Biometric Login</h3>
+            <p>Your browser will prompt you to register your biometric. This could be:</p>
+            <ul style="text-align: left; margin: 20px 0; color: #94a3b8; line-height: 1.8;">
+                <li>Face ID (iPhone/iPad)</li>
+                <li>Touch ID (Mac/iPhone)</li>
+                <li>Windows Hello (Face/Fingerprint/PIN)</li>
+                <li>Android Fingerprint</li>
+            </ul>
+            <button class="btn btn-primary" onclick="registerBiometric()" style="width: 100%; margin-bottom: 10px;">Continue</button>
+            <button class="btn btn-secondary" onclick="closeBiometricModal()" style="width: 100%;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ CONFIG ============
+        const API_BASE = '/api/auth';
+        let currentUserId = null;
+        let totpSecret = null;
+
+        // Get user ID from URL or generate
+        function getUserId() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('user')) {
+                return params.get('user');
+            }
+            // Get from localStorage or generate
+            let userId = localStorage.getItem('dozup_user_id');
+            if (!userId) {
+                userId = generateFingerprint();
+                localStorage.setItem('dozup_user_id', userId);
+            }
+            return userId;
+        }
+
+        function generateFingerprint() {
+            const nav = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height].join('|');
+            let hash = 0;
+            for (let i = 0; i < nav.length; i++) {
+                hash = ((hash << 5) - hash) + nav.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(16, '0');
+        }
+
+        // ============ INIT ============
+        async function init() {
+            currentUserId = getUserId();
+            await loadSecurityStatus();
+            await loadDevices();
+            await loadSessions();
+            await checkLoginRequests();
+
+            // Poll for login requests
+            setInterval(checkLoginRequests, 5000);
+
+            setupCodeInputs();
+        }
+
+        // ============ SECURITY STATUS ============
+        async function loadSecurityStatus() {
+            try {
+                const res = await fetch(`${API_BASE}/security-status/${currentUserId}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    updateSecurityScore(data);
+                }
+            } catch (e) {
+                console.error('Failed to load security status:', e);
+            }
+        }
+
+        function updateSecurityScore(status) {
+            let score = 20; // Base score
+
+            if (status.totpEnabled) {
+                score += 30;
+                document.getElementById('totpBadge').className = 'badge badge-enabled';
+                document.getElementById('totpBadge').textContent = 'Enabled';
+                document.getElementById('setupTotpBtn').textContent = 'Manage';
+            }
+
+            if (status.biometricEnabled) {
+                score += 30;
+                document.getElementById('biometricBadge').className = 'badge badge-enabled';
+                document.getElementById('biometricBadge').textContent = 'Enabled';
+                document.getElementById('setupBiometricBtn').textContent = 'Manage';
+            }
+
+            if (status.trustedDevices > 0) {
+                score += 10;
+            }
+
+            if (status.settings?.requireDeviceConfirmation) {
+                score += 10;
+                document.getElementById('deviceConfirmToggle').classList.add('active');
+            } else {
+                document.getElementById('deviceConfirmToggle').classList.remove('active');
+            }
+
+            document.getElementById('scoreValue').textContent = score;
+            document.getElementById('scoreCircle').style.setProperty('--score-percent', score + '%');
+
+            if (score >= 80) {
+                document.getElementById('scoreText').textContent = 'Excellent! Your account is well protected';
+            } else if (score >= 50) {
+                document.getElementById('scoreText').textContent = 'Good security, but there\'s room for improvement';
+            } else {
+                document.getElementById('scoreText').textContent = 'Your account security can be improved';
+            }
+
+            document.getElementById('deviceCount').textContent = status.totalDevices + ' devices';
+        }
+
+        // ============ DEVICES ============
+        async function loadDevices() {
+            try {
+                const res = await fetch(`${API_BASE}/devices/${currentUserId}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    renderDevices(data.devices);
+                }
+            } catch (e) {
+                console.error('Failed to load devices:', e);
+            }
+        }
+
+        function renderDevices(devices) {
+            const container = document.getElementById('deviceList');
+
+            if (devices.length === 0) {
+                container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">No devices registered</p>';
+                return;
+            }
+
+            container.innerHTML = devices.map(device => `
+                <div class="device-item">
+                    <div class="device-info">
+                        <div class="device-icon">
+                            ${getDeviceIcon(device.platform)}
+                        </div>
+                        <div>
+                            <div class="device-name">${device.name}</div>
+                            <div class="device-meta">Last used: ${formatDate(device.lastUsed)}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        ${device.trusted ? '<span class="device-trusted">Trusted</span>' : `<button class="btn btn-secondary" onclick="trustDevice('${device.id}')">Trust</button>`}
+                        <button class="btn btn-danger" onclick="removeDevice('${device.id}')">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getDeviceIcon(platform) {
+            if (platform?.includes('Win')) return '<svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd"/></svg>';
+            if (platform?.includes('Mac') || platform?.includes('iPhone') || platform?.includes('iPad')) return '<svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>';
+            if (platform?.includes('Android')) return '<svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>';
+            return '<svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd"/></svg>';
+        }
+
+        async function trustDevice(deviceId) {
+            try {
+                const res = await fetch(`${API_BASE}/devices/trust`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, deviceId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadDevices();
+                    loadSecurityStatus();
+                }
+            } catch (e) {
+                alert('Failed to trust device');
+            }
+        }
+
+        async function removeDevice(deviceId) {
+            if (!confirm('Remove this device? They will need to re-authenticate.')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/devices/${currentUserId}/${deviceId}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadDevices();
+                    loadSecurityStatus();
+                }
+            } catch (e) {
+                alert('Failed to remove device');
+            }
+        }
+
+        async function toggleDeviceConfirm() {
+            const toggle = document.getElementById('deviceConfirmToggle');
+            const newValue = !toggle.classList.contains('active');
+
+            try {
+                const res = await fetch(`${API_BASE}/settings/${currentUserId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ requireDeviceConfirmation: newValue })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    toggle.classList.toggle('active', newValue);
+                    loadSecurityStatus();
+                }
+            } catch (e) {
+                alert('Failed to update setting');
+            }
+        }
+
+        // ============ SESSIONS ============
+        async function loadSessions() {
+            try {
+                const res = await fetch(`${API_BASE}/sessions/${currentUserId}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    renderSessions(data.sessions);
+                }
+            } catch (e) {
+                console.error('Failed to load sessions:', e);
+            }
+        }
+
+        function renderSessions(sessions) {
+            const container = document.getElementById('sessionList');
+
+            if (sessions.length === 0) {
+                container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">No active sessions</p>';
+                return;
+            }
+
+            container.innerHTML = sessions.map((session, i) => `
+                <div class="session-item ${i === 0 ? 'session-current' : ''}">
+                    <div class="device-info">
+                        <div class="device-icon">
+                            <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd"/></svg>
+                        </div>
+                        <div>
+                            <div class="device-name">${session.deviceName} ${i === 0 ? '(Current)' : ''}</div>
+                            <div class="device-meta">Active: ${formatDate(session.lastActive)}</div>
+                        </div>
+                    </div>
+                    ${i !== 0 ? `<button class="btn btn-danger" onclick="revokeSession('${session.id}')">Logout</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function revokeSession(sessionId) {
+            if (!confirm('Log out this session?')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/sessions/${currentUserId}/${sessionId}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadSessions();
+                }
+            } catch (e) {
+                alert('Failed to logout session');
+            }
+        }
+
+        async function logoutAllSessions() {
+            if (!confirm('Log out all sessions except this one?')) return;
+            // Would need to implement this on backend
+            alert('This feature is coming soon');
+        }
+
+        // ============ LOGIN REQUESTS ============
+        async function checkLoginRequests() {
+            try {
+                const res = await fetch(`${API_BASE}/login-requests/${currentUserId}`);
+                const data = await res.json();
+
+                if (data.success && data.requests.length > 0) {
+                    renderLoginRequests(data.requests);
+                } else {
+                    document.getElementById('loginRequests').style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Failed to check login requests:', e);
+            }
+        }
+
+        function renderLoginRequests(requests) {
+            const container = document.getElementById('loginRequests');
+            container.style.display = 'block';
+
+            container.innerHTML = requests.map(req => `
+                <div class="login-request">
+                    <h4>
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                        New Login Attempt
+                    </h4>
+                    <div class="device-details">
+                        <p><strong>Device:</strong> ${req.newDevice.name}</p>
+                        <p><strong>Location:</strong> ${req.newDevice.location || 'Unknown'}</p>
+                        <p><strong>IP Address:</strong> ${req.newDevice.ipAddress || 'Unknown'}</p>
+                        <p style="color: #64748b; font-size: 0.8rem;">Requested: ${formatDate(req.createdAt)}</p>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-approve" onclick="approveLogin('${req.id}')">
+                            <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20" style="margin-right: 8px;"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Approve
+                        </button>
+                        <button class="btn btn-deny" onclick="denyLogin('${req.id}')">
+                            <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20" style="margin-right: 8px;"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                            Deny
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function approveLogin(requestId) {
+            try {
+                const res = await fetch(`${API_BASE}/login-requests/approve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        requestId,
+                        approverDeviceId: generateFingerprint()
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Login approved! The new device can now access your account.');
+                    checkLoginRequests();
+                }
+            } catch (e) {
+                alert('Failed to approve login');
+            }
+        }
+
+        async function denyLogin(requestId) {
+            try {
+                const res = await fetch(`${API_BASE}/login-requests/deny`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, requestId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Login denied. If this wasn\'t you, consider changing your password.');
+                    checkLoginRequests();
+                }
+            } catch (e) {
+                alert('Failed to deny login');
+            }
+        }
+
+        // ============ BIOMETRIC ============
+        function setupBiometric() {
+            document.getElementById('biometricModal').classList.add('active');
+        }
+
+        function closeBiometricModal() {
+            document.getElementById('biometricModal').classList.remove('active');
+        }
+
+        async function registerBiometric() {
+            try {
+                // Check if WebAuthn is supported
+                if (!window.PublicKeyCredential) {
+                    alert('Biometric authentication is not supported on this device');
+                    return;
+                }
+
+                // Get registration options from server
+                const optionsRes = await fetch(`${API_BASE}/biometric/setup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+                const optionsData = await optionsRes.json();
+
+                if (!optionsData.success) {
+                    alert('Failed to get registration options');
+                    return;
+                }
+
+                // Convert base64 to ArrayBuffer
+                const options = optionsData.options;
+                options.challenge = base64ToArrayBuffer(options.challenge);
+                options.user.id = base64ToArrayBuffer(options.user.id);
+
+                // Convert excludeCredentials IDs to ArrayBuffer
+                if (options.excludeCredentials) {
+                    options.excludeCredentials = options.excludeCredentials.map(cred => ({
+                        ...cred,
+                        id: base64ToArrayBuffer(cred.id)
+                    }));
+                }
+
+                // Create credential
+                const credential = await navigator.credentials.create({
+                    publicKey: options
+                });
+
+                // Send credential to server
+                const verifyRes = await fetch(`${API_BASE}/biometric/complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        credential: {
+                            id: credential.id,
+                            rawId: arrayBufferToBase64(credential.rawId),
+                            response: {
+                                publicKey: arrayBufferToBase64(credential.response.getPublicKey()),
+                                transports: credential.response.getTransports ? credential.response.getTransports() : ['internal']
+                            },
+                            authenticatorName: 'Biometric'
+                        }
+                    })
+                });
+
+                const verifyData = await verifyRes.json();
+
+                if (verifyData.success) {
+                    alert('Biometric authentication set up successfully!');
+                    closeBiometricModal();
+                    loadSecurityStatus();
+                } else {
+                    alert('Failed to register biometric: ' + verifyData.error);
+                }
+            } catch (e) {
+                console.error('Biometric registration error:', e);
+                if (e.name === 'NotAllowedError') {
+                    alert('Biometric registration was cancelled or timed out');
+                } else {
+                    alert('Failed to set up biometric: ' + e.message);
+                }
+            }
+        }
+
+        // ============ TOTP ============
+        function setupTOTP() {
+            document.getElementById('totpModal').classList.add('active');
+            fetchTOTPSetup();
+        }
+
+        function closeTOTPModal() {
+            document.getElementById('totpModal').classList.remove('active');
+        }
+
+        async function fetchTOTPSetup() {
+            try {
+                const res = await fetch(`${API_BASE}/totp/setup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    totpSecret = data.secret;
+                    document.getElementById('secretKey').textContent = formatSecret(data.secret);
+
+                    // Generate QR code URL
+                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(data.qrUrl)}`;
+                    document.getElementById('qrCode').src = qrUrl;
+                }
+            } catch (e) {
+                alert('Failed to set up authenticator');
+            }
+        }
+
+        function formatSecret(secret) {
+            return secret.match(/.{1,4}/g)?.join(' ') || secret;
+        }
+
+        async function verifyTOTP() {
+            const inputs = document.querySelectorAll('#totpCodeInput input');
+            const code = Array.from(inputs).map(i => i.value).join('');
+
+            if (code.length !== 6) {
+                alert('Please enter the 6-digit code');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/totp/enable`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, code })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('Two-factor authentication enabled! Save your backup codes:\n\n' + (data.backupCodes || []).join('\n'));
+                    closeTOTPModal();
+                    loadSecurityStatus();
+                } else {
+                    alert('Invalid code. Please try again.');
+                }
+            } catch (e) {
+                alert('Failed to verify code');
+            }
+        }
+
+        function setupCodeInputs() {
+            const inputs = document.querySelectorAll('#totpCodeInput input');
+            inputs.forEach((input, i) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value && i < inputs.length - 1) {
+                        inputs[i + 1].focus();
+                    }
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && i > 0) {
+                        inputs[i - 1].focus();
+                    }
+                });
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = paste.replace(/\D/g, '').slice(0, 6);
+                    digits.split('').forEach((d, j) => {
+                        if (inputs[j]) inputs[j].value = d;
+                    });
+                });
+            });
+        }
+
+        // ============ HELPERS ============
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Unknown';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + ' min ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + ' hours ago';
+            return date.toLocaleDateString();
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
+
+        // ============ START ============
+        init();
+    </script>
+</body>
+</html>

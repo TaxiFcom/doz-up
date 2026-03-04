@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google tag (gtag.js) - Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-441083115"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-441083115');
+    </script>
+
+    <title>Download DOZ UP - All Platforms</title>
+    <meta name="description" content="Download DOZ UP for Windows, macOS, or Linux. Free productivity toolkit for all devices.">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="apple-touch-icon" href="/app/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 15px;
+        }
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            filter: drop-shadow(0 4px 20px rgba(16, 185, 129, 0.5));
+        }
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Auto-detect banner */
+        .auto-detect {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 30px 35px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .auto-detect::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .auto-detect-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            z-index: 1;
+        }
+        .platform-icon-large {
+            width: 60px;
+            height: 60px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        .auto-detect-text h3 {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        .auto-detect-text p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        .auto-detect-text .version-tag {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.3);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #10b981;
+            margin-left: 8px;
+        }
+        .download-btn-main {
+            padding: 18px 45px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 25px rgba(16, 185, 129, 0.35);
+            z-index: 1;
+        }
+        .download-btn-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 35px rgba(16, 185, 129, 0.5);
+        }
+
+        /* What's New button */
+        .whats-new-link {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+        .changelog-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            color: #10b981;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .changelog-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Section title */
+        .section-title {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .section-title h2 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+        .section-title p {
+            color: #64748b;
+        }
+
+        /* Platform cards */
+        .platforms {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        .platform-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        .platform-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-5px);
+        }
+        .platform-card.recommended {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: rgba(16, 185, 129, 0.08);
+            position: relative;
+        }
+        .platform-card.recommended::before {
+            content: 'Recommended for you';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .platform-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .platform-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+        .platform-info .version {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .platform-requirements {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+
+        /* Download options grid */
+        .download-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .download-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .download-btn {
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .download-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.4);
+            transform: translateY(-2px);
+        }
+        .download-btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            grid-column: span 2;
+            flex-direction: row;
+            padding: 16px 20px;
+        }
+        .download-btn.primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+        .download-btn .btn-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .download-btn .btn-meta {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .download-btn.primary .btn-meta {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .download-btn .btn-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.8;
+        }
+        .download-btn.primary .btn-icon {
+            opacity: 1;
+        }
+
+        /* Type badges */
+        .type-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .badge-installer { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .badge-portable { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .badge-universal { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-store { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+        /* Features section */
+        .features {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            padding: 45px;
+            margin-bottom: 50px;
+        }
+        .features h2 {
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 1.5rem;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 30px;
+        }
+        .feature {
+            text-align: center;
+        }
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+        }
+        .feature h4 {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+        .feature p {
+            color: #64748b;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* Mobile/PWA section */
+        .mobile-section {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .mobile-section h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+        }
+        .mobile-section p {
+            color: #94a3b8;
+            margin-bottom: 25px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .mobile-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .mobile-btn {
+            padding: 14px 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .mobile-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        footer p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        footer a {
+            color: #10b981;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auto-detect {
+                flex-direction: column;
+                text-align: center;
+            }
+            .auto-detect-info {
+                flex-direction: column;
+            }
+            header h1 {
+                font-size: 1.6rem;
+            }
+            .platforms {
+                grid-template-columns: 1fr;
+            }
+            .download-row {
+                grid-template-columns: 1fr;
+            }
+            .download-btn.primary {
+                grid-column: span 1;
+            }
+        }
+    </style>
+    <!-- Time-Based Theme Styles -->
+    <link rel="stylesheet" href="/css/time-theme.css">
+    <!-- Internationalization (i18n) Styles -->
+    <link rel="stylesheet" href="/css/i18n.css">
+    <!-- Meta Pixel (Facebook) Conversion Tracking -->
+    <script src="/js/meta-pixel.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/up" class="logo" style="text-decoration: none;">
+                <svg class="logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="dlLogoGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="50%" style="stop-color:#34d399"/>
+                            <stop offset="100%" style="stop-color:#059669"/>
+                        </linearGradient>
+                        <linearGradient id="dlArrowGradient" x1="50%" y1="100%" x2="50%" y2="0%">
+                            <stop offset="0%" style="stop-color:#059669"/>
+                            <stop offset="100%" style="stop-color:#34d399"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#dlLogoGradient)"/>
+                    <path d="M25 62 C25 62 22 62 22 58 C22 52 28 50 32 50 C32 42 40 36 50 36 C60 36 68 42 68 50 C72 50 78 52 78 58 C78 62 75 62 75 62"
+                          fill="white" opacity="0.95"/>
+                    <path d="M50 28 L62 44 L54 44 L54 68 L46 68 L46 44 L38 44 Z"
+                          fill="url(#dlArrowGradient)"/>
+                </svg>
+                <span class="logo-text">DOZ UP</span>
+            </a>
+            <h1>Download for Your Device</h1>
+            <p>Professional screenshot capture with instant cloud upload. Choose installer for full experience or portable for USB drives.</p>
+        </header>
+
+        <!-- Back to Home navigation -->
+        <div style="text-align: center; margin: 0.8rem 0 0.5rem;">
+            <a href="/up" style="color: #10b981; text-decoration: none; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px;">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+                Back to Home &mdash; Learn More About DOZ UP
+            </a>
+        </div>
+
+        <!-- Auto-detected platform -->
+        <div class="auto-detect" id="autoDetect">
+            <div class="auto-detect-info">
+                <div class="platform-icon-large" id="detectedIcon"></div>
+                <div class="auto-detect-text">
+                    <h3 id="detectedPlatform">Detecting your system...</h3>
+                    <p id="detectedDesc">We'll recommend the best version for you <span class="version-tag">Latest</span></p>
+                </div>
+            </div>
+            <a href="#" class="download-btn-main" id="mainDownloadBtn">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download Installer
+            </a>
+        </div>
+
+        <!-- What's New link -->
+        <div class="whats-new-link">
+            <a href="/up/changelog" class="changelog-btn">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+                What's New in v2.9.4
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                </svg>
+            </a>
+        </div>
+
+        <!-- All platforms -->
+        <div class="section-title">
+            <h2>All Available Platforms</h2>
+            <p>Choose your operating system and preferred download type</p>
+        </div>
+
+        <div class="platforms">
+            <!-- Windows -->
+            <div class="platform-card" id="windowsCard">
+                <div class="platform-header">
+                    <div class="platform-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12V6.75l6-1.5v6.5L3 12zm0 6v-5.25l6 .25v5.75l-6-1.5zm7-7l8-2v7h-8V11zm0 6.5l8 1.5v-7h-8v5.5z"/></svg>
+                    </div>
+                    <div class="platform-info">
+                        <h3>Windows</h3>
+                        <div class="version">Version 2.9.4 | 64-bit | Updated Jan 31, 2026</div>
+                    </div>
+                </div>
+                <div class="platform-requirements">
+                    Windows 10/11 (64-bit) | Auto-updates | System tray | Global hotkeys
+                </div>
+                <div class="download-options">
+                    <a href="/download/DOZ-UP-v2.9.4.exe" class="download-btn primary">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        <span class="btn-label">Download Installer</span>
+                        <span class="btn-meta"><span class="type-badge badge-installer">Recommended</span> 73 MB</span>
+                    </a>
+                    <div class="download-row">
+                        <a href="/download/DOZ-UP-v2.7.6-portable.exe" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 10H6v-2h8v2zm4-4H6v-2h12v2z"/></svg>
+                            <span class="btn-label">Portable</span>
+                            <span class="btn-meta"><span class="type-badge badge-portable">No Install</span> 73 MB</span>
+                        </a>
+                        <a href="#" class="download-btn" style="opacity: 0.5; pointer-events: none;">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg>
+                            <span class="btn-label">32-bit</span>
+                            <span class="btn-meta"><span class="type-badge badge-store">Coming Soon</span></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- macOS -->
+            <div class="platform-card" id="macCard">
+                <div class="platform-header">
+                    <div class="platform-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    </div>
+                    <div class="platform-info">
+                        <h3>macOS</h3>
+                        <div class="version">Version 2.9.4 | Universal | Updated Jan 31, 2026</div>
+                    </div>
+                </div>
+                <div class="platform-requirements">
+                    macOS 10.15+ (Catalina) | Intel & Apple Silicon | Menu bar app
+                </div>
+                <div class="download-options">
+                    <a href="/download/DOZ-UP-v2.9.4-mac.zip" class="download-btn primary">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        <span class="btn-label">Download ZIP</span>
+                        <span class="btn-meta"><span class="type-badge badge-installer">Recommended</span> 92 MB</span>
+                    </a>
+                    <div class="download-row">
+                        <a href="/download/DOZ-UP-v2.9.4-mac.zip" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+                            <span class="btn-label">ZIP Archive</span>
+                            <span class="btn-meta"><span class="type-badge badge-portable">Portable</span></span>
+                        </a>
+                        <a href="/download/DOZ-UP-v2.9.4-mac.zip" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                            <span class="btn-label">Apple Silicon</span>
+                            <span class="btn-meta"><span class="type-badge badge-universal">M1/M2/M3</span></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Linux -->
+            <div class="platform-card" id="linuxCard">
+                <div class="platform-header">
+                    <div class="platform-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12.504 0c-.155 0-.311.003-.468.008a14.003 14.003 0 0 0-.582.034c-1.28.093-2.415.513-3.256 1.22-.842.706-1.33 1.594-1.508 2.51-.092.474-.14.973-.14 1.494 0 .57.057 1.162.183 1.77.13.637.336 1.29.623 1.955.285.658.653 1.328 1.106 2.004.45.67.988 1.345 1.62 2.02.63.67 1.356 1.34 2.177 2.004a31.77 31.77 0 0 0 2.01 1.514c.6.42 1.094.777 1.476 1.063.286.214.535.416.743.605.21.19.37.357.478.498.108.142.16.246.16.315 0 .084-.068.203-.204.355-.136.152-.332.327-.587.525-.254.198-.56.414-.914.65-.354.234-.746.48-1.176.74-.43.258-.89.524-1.382.8-.49.274-1.006.552-1.547.836-.54.284-1.1.568-1.68.852-.58.284-1.172.564-1.778.84l-.102.048c-.09.042-.155.078-.195.106-.04.028-.058.05-.058.07 0 .045.054.11.164.197.11.088.26.19.453.306.192.116.42.242.68.378.26.136.548.28.866.43.318.15.66.302 1.024.458.365.156.75.31 1.155.462.406.153.828.3 1.268.443.44.143.893.277 1.358.403.466.125.94.238 1.423.338.483.1.97.183 1.46.25.49.068.98.116 1.466.145.486.03.967.043 1.44.043.472 0 .95-.014 1.432-.043.483-.03.968-.078 1.456-.145.488-.068.975-.152 1.46-.25.485-.1.96-.214 1.426-.34.466-.126.92-.26 1.36-.403.44-.143.86-.29 1.264-.443.404-.152.788-.306 1.152-.462.364-.156.706-.308 1.024-.458.318-.15.606-.294.866-.43.26-.136.488-.262.68-.378.193-.116.344-.218.454-.306.11-.088.164-.153.164-.198 0-.02-.02-.042-.058-.07-.04-.028-.105-.064-.195-.106l-.102-.048c-.606-.276-1.198-.556-1.778-.84-.58-.284-1.14-.568-1.68-.852-.54-.284-1.056-.562-1.547-.836-.49-.276-.95-.542-1.382-.8-.43-.26-.822-.506-1.176-.74-.354-.236-.66-.452-.914-.65-.255-.198-.45-.373-.587-.525-.136-.152-.204-.27-.204-.355 0-.07.052-.173.16-.315.108-.14.268-.308.478-.498.208-.19.457-.39.743-.605.382-.286.875-.643 1.476-1.063a31.77 31.77 0 0 0 2.01-1.514c.82-.664 1.546-1.334 2.177-2.004.632-.675 1.17-1.35 1.62-2.02.453-.676.82-1.346 1.106-2.004.287-.665.493-1.318.623-1.955.126-.608.183-1.2.183-1.77 0-.52-.048-1.02-.14-1.494-.178-.916-.666-1.804-1.508-2.51-.84-.707-1.975-1.127-3.256-1.22a14.003 14.003 0 0 0-.582-.034 11.36 11.36 0 0 0-.468-.008z"/></svg>
+                    </div>
+                    <div class="platform-info">
+                        <h3>Linux</h3>
+                        <div class="version">Version 2.9.4 | x64 | Updated Jan 31, 2026</div>
+                    </div>
+                </div>
+                <div class="platform-requirements">
+                    Ubuntu 18.04+, Fedora 32+, Debian 10+ | X11/Wayland | AppImage & TAR
+                </div>
+                <div class="download-options">
+                    <a href="/download/DOZ-UP-v2.9.4.AppImage" class="download-btn primary">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        <span class="btn-label">Download AppImage</span>
+                        <span class="btn-meta"><span class="type-badge badge-universal">Universal</span> 100 MB</span>
+                    </a>
+                    <div class="download-row">
+                        <a href="/download/DOZ-UP-v2.6.2-linux.tar.gz" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <span class="btn-label">TAR Archive</span>
+                            <span class="btn-meta"><span class="type-badge badge-portable">Portable</span> 95 MB</span>
+                        </a>
+                        <a href="/download/DOZ-UP-v2.9.4.AppImage" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <span class="btn-label">AppImage</span>
+                            <span class="btn-meta"><span class="type-badge badge-installer">All Distros</span></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Android -->
+            <div class="platform-card" id="androidCard">
+                <div class="platform-header">
+                    <div class="platform-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-2.86-1.21-6.08-1.21-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
+                    </div>
+                    <div class="platform-info">
+                        <h3>Android</h3>
+                        <div class="version">Version 2.9.5 | Updated Feb 2, 2026</div>
+                    </div>
+                </div>
+                <div class="platform-requirements">
+                    Android 6.0+ | Screen capture | Share to upload | Material Design
+                </div>
+                <div class="download-options">
+                    <a href="/download/DOZ-UP-v2.9.8.apk" class="download-btn primary">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        <span class="btn-label">Download APK</span>
+                        <span class="btn-meta"><span class="type-badge badge-portable">Direct Install</span> 2.7 MB</span>
+                    </a>
+                    <div class="download-row">
+                        <a href="/up/mobile" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+                            <span class="btn-label">Web App</span>
+                            <span class="btn-meta"><span class="type-badge badge-universal">PWA</span></span>
+                        </a>
+                        <a href="#" class="download-btn" style="opacity: 0.5; pointer-events: none;">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13.5L8.5 19 20 7.5l-1.41-1.41L8.5 16.17l-4.09-4.09L3 13.5z"/></svg>
+                            <span class="btn-label">Play Store</span>
+                            <span class="btn-meta"><span class="type-badge badge-store">Coming Soon</span></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chrome Extension -->
+            <div class="platform-card" id="chromeCard">
+                <div class="platform-header">
+                    <div class="platform-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29L1.931 5.47zm13.891 2.166l3.953 6.848A11.943 11.943 0 0 0 24 12c0-1.525-.285-2.983-.806-4.326L15.822 7.636zM12 16.364a4.364 4.364 0 1 0 0-8.728 4.364 4.364 0 0 0 0 8.728z"/></svg>
+                    </div>
+                    <div class="platform-info">
+                        <h3>Browser Extension</h3>
+                        <div class="version">Version 2.9.4 | Updated Jan 31, 2026</div>
+                    </div>
+                </div>
+                <div class="platform-requirements">
+                    Chrome, Edge, Brave, Opera | Ctrl+Shift+S | Full page capture
+                </div>
+                <div class="download-options">
+                    <a href="/extension/" class="download-btn primary">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        <span class="btn-label">Add to Browser</span>
+                        <span class="btn-meta"><span class="type-badge badge-universal">All Chromium</span></span>
+                    </a>
+                    <div class="download-row">
+                        <a href="/download/DOZ-UP-Extension-v2.9.4.zip" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+                            <span class="btn-label">Manual Install</span>
+                            <span class="btn-meta"><span class="type-badge badge-portable">ZIP</span></span>
+                        </a>
+                        <a href="#" class="download-btn" style="opacity: 0.5; pointer-events: none;">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0z"/></svg>
+                            <span class="btn-label">Chrome Store</span>
+                            <span class="btn-meta"><span class="type-badge badge-store">Coming Soon</span></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- iOS / PWA -->
+            <div class="platform-card" id="iosCard">
+                <div class="platform-header">
+                    <div class="platform-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    </div>
+                    <div class="platform-info">
+                        <h3>iOS / Web App</h3>
+                        <div class="version">Progressive Web App | Always Latest</div>
+                    </div>
+                </div>
+                <div class="platform-requirements">
+                    iPhone, iPad | Add to Home Screen | Upload from Photos | Safari
+                </div>
+                <div class="download-options">
+                    <a href="/up/mobile" class="download-btn primary">
+                        <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 5.69l5 4.5V18h-4v-6H7v6H5v-7.81l7-6.31M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
+                        <span class="btn-label">Open Web App</span>
+                        <span class="btn-meta"><span class="type-badge badge-universal">Add to Home</span></span>
+                    </a>
+                    <div class="download-row">
+                        <a href="/" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/></svg>
+                            <span class="btn-label">Dashboard</span>
+                            <span class="btn-meta"><span class="type-badge badge-universal">Full Access</span></span>
+                        </a>
+                        <a href="/up/upload" class="download-btn">
+                            <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                            <span class="btn-label">Quick Upload</span>
+                            <span class="btn-meta"><span class="type-badge badge-portable">Instant</span></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <h2>Everything You Get with DOZ UP v2.9.4</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2.05v2.02c3.95.49 7 3.85 7 7.93 0 2.76-1.41 5.19-3.54 6.61l1.41 1.41C20.14 18.16 22 15.32 22 12c0-4.97-3.64-9.09-8.41-9.88zm-2 0C5.95 2.96 2 7.4 2 12c0 4.6 3.95 9.04 9 9.95v-2.02c-3.93-.5-7-3.86-7-7.93s3.07-7.43 7-7.93V2.05z"/><path d="M12 6v6l4 2-1 1.7L10 13V6h2z"/></svg>
+                    </div>
+                    <h4>Instant Capture</h4>
+                    <p>Sub-200ms response with GPU pre-warming technology</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </div>
+                    <h4>Auto Updates</h4>
+                    <p>Always on the latest version automatically</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                    </div>
+                    <h4>Secure Upload</h4>
+                    <p>End-to-end encryption with HTTPS</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 6h16v2H4V6zm0 12v-6h16v6H4z"/></svg>
+                    </div>
+                    <h4>System Tray</h4>
+                    <p>Quick access from taskbar icon</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg>
+                    </div>
+                    <h4>Global Hotkeys</h4>
+                    <p>Ctrl+Shift+S works everywhere</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                    </div>
+                    <h4>Cloud Sync</h4>
+                    <p>Access screenshots anywhere</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile & Browser Options -->
+        <div class="mobile-section">
+            <h3>Use DOZ UP Anywhere</h3>
+            <p>Capture and share from any device - desktop, mobile, or browser</p>
+            <div class="mobile-buttons">
+                <a href="/up/mobile" class="mobile-btn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+                    Mobile App
+                </a>
+                <a href="/extension/" class="mobile-btn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0z"/></svg>
+                    Browser Extension
+                </a>
+                <a href="/up" class="mobile-btn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/></svg>
+                    Web Dashboard
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p>DOZ UP v2.9.4 | Free for personal use | Enterprise licenses available</p>
+            <div class="footer-links">
+                <a href="/up">Home</a>
+                <a href="/up/changelog">What's New</a>
+                <a href="/up/my-account">My Account</a>
+                <a href="/up/security">Security</a>
+                <a href="mailto:support@doz.com.im">Support</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Platform detection
+        function detectPlatform() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const platform = navigator.platform.toLowerCase();
+
+            if (platform.includes('win') || userAgent.includes('windows')) {
+                return 'windows';
+            } else if (platform.includes('mac') || userAgent.includes('mac')) {
+                return 'mac';
+            } else if (platform.includes('linux') || userAgent.includes('linux')) {
+                return 'linux';
+            } else if (/android/i.test(userAgent)) {
+                return 'android';
+            } else if (/iphone|ipad|ipod/i.test(userAgent)) {
+                return 'ios';
+            }
+            return 'unknown';
+        }
+
+        // Build platform configs dynamically from version info
+        function buildPlatformConfigs(v, apkV) {
+            return {
+                windows: {
+                    icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12V6.75l6-1.5v6.5L3 12zm0 6v-5.25l6 .25v5.75l-6-1.5zm7-7l8-2v7h-8V11zm0 6.5l8 1.5v-7h-8v5.5z"/></svg>',
+                    name: 'Windows',
+                    desc: 'Windows 10/11 detected',
+                    downloadUrl: '/download/DOZ-UP-v' + v + '.exe',
+                    downloadLabel: 'Download Installer',
+                    cardId: 'windowsCard',
+                    available: true,
+                    version: 'v' + v
+                },
+                mac: {
+                    icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>',
+                    name: 'macOS',
+                    desc: 'macOS 10.15+ available',
+                    downloadUrl: '/download/DOZ-UP-v' + v + '-mac.zip',
+                    downloadLabel: 'Download ZIP',
+                    cardId: 'macCard',
+                    available: true,
+                    version: 'v' + v
+                },
+                linux: {
+                    icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12.504 0c-.155 0-.311.003-.468.008a14.003 14.003 0 0 0-.582.034c-1.28.093-2.415.513-3.256 1.22-.842.706-1.33 1.594-1.508 2.51-.092.474-.14.973-.14 1.494 0 .57.057 1.162.183 1.77.13.637.336 1.29.623 1.955.285.658.653 1.328 1.106 2.004.45.67.988 1.345 1.62 2.02.63.67 1.356 1.34 2.177 2.004a31.77 31.77 0 0 0 2.01 1.514c.6.42 1.094.777 1.476 1.063.286.214.535.416.743.605.21.19.37.357.478.498.108.142.16.246.16.315 0 .084-.068.203-.204.355-.136.152-.332.327-.587.525-.254.198-.56.414-.914.65-.354.234-.746.48-1.176.74-.43.258-.89.524-1.382.8-.49.274-1.006.552-1.547.836-.54.284-1.1.568-1.68.852-.58.284-1.172.564-1.778.84l-.102.048c-.09.042-.155.078-.195.106-.04.028-.058.05-.058.07 0 .045.054.11.164.197.11.088.26.19.453.306.192.116.42.242.68.378.26.136.548.28.866.43.318.15.66.302 1.024.458.365.156.75.31 1.155.462.406.153.828.3 1.268.443.44.143.893.277 1.358.403.466.125.94.238 1.423.338.483.1.97.183 1.46.25.49.068.98.116 1.466.145.486.03.967.043 1.44.043.472 0 .95-.014 1.432-.043.483-.03.968-.078 1.456-.145.488-.068.975-.152 1.46-.25.485-.1.96-.214 1.426-.34.466-.126.92-.26 1.36-.403.44-.143.86-.29 1.264-.443.404-.152.788-.306 1.152-.462.364-.156.706-.308 1.024-.458.318-.15.606-.294.866-.43.26-.136.488-.262.68-.378.193-.116.344-.218.454-.306.11-.088.164-.153.164-.198 0-.02-.02-.042-.058-.07-.04-.028-.105-.064-.195-.106l-.102-.048c-.606-.276-1.198-.556-1.778-.84-.58-.284-1.14-.568-1.68-.852-.54-.284-1.056-.562-1.547-.836-.49-.276-.95-.542-1.382-.8-.43-.26-.822-.506-1.176-.74-.354-.236-.66-.452-.914-.65-.255-.198-.45-.373-.587-.525-.136-.152-.204-.27-.204-.355 0-.07.052-.173.16-.315.108-.14.268-.308.478-.498.208-.19.457-.39.743-.605.382-.286.875-.643 1.476-1.063a31.77 31.77 0 0 0 2.01-1.514c.82-.664 1.546-1.334 2.177-2.004.632-.675 1.17-1.35 1.62-2.02.453-.676.82-1.346 1.106-2.004.287-.665.493-1.318.623-1.955.126-.608.183-1.2.183-1.77 0-.52-.048-1.02-.14-1.494-.178-.916-.666-1.804-1.508-2.51-.84-.707-1.975-1.127-3.256-1.22a14.003 14.003 0 0 0-.582-.034 11.36 11.36 0 0 0-.468-.008z"/></svg>',
+                    name: 'Linux',
+                    desc: 'AppImage available',
+                    downloadUrl: '/download/DOZ-UP-v' + v + '.AppImage',
+                    downloadLabel: 'Download AppImage',
+                    cardId: 'linuxCard',
+                    available: true,
+                    version: 'v' + v
+                },
+                android: {
+                    icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-2.86-1.21-6.08-1.21-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>',
+                    name: 'Android',
+                    desc: 'Native app available',
+                    downloadUrl: '/download/DOZ-UP-v' + apkV + '.apk',
+                    downloadLabel: 'Download APK',
+                    cardId: 'androidCard',
+                    available: true,
+                    version: 'v' + apkV
+                },
+                ios: {
+                    icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>',
+                    name: 'iOS',
+                    desc: 'Use the mobile web app',
+                    downloadUrl: '/mobile.html',
+                    downloadLabel: 'Open Web App',
+                    cardId: 'iosCard',
+                    available: true,
+                    version: 'PWA'
+                },
+                unknown: {
+                    icon: '<svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>',
+                    name: 'Your Device',
+                    desc: 'Select your platform below',
+                    downloadUrl: '#platforms',
+                    downloadLabel: 'Select Platform',
+                    cardId: null,
+                    available: true,
+                    version: 'Latest'
+                }
+            };
+        }
+
+        // Update all version strings and download URLs across the page
+        function applyVersionToPage(ver, apkVer, releaseDate) {
+            const v = ver;
+            const av = apkVer;
+
+            // Format release date
+            const dateStr = releaseDate ? new Date(releaseDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+            // Update "What's New" button
+            const changelogBtn = document.querySelector('.changelog-btn');
+            if (changelogBtn) {
+                changelogBtn.childNodes.forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().startsWith("What's New")) {
+                        node.textContent = "\n                What's New in v" + v + "\n                ";
+                    }
+                });
+            }
+
+            // Update platform card version info lines
+            const versionDivs = document.querySelectorAll('.platform-info .version');
+            versionDivs.forEach(el => {
+                const text = el.textContent;
+                if (text.includes('Windows') || el.closest('#windowsCard')) {
+                    el.textContent = 'Version ' + v + ' | 64-bit | Updated ' + dateStr;
+                } else if (text.includes('macOS') || text.includes('Universal') || el.closest('#macCard')) {
+                    el.textContent = 'Version ' + v + ' | Universal | Updated ' + dateStr;
+                } else if (text.includes('Linux') || text.includes('x64') || el.closest('#linuxCard')) {
+                    el.textContent = 'Version ' + v + ' | x64 | Updated ' + dateStr;
+                } else if (text.includes('Android') || el.closest('#androidCard')) {
+                    el.textContent = 'Version ' + av + ' | Updated ' + dateStr;
+                } else if (text.includes('Extension') || text.includes('Browser') || el.closest('#chromeCard')) {
+                    el.textContent = 'Version ' + v + ' | Updated ' + dateStr;
+                }
+            });
+
+            // Update all download links with versioned filenames
+            document.querySelectorAll('a[href*="/download/DOZ-UP-v"]').forEach(link => {
+                const href = link.getAttribute('href');
+                // Replace version in download URLs (match version number but not trailing dot before extension)
+                link.setAttribute('href', href.replace(/DOZ-UP-v\d+\.\d+\.\d+/g, function(match) {
+                    if (href.includes('.apk')) {
+                        return 'DOZ-UP-v' + av;
+                    }
+                    return 'DOZ-UP-v' + v;
+                }));
+            });
+
+            // Update extension zip link
+            document.querySelectorAll('a[href*="Extension-v"]').forEach(link => {
+                const href = link.getAttribute('href');
+                link.setAttribute('href', href.replace(/Extension-v[\d.]+/, 'Extension-v' + v));
+            });
+
+            // Update features section heading
+            const featuresH2 = document.querySelector('.features h2');
+            if (featuresH2) {
+                featuresH2.textContent = 'Everything You Get with DOZ UP v' + v;
+            }
+
+            // Update footer
+            const footerP = document.querySelector('footer p');
+            if (footerP && footerP.textContent.includes('DOZ UP v')) {
+                footerP.textContent = 'DOZ UP v' + v + ' | Free for personal use | Enterprise licenses available';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch real version from server API, then set up everything
+            fetch('/api/version')
+                .then(res => res.json())
+                .then(data => {
+                    const ver = data.version || '2.9.4';
+                    const apkVer = data.apkVersion || ver;
+                    const releaseDate = data.releaseDate || '';
+
+                    // Apply version to all static HTML elements
+                    applyVersionToPage(ver, apkVer, releaseDate);
+
+                    // Build platform configs with live version
+                    const platformConfigs = buildPlatformConfigs(ver, apkVer);
+                    setupPlatformDetection(platformConfigs);
+                })
+                .catch(() => {
+                    // Fallback: use platformConfigs with hardcoded fallback
+                    const platformConfigs = buildPlatformConfigs('2.9.4', '2.9.5');
+                    setupPlatformDetection(platformConfigs);
+                });
+        });
+
+        function setupPlatformDetection(platformConfigs) {
+            const detected = detectPlatform();
+            const config = platformConfigs[detected];
+
+            // Update auto-detect section
+            document.getElementById('detectedIcon').innerHTML = config.icon;
+            document.getElementById('detectedPlatform').textContent = config.name + ' Detected';
+            document.getElementById('detectedDesc').innerHTML = config.desc + ' <span class="version-tag">' + config.version + '</span>';
+
+            const mainBtn = document.getElementById('mainDownloadBtn');
+            mainBtn.href = config.downloadUrl;
+            mainBtn.innerHTML = `
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                ${config.downloadLabel}
+            `;
+
+            // Highlight recommended card
+            if (config.cardId) {
+                document.getElementById(config.cardId).classList.add('recommended');
+            } else {
+                // Default to Windows
+                document.getElementById('windowsCard').classList.add('recommended');
+            }
+        }
+
+        // Track downloads
+        document.querySelectorAll('.download-btn, .download-btn-main').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const url = this.href;
+                if (url && !url.includes('#')) {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'download', {
+                            'event_category': 'engagement',
+                            'event_label': url
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- DOZ UP Analytics & Traffic Tracking -->
+    <script src="/js/analytics.js" defer></script>
+    <script src="/track.js" async></script>
+    <script src="/track-advanced.js" async></script>
+
+
+</body>
+</html>

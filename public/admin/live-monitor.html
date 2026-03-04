@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Live Monitor</title>
+    <link rel="icon" href="/favicon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(15, 15, 26, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7c3aed, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .connection-status {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Main Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7c3aed, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .stat-change.positive { color: #10b981; }
+        .stat-change.negative { color: #ef4444; }
+
+        /* Revenue Card */
+        .revenue-card .stat-value {
+            font-size: 48px;
+        }
+
+        /* User Flow */
+        .flow-card {
+            grid-column: span 2;
+        }
+
+        .user-flow {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .flow-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(124, 58, 237, 0.1);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            animation: slideIn 0.3s ease-out;
+            font-size: 13px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .flow-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .flow-icon.visit { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .flow-icon.upload { background: linear-gradient(135deg, #10b981, #059669); }
+        .flow-icon.download { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+        .flow-icon.share { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .flow-icon.signup { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .flow-icon.purchase { background: linear-gradient(135deg, #10b981, #047857); }
+        .flow-icon.error { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+
+        .flow-details {
+            flex: 1;
+        }
+
+        .flow-action {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .flow-meta {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .flow-time {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Sales Feed */
+        .sales-card {
+            grid-column: span 2;
+        }
+
+        .sales-feed {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .sale-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .sale-item:last-child {
+            border-bottom: none;
+        }
+
+        .sale-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #10b981, #047857);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .sale-details {
+            flex: 1;
+        }
+
+        .sale-plan {
+            font-weight: 600;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .sale-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .sale-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        /* Issues Panel */
+        .issues-card {
+            grid-column: span 2;
+        }
+
+        .issues-feed {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .issue-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .issue-item.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .issue-item.resolved {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .issue-severity {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .issue-severity.error { background: #ef4444; }
+        .issue-severity.warning { background: #f59e0b; }
+        .issue-severity.resolved { background: #10b981; }
+
+        .issue-content {
+            flex: 1;
+        }
+
+        .issue-message {
+            font-size: 13px;
+            color: #fff;
+        }
+
+        .issue-meta {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Funnel Visualization */
+        .funnel-card {
+            grid-column: span 2;
+        }
+
+        .funnel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .funnel-stage {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .funnel-bar-container {
+            flex: 1;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .funnel-bar {
+            height: 100%;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            font-weight: 600;
+            transition: width 0.5s ease-out;
+        }
+
+        .funnel-bar.visitors { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+        .funnel-bar.signups { background: linear-gradient(90deg, #8b5cf6, #6d28d9); }
+        .funnel-bar.trials { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .funnel-bar.paid { background: linear-gradient(90deg, #10b981, #047857); }
+
+        .funnel-label {
+            width: 80px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .funnel-value {
+            width: 80px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* World Map Activity */
+        .map-card {
+            grid-column: span 2;
+        }
+
+        .activity-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-flag {
+            font-size: 24px;
+        }
+
+        .activity-location {
+            flex: 1;
+        }
+
+        .activity-city {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .activity-country {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .activity-count {
+            background: rgba(124, 58, 237, 0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Health Status */
+        .health-card {
+            grid-column: span 2;
+        }
+
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .health-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+
+        .health-score {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .health-score.good { color: #10b981; }
+        .health-score.warning { color: #f59e0b; }
+        .health-score.bad { color: #ef4444; }
+
+        .health-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Timeline */
+        .timeline-card {
+            grid-column: span 4;
+        }
+
+        .timeline {
+            display: flex;
+            gap: 2px;
+            height: 60px;
+            align-items: flex-end;
+        }
+
+        .timeline-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #7c3aed, #10b981);
+            border-radius: 3px 3px 0 0;
+            min-height: 5px;
+            transition: height 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .timeline-bar:hover {
+            opacity: 0.8;
+        }
+
+        .timeline-bar:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.5);
+            border-radius: 3px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .timeline-card, .flow-card, .sales-card, .issues-card, .funnel-card, .map-card, .health-card {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                grid-column: span 1 !important;
+            }
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: toastIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .toast.sale {
+            background: linear-gradient(135deg, #10b981, #047857);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="/logo.png" alt="DOZ UP">
+            Live Monitor
+        </div>
+        <div class="status-indicator">
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                <span>LIVE</span>
+            </div>
+            <div class="connection-status" id="connectionStatus">Connecting...</div>
+        </div>
+    </header>
+
+    <!-- Dashboard -->
+    <main class="dashboard">
+        <!-- Stats Row -->
+        <div class="card stat-card">
+            <div class="card-header">
+                <span class="card-title">Active Users</span>
+            </div>
+            <div class="card-body">
+                <div class="stat-value" id="activeUsers">0</div>
+                <div class="stat-label">Right Now</div>
+                <div class="stat-change positive" id="activeUsersChange">+0 last hour</div>
+            </div>
+        </div>
+
+        <div class="card stat-card revenue-card">
+            <div class="card-header">
+                <span class="card-title">Today's Revenue</span>
+            </div>
+            <div class="card-body">
+                <div class="stat-value" id="todayRevenue">$0</div>
+                <div class="stat-label">From 0 sales</div>
+                <div class="stat-change positive" id="revenueChange">+0% vs yesterday</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="card-header">
+                <span class="card-title">Uploads Today</span>
+            </div>
+            <div class="card-body">
+                <div class="stat-value" id="uploadsToday">0</div>
+                <div class="stat-label">Screenshots</div>
+                <div class="stat-change positive" id="uploadsChange">+0 last hour</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="card-header">
+                <span class="card-title">Shares Today</span>
+            </div>
+            <div class="card-body">
+                <div class="stat-value" id="sharesToday">0</div>
+                <div class="stat-label">Link Views</div>
+                <div class="stat-change positive" id="sharesChange">+0 last hour</div>
+            </div>
+        </div>
+
+        <!-- User Flow -->
+        <div class="card flow-card">
+            <div class="card-header">
+                <span class="card-title">Live User Activity</span>
+                <span id="flowCount">0 events</span>
+            </div>
+            <div class="card-body">
+                <div class="user-flow" id="userFlow">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">...</div>
+                        <div>Waiting for activity...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Feed -->
+        <div class="card sales-card">
+            <div class="card-header">
+                <span class="card-title">Recent Sales</span>
+                <span id="salesCount">0 today</span>
+            </div>
+            <div class="card-body">
+                <div class="sales-feed" id="salesFeed">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">$</div>
+                        <div>No sales yet today</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Funnel -->
+        <div class="card funnel-card">
+            <div class="card-header">
+                <span class="card-title">Conversion Funnel (Today)</span>
+            </div>
+            <div class="card-body">
+                <div class="funnel">
+                    <div class="funnel-stage">
+                        <span class="funnel-label">Visitors</span>
+                        <div class="funnel-bar-container">
+                            <div class="funnel-bar visitors" id="funnelVisitors" style="width: 100%">100%</div>
+                        </div>
+                        <span class="funnel-value" id="funnelVisitorsCount">0</span>
+                    </div>
+                    <div class="funnel-stage">
+                        <span class="funnel-label">Signups</span>
+                        <div class="funnel-bar-container">
+                            <div class="funnel-bar signups" id="funnelSignups" style="width: 0%"></div>
+                        </div>
+                        <span class="funnel-value" id="funnelSignupsCount">0</span>
+                    </div>
+                    <div class="funnel-stage">
+                        <span class="funnel-label">Trials</span>
+                        <div class="funnel-bar-container">
+                            <div class="funnel-bar trials" id="funnelTrials" style="width: 0%"></div>
+                        </div>
+                        <span class="funnel-value" id="funnelTrialsCount">0</span>
+                    </div>
+                    <div class="funnel-stage">
+                        <span class="funnel-label">Paid</span>
+                        <div class="funnel-bar-container">
+                            <div class="funnel-bar paid" id="funnelPaid" style="width: 0%"></div>
+                        </div>
+                        <span class="funnel-value" id="funnelPaidCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issues Panel -->
+        <div class="card issues-card">
+            <div class="card-header">
+                <span class="card-title">Live Issues & Errors</span>
+                <span id="issuesCount">0 active</span>
+            </div>
+            <div class="card-body">
+                <div class="issues-feed" id="issuesFeed">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">...</div>
+                        <div>No issues detected</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Geographic Activity -->
+        <div class="card map-card">
+            <div class="card-header">
+                <span class="card-title">Geographic Activity</span>
+            </div>
+            <div class="card-body">
+                <div class="activity-list" id="geoActivity">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">...</div>
+                        <div>No location data yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="card health-card">
+            <div class="card-header">
+                <span class="card-title">System Health</span>
+            </div>
+            <div class="card-body">
+                <div class="health-grid">
+                    <div class="health-item">
+                        <div class="health-score good" id="healthScore">100</div>
+                        <div class="health-label">Health Score</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-score good" id="responseTime">0ms</div>
+                        <div class="health-label">Avg Response</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-score good" id="uptime">100%</div>
+                        <div class="health-label">Uptime</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-score good" id="memoryUsage">0MB</div>
+                        <div class="health-label">Memory</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-score good" id="wsConnections">0</div>
+                        <div class="health-label">WS Connections</div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-score good" id="aiStatus">Active</div>
+                        <div class="health-label">AI Services</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="card timeline-card">
+            <div class="card-header">
+                <span class="card-title">Activity Timeline (Last 24 Hours)</span>
+            </div>
+            <div class="card-body">
+                <div class="timeline" id="activityTimeline"></div>
+                <div class="timeline-labels">
+                    <span>24h ago</span>
+                    <span>18h</span>
+                    <span>12h</span>
+                    <span>6h</span>
+                    <span>Now</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script>
+        // State
+        const state = {
+            ws: null,
+            connected: false,
+            activeUsers: 0,
+            todayRevenue: 0,
+            todaySales: 0,
+            uploadsToday: 0,
+            sharesToday: 0,
+            userFlow: [],
+            sales: [],
+            issues: [],
+            geoData: {},
+            timeline: new Array(24).fill(0),
+            funnel: { visitors: 0, signups: 0, trials: 0, paid: 0 }
+        };
+
+        // Country flags
+        const countryFlags = {
+            'US': '🇺🇸', 'GB': '🇬🇧', 'DE': '🇩🇪', 'FR': '🇫🇷', 'CA': '🇨🇦',
+            'AU': '🇦🇺', 'JP': '🇯🇵', 'IN': '🇮🇳', 'BR': '🇧🇷', 'MX': '🇲🇽',
+            'ES': '🇪🇸', 'IT': '🇮🇹', 'NL': '🇳🇱', 'SE': '🇸🇪', 'NO': '🇳🇴',
+            'RU': '🇷🇺', 'CN': '🇨🇳', 'KR': '🇰🇷', 'SG': '🇸🇬', 'AE': '🇦🇪',
+            'IL': '🇮🇱', 'PL': '🇵🇱', 'CH': '🇨🇭', 'AT': '🇦🇹', 'BE': '🇧🇪'
+        };
+
+        // Connect WebSocket
+        function connect() {
+            const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${location.host}/ws/monitor`;
+
+            state.ws = new WebSocket(wsUrl);
+
+            state.ws.onopen = () => {
+                state.connected = true;
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectionStatus').style.color = '#10b981';
+
+                // Request initial data
+                state.ws.send(JSON.stringify({ type: 'init' }));
+            };
+
+            state.ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (e) {
+                    console.error('WebSocket message error:', e);
+                }
+            };
+
+            state.ws.onclose = () => {
+                state.connected = false;
+                document.getElementById('connectionStatus').textContent = 'Disconnected - Reconnecting...';
+                document.getElementById('connectionStatus').style.color = '#ef4444';
+                setTimeout(connect, 3000);
+            };
+
+            state.ws.onerror = () => {
+                console.error('WebSocket error');
+            };
+        }
+
+        // Handle incoming messages
+        function handleMessage(data) {
+            switch (data.type) {
+                case 'init':
+                    updateInitialState(data);
+                    break;
+                case 'stats':
+                    updateStats(data);
+                    break;
+                case 'activity':
+                    addActivity(data);
+                    break;
+                case 'sale':
+                    addSale(data);
+                    break;
+                case 'issue':
+                    addIssue(data);
+                    break;
+                case 'health':
+                    updateHealth(data);
+                    break;
+                case 'geo':
+                    updateGeo(data);
+                    break;
+            }
+        }
+
+        // Update initial state
+        function updateInitialState(data) {
+            state.activeUsers = data.activeUsers || 0;
+            state.todayRevenue = data.todayRevenue || 0;
+            state.todaySales = data.todaySales || 0;
+            state.uploadsToday = data.uploadsToday || 0;
+            state.sharesToday = data.sharesToday || 0;
+            state.funnel = data.funnel || state.funnel;
+            state.timeline = data.timeline || state.timeline;
+            state.geoData = data.geoData || {};
+
+            updateUI();
+
+            // Load recent activities
+            if (data.recentActivities) {
+                data.recentActivities.forEach(a => addActivity(a, false));
+            }
+            if (data.recentSales) {
+                data.recentSales.forEach(s => addSale(s, false));
+            }
+            if (data.activeIssues) {
+                data.activeIssues.forEach(i => addIssue(i, false));
+            }
+        }
+
+        // Update stats
+        function updateStats(data) {
+            if (data.activeUsers !== undefined) {
+                state.activeUsers = data.activeUsers;
+                animateValue('activeUsers', state.activeUsers);
+            }
+            if (data.todayRevenue !== undefined) {
+                state.todayRevenue = data.todayRevenue;
+                document.getElementById('todayRevenue').textContent = '$' + state.todayRevenue.toLocaleString();
+            }
+            if (data.uploadsToday !== undefined) {
+                state.uploadsToday = data.uploadsToday;
+                animateValue('uploadsToday', state.uploadsToday);
+            }
+            if (data.sharesToday !== undefined) {
+                state.sharesToday = data.sharesToday;
+                animateValue('sharesToday', state.sharesToday);
+            }
+        }
+
+        // Add activity to flow
+        function addActivity(data, animate = true) {
+            const flow = document.getElementById('userFlow');
+
+            // Clear empty state
+            if (flow.querySelector('.empty-state')) {
+                flow.innerHTML = '';
+            }
+
+            const icons = {
+                visit: '👁', upload: '📤', download: '📥', share: '🔗',
+                signup: '👤', purchase: '💰', error: '⚠️'
+            };
+
+            const item = document.createElement('div');
+            item.className = 'flow-item';
+            if (!animate) item.style.animation = 'none';
+
+            item.innerHTML = `
+                <div class="flow-icon ${data.action}">${icons[data.action] || '📍'}</div>
+                <div class="flow-details">
+                    <div class="flow-action">${data.description || data.action}</div>
+                    <div class="flow-meta">${data.page || ''} ${data.device || ''}</div>
+                </div>
+                <div class="flow-time">${formatTime(data.timestamp)}</div>
+            `;
+
+            flow.insertBefore(item, flow.firstChild);
+
+            // Keep only last 50 items
+            while (flow.children.length > 50) {
+                flow.removeChild(flow.lastChild);
+            }
+
+            state.userFlow.unshift(data);
+            document.getElementById('flowCount').textContent = state.userFlow.length + ' events';
+        }
+
+        // Add sale
+        function addSale(data, animate = true) {
+            const feed = document.getElementById('salesFeed');
+
+            // Clear empty state
+            if (feed.querySelector('.empty-state')) {
+                feed.innerHTML = '';
+            }
+
+            state.todaySales++;
+            state.todayRevenue += data.amount || 0;
+
+            const item = document.createElement('div');
+            item.className = 'sale-item';
+            if (!animate) item.style.animation = 'none';
+
+            item.innerHTML = `
+                <div class="sale-icon">💰</div>
+                <div class="sale-details">
+                    <div class="sale-plan">${data.plan || 'Subscription'}</div>
+                    <div class="sale-meta">${data.email || 'Customer'} • ${formatTime(data.timestamp)}</div>
+                </div>
+                <div class="sale-amount">$${(data.amount || 0).toLocaleString()}</div>
+            `;
+
+            feed.insertBefore(item, feed.firstChild);
+
+            // Keep only last 20
+            while (feed.children.length > 20) {
+                feed.removeChild(feed.lastChild);
+            }
+
+            document.getElementById('salesCount').textContent = state.todaySales + ' today';
+            document.getElementById('todayRevenue').textContent = '$' + state.todayRevenue.toLocaleString();
+
+            // Show toast for new sales
+            if (animate) {
+                showToast(`New Sale: $${data.amount} - ${data.plan}`, 'sale');
+            }
+        }
+
+        // Add issue
+        function addIssue(data, animate = true) {
+            const feed = document.getElementById('issuesFeed');
+
+            // Clear empty state
+            if (feed.querySelector('.empty-state')) {
+                feed.innerHTML = '';
+            }
+
+            const item = document.createElement('div');
+            item.className = `issue-item ${data.severity || 'error'}`;
+            if (!animate) item.style.animation = 'none';
+
+            item.innerHTML = `
+                <div class="issue-severity ${data.severity || 'error'}"></div>
+                <div class="issue-content">
+                    <div class="issue-message">${data.message}</div>
+                    <div class="issue-meta">${data.page || ''} • ${data.user || 'Anonymous'} • ${formatTime(data.timestamp)}</div>
+                </div>
+            `;
+
+            feed.insertBefore(item, feed.firstChild);
+
+            // Keep only last 30
+            while (feed.children.length > 30) {
+                feed.removeChild(feed.lastChild);
+            }
+
+            state.issues.unshift(data);
+            const activeCount = state.issues.filter(i => i.severity !== 'resolved').length;
+            document.getElementById('issuesCount').textContent = activeCount + ' active';
+
+            // Show toast for errors
+            if (animate && data.severity === 'error') {
+                showToast(data.message, 'error');
+            }
+        }
+
+        // Update health
+        function updateHealth(data) {
+            if (data.score !== undefined) {
+                const el = document.getElementById('healthScore');
+                el.textContent = data.score;
+                el.className = 'health-score ' + (data.score >= 80 ? 'good' : data.score >= 50 ? 'warning' : 'bad');
+            }
+            if (data.responseTime !== undefined) {
+                document.getElementById('responseTime').textContent = data.responseTime + 'ms';
+            }
+            if (data.memory !== undefined) {
+                document.getElementById('memoryUsage').textContent = data.memory + 'MB';
+            }
+            if (data.wsConnections !== undefined) {
+                document.getElementById('wsConnections').textContent = data.wsConnections;
+            }
+        }
+
+        // Update geo
+        function updateGeo(data) {
+            state.geoData[data.country] = state.geoData[data.country] || { count: 0, cities: {} };
+            state.geoData[data.country].count++;
+            if (data.city) {
+                state.geoData[data.country].cities[data.city] = (state.geoData[data.country].cities[data.city] || 0) + 1;
+            }
+
+            renderGeoActivity();
+        }
+
+        // Render geo activity
+        function renderGeoActivity() {
+            const container = document.getElementById('geoActivity');
+            const sorted = Object.entries(state.geoData)
+                .sort((a, b) => b[1].count - a[1].count)
+                .slice(0, 10);
+
+            if (sorted.length === 0) return;
+
+            container.innerHTML = sorted.map(([country, data]) => {
+                const topCity = Object.entries(data.cities || {}).sort((a, b) => b[1] - a[1])[0];
+                return `
+                    <div class="activity-item">
+                        <div class="activity-flag">${countryFlags[country] || '🌍'}</div>
+                        <div class="activity-location">
+                            <div class="activity-city">${topCity ? topCity[0] : country}</div>
+                            <div class="activity-country">${country}</div>
+                        </div>
+                        <div class="activity-count">${data.count}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('activeUsers').textContent = state.activeUsers;
+            document.getElementById('todayRevenue').textContent = '$' + state.todayRevenue.toLocaleString();
+            document.getElementById('uploadsToday').textContent = state.uploadsToday;
+            document.getElementById('sharesToday').textContent = state.sharesToday;
+
+            // Update funnel
+            const maxFunnel = Math.max(state.funnel.visitors, 1);
+            document.getElementById('funnelVisitors').style.width = '100%';
+            document.getElementById('funnelVisitorsCount').textContent = state.funnel.visitors;
+
+            const signupPct = Math.round((state.funnel.signups / maxFunnel) * 100);
+            document.getElementById('funnelSignups').style.width = signupPct + '%';
+            document.getElementById('funnelSignups').textContent = signupPct > 10 ? signupPct + '%' : '';
+            document.getElementById('funnelSignupsCount').textContent = state.funnel.signups;
+
+            const trialPct = Math.round((state.funnel.trials / maxFunnel) * 100);
+            document.getElementById('funnelTrials').style.width = trialPct + '%';
+            document.getElementById('funnelTrials').textContent = trialPct > 10 ? trialPct + '%' : '';
+            document.getElementById('funnelTrialsCount').textContent = state.funnel.trials;
+
+            const paidPct = Math.round((state.funnel.paid / maxFunnel) * 100);
+            document.getElementById('funnelPaid').style.width = paidPct + '%';
+            document.getElementById('funnelPaid').textContent = paidPct > 10 ? paidPct + '%' : '';
+            document.getElementById('funnelPaidCount').textContent = state.funnel.paid;
+
+            // Update timeline
+            renderTimeline();
+
+            // Update geo
+            renderGeoActivity();
+        }
+
+        // Render timeline
+        function renderTimeline() {
+            const container = document.getElementById('activityTimeline');
+            const maxValue = Math.max(...state.timeline, 1);
+
+            container.innerHTML = state.timeline.map((value, i) => {
+                const height = Math.max(5, (value / maxValue) * 100);
+                const hour = (24 - state.timeline.length + i) % 24;
+                return `<div class="timeline-bar" style="height: ${height}%" data-tooltip="${value} events at ${hour}:00"></div>`;
+            }).join('');
+        }
+
+        // Animate value
+        function animateValue(elementId, newValue) {
+            const el = document.getElementById(elementId);
+            const current = parseInt(el.textContent.replace(/\D/g, '')) || 0;
+            const diff = newValue - current;
+            const steps = 20;
+            const stepValue = diff / steps;
+            let step = 0;
+
+            const interval = setInterval(() => {
+                step++;
+                el.textContent = Math.round(current + stepValue * step);
+                if (step >= steps) {
+                    clearInterval(interval);
+                    el.textContent = newValue;
+                }
+            }, 30);
+        }
+
+        // Format time
+        function formatTime(timestamp) {
+            if (!timestamp) return 'now';
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return 'just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            return date.toLocaleDateString();
+        }
+
+        // Show toast
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${type === 'sale' ? '💰' : '⚠️'}</span> ${message}`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Fetch health data periodically
+        async function fetchHealth() {
+            try {
+                const res = await fetch('/api/health/full');
+                const data = await res.json();
+
+                updateHealth({
+                    score: data.score || 0,
+                    responseTime: data.checks?.pages?.avgResponseMs || 0,
+                    memory: data.checks?.memory?.heapUsedMB || 0,
+                    wsConnections: data.checks?.websockets?.totalConnections || 0
+                });
+            } catch (e) {
+                console.error('Health fetch error:', e);
+            }
+        }
+
+        // Fetch live stats periodically
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/live-stats');
+                const data = await res.json();
+
+                if (data.activeUsers !== undefined) {
+                    state.activeUsers = data.activeUsers;
+                    document.getElementById('activeUsers').textContent = state.activeUsers;
+                }
+            } catch (e) {
+                // Ignore
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            connect();
+            fetchHealth();
+            fetchStats();
+
+            // Periodic updates
+            setInterval(fetchHealth, 30000);
+            setInterval(fetchStats, 10000);
+
+            // Initialize timeline
+            renderTimeline();
+        });
+    </script>
+</body>
+</html>

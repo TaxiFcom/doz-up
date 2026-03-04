@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+*.env
+
+# SSL certificates & keys
+ssl/
+*.key
+*.crt
+*.csr
+*.pem
+
+# User data & database files
+data/
+uploads/
+backups/
+
+# Logs
+logs/
+*.log
+
+# Backup files
+*.bak
+*.bak2
+gateway.js.bak*
+
+# Runtime
+.pm2/
+*.pid
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Exports
+exports/
+
+# Android build artifacts
+mobile-app/android/.gradle/
+mobile-app/android/app/build/
+mobile-app/android/app/release.keystore
+*.keystore
+
+# Config with credentials
+config/
+
+# Electron/desktop builds & downloads
+public/download/
+public/download-new/
+public/download/*.exe
+public/download/*.apk
+public/download/*.zip
+public/download/*.AppImage
+public/download/*.tar.gz
+*.exe
+*.dll
+*.apk
+*.aar
+
+# Mobile app (has own node_modules)
+mobile-app/node_modules/
+mobile-app/android/.gradle/
+mobile-app/android/app/build/
+
+# Nested node_modules
+public/DOZAI/calculator/node_modules/
+
+# Backup HTML
+*.backup

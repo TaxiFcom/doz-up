@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Screenshot Annotation Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 25px;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .header-btn.primary {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* MAIN LAYOUT */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 56px);
+        }
+
+        /* LEFT TOOLBAR */
+        .toolbar {
+            width: 70px;
+            background: rgba(0,0,0,0.5);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tool-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            font-size: 0.6rem;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .tool-btn.active {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .tool-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .tool-divider {
+            width: 35px;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 8px 0;
+        }
+
+        /* CANVAS AREA */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.2);
+            position: relative;
+            overflow: auto;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        #annotationCanvas {
+            display: block;
+            cursor: crosshair;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 700px;
+            height: 500px;
+            background: rgba(255,255,255,0.02);
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 15px;
+        }
+
+        .empty-state svg {
+            width: 70px;
+            height: 70px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .empty-state .upload-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .empty-state .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .empty-state .paste-hint {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .empty-state .paste-hint kbd {
+            background: rgba(255,255,255,0.1);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        /* RIGHT PANEL */
+        .right-panel {
+            width: 260px;
+            background: rgba(0,0,0,0.4);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        /* COLOR PICKER */
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .color-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .color-swatch.active {
+            border-color: #fff;
+        }
+
+        /* STROKE WIDTH */
+        .stroke-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .stroke-option {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stroke-option:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .stroke-option.active {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .stroke-preview {
+            height: 3px;
+            background: #fff;
+            border-radius: 2px;
+            margin-bottom: 5px;
+        }
+
+        .stroke-option:nth-child(1) .stroke-preview { height: 2px; }
+        .stroke-option:nth-child(2) .stroke-preview { height: 4px; }
+        .stroke-option:nth-child(3) .stroke-preview { height: 6px; }
+
+        .stroke-option span {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        /* OPACITY SLIDER */
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider-container label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.1);
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+        }
+
+        /* TEXT OPTIONS */
+        .text-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .text-options select, .text-options input {
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        /* SHAPE OPTIONS */
+        .shape-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .shape-option {
+            flex: 1;
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .shape-option:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .shape-option.active {
+            border-color: #f59e0b;
+        }
+
+        .shape-option svg {
+            width: 24px;
+            height: 24px;
+            color: #94a3b8;
+        }
+
+        /* HISTORY */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .history-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .history-item svg {
+            width: 16px;
+            height: 16px;
+            color: #64748b;
+        }
+
+        /* QUICK ACTIONS */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .quick-action {
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .quick-action:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .quick-action svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ZOOM CONTROLS */
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .zoom-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .zoom-level {
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        /* HIDDEN INPUT */
+        #fileInput { display: none; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .right-panel { display: none; }
+            .toolbar { width: 60px; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    </style>
+    <!-- Time-Based Theme Styles -->
+    <link rel="stylesheet" href="/css/time-theme.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <a href="/up" class="logo" style="text-decoration: none;">
+            <h1>DOZ Annotate</h1>
+        </a>
+        <div class="header-actions">
+            <button class="header-btn secondary" onclick="undoAction()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+                Undo
+            </button>
+            <button class="header-btn secondary" onclick="redoAction()">
+                Redo
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </button>
+            <button class="header-btn secondary" onclick="downloadImage()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/></svg>
+                Download
+            </button>
+            <button class="header-btn primary" onclick="copyToClipboard()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/></svg>
+                Copy
+            </button>
+            <button class="header-btn primary" onclick="saveAndShare()" id="saveBtn">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+                <span id="saveBtnText">Upload</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- LEFT TOOLBAR -->
+        <aside class="toolbar">
+            <button class="tool-btn active" onclick="setTool('select')" title="Select">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.414 1.415l.708-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd"/></svg>
+                Select
+            </button>
+            <button class="tool-btn" onclick="setTool('pen')" title="Pen">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                Pen
+            </button>
+            <button class="tool-btn" onclick="setTool('highlighter')" title="Highlighter">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
+                Marker
+            </button>
+
+            <div class="tool-divider"></div>
+
+            <button class="tool-btn" onclick="setTool('arrow')" title="Arrow">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                Arrow
+            </button>
+            <button class="tool-btn" onclick="setTool('line')" title="Line">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+                Line
+            </button>
+            <button class="tool-btn" onclick="setTool('rectangle')" title="Rectangle">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2v8h10V6H5z" clip-rule="evenodd"/></svg>
+                Rect
+            </button>
+            <button class="tool-btn" onclick="setTool('circle')" title="Circle">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd"/></svg>
+                Circle
+            </button>
+
+            <div class="tool-divider"></div>
+
+            <button class="tool-btn" onclick="setTool('text')" title="Text">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2h10V3a1 1 0 112 0v14a1 1 0 11-2 0v-2H5v2a1 1 0 11-2 0V3a1 1 0 011-1zm0 5h12v6H4V7z" clip-rule="evenodd"/></svg>
+                Text
+            </button>
+            <button class="tool-btn" onclick="setTool('number')" title="Number">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V5z" clip-rule="evenodd"/></svg>
+                Step
+            </button>
+            <button class="tool-btn" onclick="setTool('blur')" title="Blur">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                Blur
+            </button>
+
+            <div class="tool-divider"></div>
+
+            <button class="tool-btn" onclick="setTool('eraser')" title="Eraser">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                Erase
+            </button>
+        </aside>
+
+        <!-- CANVAS AREA -->
+        <main class="canvas-area" id="canvasArea">
+            <div class="empty-state" id="emptyState">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                <h3>Annotate Your Screenshot</h3>
+                <p>Upload an image or paste from clipboard</p>
+                <button class="upload-btn" onclick="triggerUpload()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+                    Upload Image
+                </button>
+                <p class="paste-hint">Or press <kbd>Ctrl+V</kbd> to paste</p>
+            </div>
+
+            <div class="canvas-wrapper" id="canvasWrapper" style="display: none;">
+                <canvas id="annotationCanvas"></canvas>
+            </div>
+
+            <!-- Zoom Controls -->
+            <div class="zoom-controls" id="zoomControls" style="display: none;">
+                <button class="zoom-btn" onclick="zoomOut()">-</button>
+                <span class="zoom-level" id="zoomLevel">100%</span>
+                <button class="zoom-btn" onclick="zoomIn()">+</button>
+                <button class="zoom-btn" onclick="resetZoom()">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+                </button>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL -->
+        <aside class="right-panel">
+            <div class="panel-section">
+                <h4 class="section-title">Color</h4>
+                <div class="color-palette" id="colorPalette">
+                    <div class="color-swatch active" style="background: #ef4444;" onclick="setColor('#ef4444')"></div>
+                    <div class="color-swatch" style="background: #f59e0b;" onclick="setColor('#f59e0b')"></div>
+                    <div class="color-swatch" style="background: #10b981;" onclick="setColor('#10b981')"></div>
+                    <div class="color-swatch" style="background: #3b82f6;" onclick="setColor('#3b82f6')"></div>
+                    <div class="color-swatch" style="background: #8b5cf6;" onclick="setColor('#8b5cf6')"></div>
+                    <div class="color-swatch" style="background: #ec4899;" onclick="setColor('#ec4899')"></div>
+                    <div class="color-swatch" style="background: #ffffff;" onclick="setColor('#ffffff')"></div>
+                    <div class="color-swatch" style="background: #000000; border: 1px solid rgba(255,255,255,0.3);" onclick="setColor('#000000')"></div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h4 class="section-title">Stroke Width</h4>
+                <div class="stroke-options">
+                    <div class="stroke-option" onclick="setStrokeWidth(2)">
+                        <div class="stroke-preview"></div>
+                        <span>Thin</span>
+                    </div>
+                    <div class="stroke-option active" onclick="setStrokeWidth(4)">
+                        <div class="stroke-preview"></div>
+                        <span>Medium</span>
+                    </div>
+                    <div class="stroke-option" onclick="setStrokeWidth(8)">
+                        <div class="stroke-preview"></div>
+                        <span>Thick</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h4 class="section-title">Opacity</h4>
+                <div class="slider-container">
+                    <label>
+                        <span>Transparency</span>
+                        <span id="opacityValue">100%</span>
+                    </label>
+                    <input type="range" class="slider" id="opacitySlider" min="10" max="100" value="100" oninput="setOpacity(this.value)">
+                </div>
+            </div>
+
+            <div class="panel-section" id="textOptions" style="display: none;">
+                <h4 class="section-title">Text Options</h4>
+                <div class="text-options">
+                    <select id="fontSize" onchange="setFontSize(this.value)">
+                        <option value="14">Small (14px)</option>
+                        <option value="18" selected>Medium (18px)</option>
+                        <option value="24">Large (24px)</option>
+                        <option value="32">X-Large (32px)</option>
+                        <option value="48">Huge (48px)</option>
+                    </select>
+                    <select id="fontWeight" onchange="setFontWeight(this.value)">
+                        <option value="normal">Regular</option>
+                        <option value="bold" selected>Bold</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h4 class="section-title">Quick Actions</h4>
+                <div class="quick-actions">
+                    <button class="quick-action" onclick="cropImage()">
+                        <svg fill="currentColor" viewBox="0 0 20 20"><path d="M4 3a1 1 0 00-1 1v10a1 1 0 001 1h1V4h11a1 1 0 00-1-1H4zM16 7a1 1 0 011 1v8a1 1 0 01-1 1H6a1 1 0 01-1-1v-1h10V7h1z"/></svg>
+                        Crop
+                    </button>
+                    <button class="quick-action" onclick="addStepNumber()">
+                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/></svg>
+                        Add Step
+                    </button>
+                    <button class="quick-action" onclick="clearAll()">
+                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                        Clear
+                    </button>
+                    <button class="quick-action" onclick="resetImage()">
+                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- HIDDEN INPUT -->
+    <input type="file" id="fileInput" accept="image/*" onchange="handleFileUpload(event)">
+
+    <script>
+        // ============ STATE ============
+        let canvas, ctx;
+        let originalImage = null;
+        let currentTool = 'select';
+        let isDrawing = false;
+        let startX, startY;
+        let currentColor = '#ef4444';
+        let currentStrokeWidth = 4;
+        let currentOpacity = 1;
+        let currentFontSize = 18;
+        let currentFontWeight = 'bold';
+        let zoom = 1;
+        let stepCounter = 1;
+
+        let history = [];
+        let historyIndex = -1;
+
+        // Edit mode - for editing existing images
+        let editMode = false;
+        let editFilename = null;
+
+        // ============ INITIALIZATION ============
+        function init() {
+            canvas = document.getElementById('annotationCanvas');
+            ctx = canvas.getContext('2d');
+
+            // Event listeners
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('mouseleave', handleMouseUp);
+
+            // Paste from clipboard
+            document.addEventListener('paste', handlePaste);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboard);
+
+            // Check for URL parameters (edit mode from share page)
+            const urlParams = new URLSearchParams(window.location.search);
+            const sourceUrl = urlParams.get('source');
+            const filename = urlParams.get('filename');
+
+            if (sourceUrl && filename) {
+                editMode = true;
+                editFilename = filename;
+                loadImageFromUrl(sourceUrl);
+                // Update UI to show we're in edit mode
+                document.querySelector('.header h1').textContent = 'DOZ Edit';
+                document.getElementById('saveBtnText').textContent = 'Save';
+            }
+        }
+
+        // Load image from URL (for edit mode)
+        async function loadImageFromUrl(url) {
+            try {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    setupCanvas(img);
+                };
+                img.onerror = () => {
+                    console.error('Failed to load image from URL');
+                    alert('Failed to load image. Please try again.');
+                };
+                // Add cache-busting parameter
+                img.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+            } catch (e) {
+                console.error('Error loading image:', e);
+            }
+        }
+
+        // ============ IMAGE LOADING ============
+        function triggerUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            loadImageFile(file);
+        }
+
+        function handlePaste(event) {
+            const items = event.clipboardData.items;
+            for (let item of items) {
+                if (item.type.startsWith('image')) {
+                    const blob = item.getAsFile();
+                    loadImageFile(blob);
+                    break;
+                }
+            }
+        }
+
+        function loadImageFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    setupCanvas(img);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setupCanvas(img) {
+            // Calculate dimensions (max 1200px)
+            let width = img.width;
+            let height = img.height;
+            const maxDim = 1200;
+
+            if (width > maxDim || height > maxDim) {
+                if (width > height) {
+                    height = (maxDim / width) * height;
+                    width = maxDim;
+                } else {
+                    width = (maxDim / height) * width;
+                    height = maxDim;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // Draw image
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Store original
+            originalImage = new Image();
+            originalImage.src = canvas.toDataURL();
+
+            // Show canvas
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('canvasWrapper').style.display = 'block';
+            document.getElementById('zoomControls').style.display = 'flex';
+
+            // Save initial state
+            saveToHistory();
+        }
+
+        // ============ DRAWING ============
+        function handleMouseDown(e) {
+            if (!originalImage) return;
+
+            const rect = canvas.getBoundingClientRect();
+            startX = (e.clientX - rect.left) / zoom;
+            startY = (e.clientY - rect.top) / zoom;
+            isDrawing = true;
+
+            if (currentTool === 'pen' || currentTool === 'highlighter' || currentTool === 'eraser') {
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+            } else if (currentTool === 'text') {
+                addText(startX, startY);
+                isDrawing = false;
+            } else if (currentTool === 'number') {
+                addStepNumberAt(startX, startY);
+                isDrawing = false;
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!isDrawing || !originalImage) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / zoom;
+            const y = (e.clientY - rect.top) / zoom;
+
+            if (currentTool === 'pen') {
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = currentColor;
+                ctx.lineWidth = currentStrokeWidth;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.globalAlpha = currentOpacity;
+                ctx.stroke();
+            } else if (currentTool === 'highlighter') {
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = currentColor;
+                ctx.lineWidth = currentStrokeWidth * 4;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.globalAlpha = 0.3;
+                ctx.stroke();
+            } else if (currentTool === 'eraser') {
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = currentStrokeWidth * 3;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+        }
+
+        function handleMouseUp(e) {
+            if (!isDrawing || !originalImage) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const endX = (e.clientX - rect.left) / zoom;
+            const endY = (e.clientY - rect.top) / zoom;
+
+            ctx.globalAlpha = currentOpacity;
+
+            if (currentTool === 'arrow') {
+                drawArrow(startX, startY, endX, endY);
+            } else if (currentTool === 'line') {
+                drawLine(startX, startY, endX, endY);
+            } else if (currentTool === 'rectangle') {
+                drawRectangle(startX, startY, endX, endY);
+            } else if (currentTool === 'circle') {
+                drawCircle(startX, startY, endX, endY);
+            } else if (currentTool === 'blur') {
+                blurArea(startX, startY, endX, endY);
+            }
+
+            isDrawing = false;
+            ctx.globalAlpha = 1;
+
+            if (currentTool !== 'select') {
+                saveToHistory();
+            }
+        }
+
+        // ============ DRAWING FUNCTIONS ============
+        function drawArrow(x1, y1, x2, y2) {
+            const headLength = 15;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+
+            ctx.strokeStyle = currentColor;
+            ctx.fillStyle = currentColor;
+            ctx.lineWidth = currentStrokeWidth;
+            ctx.lineCap = 'round';
+
+            // Line
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            // Arrowhead
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headLength * Math.cos(angle - Math.PI/6), y2 - headLength * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(x2 - headLength * Math.cos(angle + Math.PI/6), y2 - headLength * Math.sin(angle + Math.PI/6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = currentStrokeWidth;
+            ctx.lineCap = 'round';
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        function drawRectangle(x1, y1, x2, y2) {
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = currentStrokeWidth;
+
+            ctx.beginPath();
+            ctx.rect(x1, y1, x2 - x1, y2 - y1);
+            ctx.stroke();
+        }
+
+        function drawCircle(x1, y1, x2, y2) {
+            const radiusX = Math.abs(x2 - x1) / 2;
+            const radiusY = Math.abs(y2 - y1) / 2;
+            const centerX = Math.min(x1, x2) + radiusX;
+            const centerY = Math.min(y1, y2) + radiusY;
+
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = currentStrokeWidth;
+
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function blurArea(x1, y1, x2, y2) {
+            const width = Math.abs(x2 - x1);
+            const height = Math.abs(y2 - y1);
+            const startX = Math.min(x1, x2);
+            const startY = Math.min(y1, y2);
+
+            if (width < 10 || height < 10) return;
+
+            // Get image data
+            const imageData = ctx.getImageData(startX, startY, width, height);
+            const data = imageData.data;
+
+            // Simple pixelate blur
+            const pixelSize = 10;
+            for (let py = 0; py < height; py += pixelSize) {
+                for (let px = 0; px < width; px += pixelSize) {
+                    let r = 0, g = 0, b = 0, count = 0;
+
+                    for (let dy = 0; dy < pixelSize && py + dy < height; dy++) {
+                        for (let dx = 0; dx < pixelSize && px + dx < width; dx++) {
+                            const i = ((py + dy) * width + (px + dx)) * 4;
+                            r += data[i];
+                            g += data[i + 1];
+                            b += data[i + 2];
+                            count++;
+                        }
+                    }
+
+                    r = Math.floor(r / count);
+                    g = Math.floor(g / count);
+                    b = Math.floor(b / count);
+
+                    for (let dy = 0; dy < pixelSize && py + dy < height; dy++) {
+                        for (let dx = 0; dx < pixelSize && px + dx < width; dx++) {
+                            const i = ((py + dy) * width + (px + dx)) * 4;
+                            data[i] = r;
+                            data[i + 1] = g;
+                            data[i + 2] = b;
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, startX, startY);
+        }
+
+        function addText(x, y) {
+            const text = prompt('Enter text:');
+            if (!text) return;
+
+            ctx.font = `${currentFontWeight} ${currentFontSize}px Inter, sans-serif`;
+            ctx.fillStyle = currentColor;
+            ctx.fillText(text, x, y);
+            saveToHistory();
+        }
+
+        function addStepNumberAt(x, y) {
+            const radius = 15;
+
+            // Draw circle
+            ctx.fillStyle = currentColor;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Draw number
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(stepCounter.toString(), x, y);
+
+            stepCounter++;
+            saveToHistory();
+        }
+
+        function addStepNumber() {
+            setTool('number');
+        }
+
+        // ============ TOOLS ============
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tool-btn').classList.add('active');
+
+            // Show text options for text tool
+            document.getElementById('textOptions').style.display =
+                (tool === 'text' || tool === 'number') ? 'block' : 'none';
+
+            // Update cursor
+            if (tool === 'select') {
+                canvas.style.cursor = 'default';
+            } else if (tool === 'text' || tool === 'number') {
+                canvas.style.cursor = 'text';
+            } else {
+                canvas.style.cursor = 'crosshair';
+            }
+        }
+
+        function setColor(color) {
+            currentColor = color;
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.classList.toggle('active', swatch.style.background === color ||
+                    swatch.style.backgroundColor === color);
+            });
+        }
+
+        function setStrokeWidth(width) {
+            currentStrokeWidth = width;
+            document.querySelectorAll('.stroke-option').forEach((opt, i) => {
+                opt.classList.toggle('active', [2, 4, 8][i] === width);
+            });
+        }
+
+        function setOpacity(value) {
+            currentOpacity = value / 100;
+            document.getElementById('opacityValue').textContent = value + '%';
+        }
+
+        function setFontSize(size) {
+            currentFontSize = parseInt(size);
+        }
+
+        function setFontWeight(weight) {
+            currentFontWeight = weight;
+        }
+
+        // ============ HISTORY ============
+        function saveToHistory() {
+            // Remove future states if we've undone
+            history = history.slice(0, historyIndex + 1);
+
+            // Add current state
+            history.push(canvas.toDataURL());
+            historyIndex = history.length - 1;
+
+            // Limit history
+            if (history.length > 50) {
+                history.shift();
+                historyIndex--;
+            }
+        }
+
+        function undoAction() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                loadHistoryState(history[historyIndex]);
+            }
+        }
+
+        function redoAction() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                loadHistoryState(history[historyIndex]);
+            }
+        }
+
+        function loadHistoryState(dataUrl) {
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+            img.src = dataUrl;
+        }
+
+        // ============ ACTIONS ============
+        function clearAll() {
+            if (!originalImage) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+            stepCounter = 1;
+            saveToHistory();
+        }
+
+        function resetImage() {
+            if (!originalImage) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+            history = [];
+            historyIndex = -1;
+            stepCounter = 1;
+            saveToHistory();
+        }
+
+        function cropImage() {
+            alert('Draw a rectangle to crop. Feature coming soon!');
+        }
+
+        // ============ ZOOM ============
+        function zoomIn() {
+            zoom = Math.min(zoom + 0.25, 3);
+            updateZoom();
+        }
+
+        function zoomOut() {
+            zoom = Math.max(zoom - 0.25, 0.5);
+            updateZoom();
+        }
+
+        function resetZoom() {
+            zoom = 1;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            canvas.style.transform = `scale(${zoom})`;
+            canvas.style.transformOrigin = 'center center';
+            document.getElementById('zoomLevel').textContent = Math.round(zoom * 100) + '%';
+        }
+
+        // ============ EXPORT ============
+        function downloadImage() {
+            if (!originalImage) return;
+
+            const link = document.createElement('a');
+            link.download = `doz-annotated-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        async function copyToClipboard() {
+            if (!originalImage) return;
+
+            try {
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': blob })
+                ]);
+                alert('Copied to clipboard!');
+            } catch (err) {
+                console.error('Copy failed:', err);
+                alert('Copy failed. Try downloading instead.');
+            }
+        }
+
+        async function saveAndShare() {
+            if (!originalImage) return;
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+            const formData = new FormData();
+            formData.append('screenshot', blob, 'annotated.png');
+            formData.append('deviceId', generateFingerprint());
+
+            // Get userId if logged in
+            const userId = localStorage.getItem('doz_userId');
+            const headers = {};
+            if (userId) headers['X-User-ID'] = userId;
+
+            try {
+                let endpoint = '/upload';
+                let method = 'POST';
+
+                // If editing existing image, use replace endpoint
+                if (editMode && editFilename) {
+                    endpoint = '/api/upload/' + encodeURIComponent(editFilename);
+                    method = 'PUT';
+                }
+
+                const res = await fetch(endpoint, {
+                    method: method,
+                    headers: headers,
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success || data.url) {
+                    const url = data.url || ('https://up.doz.com.im/i/' + editFilename);
+                    navigator.clipboard.writeText(url);
+
+                    if (editMode) {
+                        alert('Saved! Returning to share page...');
+                        // Redirect back to share page
+                        window.location.href = url;
+                    } else {
+                        alert('Uploaded! Link copied:\n' + url);
+                    }
+                } else {
+                    alert('Save failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (e) {
+                console.error('Upload error:', e);
+                alert('Upload failed');
+            }
+        }
+
+        // ============ KEYBOARD ============
+        function handleKeyboard(e) {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z') {
+                    e.preventDefault();
+                    undoAction();
+                } else if (e.key === 'y') {
+                    e.preventDefault();
+                    redoAction();
+                } else if (e.key === 's') {
+                    e.preventDefault();
+                    downloadImage();
+                }
+            }
+
+            // Tool shortcuts
+            const toolShortcuts = {
+                'v': 'select',
+                'p': 'pen',
+                'h': 'highlighter',
+                'a': 'arrow',
+                'l': 'line',
+                'r': 'rectangle',
+                'c': 'circle',
+                't': 'text',
+                'n': 'number',
+                'b': 'blur',
+                'e': 'eraser'
+            };
+
+            if (toolShortcuts[e.key] && !e.ctrlKey && !e.metaKey) {
+                setTool(toolShortcuts[e.key]);
+            }
+        }
+
+        // ============ UTILS ============
+        function generateFingerprint() {
+            const nav = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height].join('|');
+            let hash = 0;
+            for (let i = 0; i < nav.length; i++) { hash = ((hash << 5) - hash) + nav.charCodeAt(i); hash = hash & hash; }
+            return 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+        }
+
+        // Initialize
+        init();
+    </script>
+
+</body>
+</html>

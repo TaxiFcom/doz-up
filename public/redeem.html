@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redeem Your Gift - DOZ UP</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #ff6b9d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Gift Card */
+        .gift-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .gift-header {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gift-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20%, 20%); }
+        }
+
+        .gift-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .gift-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gift-header p {
+            opacity: 0.9;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gift-body {
+            padding: 30px;
+        }
+
+        /* Personal Message */
+        .personal-message {
+            background: rgba(255, 107, 157, 0.1);
+            border-left: 4px solid #ff6b9d;
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .personal-message p {
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Plan Details */
+        .plan-details {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .plan-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-badge {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .plan-features {
+            list-style: none;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-features li::before {
+            content: '\2713';
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        /* Form */
+        .redeem-form {
+            margin-top: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff6b9d;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .redeem-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .redeem-btn:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4);
+        }
+
+        .redeem-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .redeem-btn .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Error */
+        .error-message {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            color: #f44336;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Success State */
+        .success-state {
+            text-align: center;
+            padding: 40px 30px;
+            display: none;
+        }
+
+        .success-state.show {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .success-state h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #4CAF50;
+        }
+
+        .success-state p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .success-state .cta-btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .success-state .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Error State */
+        .error-state {
+            text-align: center;
+            padding: 40px 30px;
+            display: none;
+        }
+
+        .error-state.show {
+            display: block;
+        }
+
+        .error-state .error-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(244, 67, 54, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+        }
+
+        .error-state h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #f44336;
+        }
+
+        .error-state p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 24px;
+        }
+
+        .error-state a {
+            color: #ff6b9d;
+            text-decoration: none;
+        }
+
+        .error-state a:hover {
+            text-decoration: underline;
+        }
+
+        /* Already Redeemed */
+        .already-redeemed {
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        .already-redeemed .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .already-redeemed h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .already-redeemed p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #ff6b9d;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .gift-header {
+                padding: 30px 20px;
+            }
+
+            .gift-header h1 {
+                font-size: 24px;
+            }
+
+            .gift-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading your gift...</p>
+        </div>
+
+        <!-- Gift Card -->
+        <div id="gift-card" class="gift-card" style="display: none;">
+            <div class="gift-header">
+                <div class="gift-icon">&#127873;</div>
+                <h1>You've Got a Gift!</h1>
+                <p id="gift-from">Someone special sent you DOZ UP Premium</p>
+            </div>
+
+            <div class="gift-body">
+                <!-- Personal Message -->
+                <div id="personal-message" class="personal-message" style="display: none;">
+                    <p id="message-text"></p>
+                </div>
+
+                <!-- Plan Details -->
+                <div class="plan-details">
+                    <div class="plan-name">
+                        <span id="plan-name">Pro Plan</span>
+                        <span class="plan-badge">Gift</span>
+                    </div>
+                    <ul class="plan-features" id="plan-features">
+                        <li>Loading features...</li>
+                    </ul>
+                </div>
+
+                <!-- Redeem Form -->
+                <form id="redeem-form" class="redeem-form">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" placeholder="Enter your name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Your Email Address</label>
+                        <input type="email" id="email" placeholder="you@example.com" required>
+                    </div>
+
+                    <button type="submit" class="redeem-btn" id="redeem-btn">
+                        <span class="btn-text">Redeem My Gift</span>
+                    </button>
+
+                    <div id="error-message" class="error-message"></div>
+                </form>
+
+                <!-- Success State -->
+                <div id="success-state" class="success-state">
+                    <div class="success-icon">&#10003;</div>
+                    <h2>Gift Activated!</h2>
+                    <p id="success-text">Your subscription is now active. Enjoy all the premium features!</p>
+                    <a href="/app" class="cta-btn">Start Using DOZ UP</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State (gift not found) -->
+        <div id="error-state" class="gift-card error-state">
+            <div class="error-icon">&#128533;</div>
+            <h2>Gift Not Found</h2>
+            <p>This gift link is invalid or has expired.</p>
+            <p><a href="/v2/pricing">Get DOZ UP Premium</a></p>
+        </div>
+
+        <!-- Already Redeemed State -->
+        <div id="already-redeemed" class="gift-card already-redeemed" style="display: none;">
+            <div class="icon">&#9989;</div>
+            <h2>Already Redeemed</h2>
+            <p>This gift has already been activated. If this was you, you can log in to access your subscription.</p>
+            <a href="/app" class="redeem-btn" style="display: inline-block; margin-top: 20px;">Go to DOZ UP</a>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <a href="/">DOZ UP</a></p>
+        </div>
+    </div>
+
+    <script>
+        const loadingState = document.getElementById('loading-state');
+        const giftCard = document.getElementById('gift-card');
+        const errorState = document.getElementById('error-state');
+        const alreadyRedeemed = document.getElementById('already-redeemed');
+        const successState = document.getElementById('success-state');
+        const redeemForm = document.getElementById('redeem-form');
+        const errorMessage = document.getElementById('error-message');
+        const redeemBtn = document.getElementById('redeem-btn');
+
+        let giftId = null;
+        let giftData = null;
+
+        // Get gift ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        giftId = urlParams.get('gift');
+
+        if (!giftId) {
+            loadingState.style.display = 'none';
+            errorState.classList.add('show');
+        } else {
+            loadGiftDetails();
+        }
+
+        async function loadGiftDetails() {
+            try {
+                const response = await fetch(`/api/stripe/gift/${giftId}`);
+                const data = await response.json();
+
+                loadingState.style.display = 'none';
+
+                if (!data.success) {
+                    errorState.classList.add('show');
+                    return;
+                }
+
+                giftData = data;
+
+                if (data.gift.status === 'redeemed') {
+                    alreadyRedeemed.style.display = 'block';
+                    return;
+                }
+
+                // Show gift card
+                giftCard.style.display = 'block';
+
+                // Update recipient name
+                if (data.gift.recipientName) {
+                    document.getElementById('gift-from').textContent =
+                        `Hi ${data.gift.recipientName}! Someone sent you DOZ UP`;
+                    document.getElementById('name').value = data.gift.recipientName;
+                }
+
+                // Show personal message
+                if (data.gift.message) {
+                    document.getElementById('personal-message').style.display = 'block';
+                    document.getElementById('message-text').textContent = `"${data.gift.message}"`;
+                }
+
+                // Update plan details
+                if (data.plan) {
+                    document.getElementById('plan-name').textContent = data.plan.name;
+
+                    const featuresEl = document.getElementById('plan-features');
+                    if (data.plan.features && data.plan.features.length > 0) {
+                        featuresEl.innerHTML = data.plan.features
+                            .slice(0, 5)
+                            .map(f => `<li>${f}</li>`)
+                            .join('');
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading gift:', error);
+                loadingState.style.display = 'none';
+                errorState.classList.add('show');
+            }
+        }
+
+        redeemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            if (!name || !email) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            redeemBtn.disabled = true;
+            redeemBtn.innerHTML = '<span class="spinner"></span> Redeeming...';
+            hideError();
+
+            try {
+                const response = await fetch('/api/stripe/redeem-gift', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        giftId: giftId,
+                        email: email,
+                        name: name
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to redeem gift');
+                }
+
+                // Show success
+                redeemForm.style.display = 'none';
+                document.getElementById('personal-message').style.display = 'none';
+                document.querySelector('.plan-details').style.display = 'none';
+
+                if (data.subscription) {
+                    document.getElementById('success-text').textContent =
+                        `Your ${data.subscription.planName} subscription is now active until ${new Date(data.subscription.endDate).toLocaleDateString()}!`;
+                }
+
+                successState.classList.add('show');
+
+            } catch (error) {
+                showError(error.message);
+                redeemBtn.disabled = false;
+                redeemBtn.innerHTML = '<span class="btn-text">Redeem My Gift</span>';
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
+    </script>
+</body>
+</html>

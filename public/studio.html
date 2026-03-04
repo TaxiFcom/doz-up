@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>DOZ Studio - Capture, Edit & Share Screenshots | Image Editor</title>
+    <meta name="description" content="DOZ Studio - Professional screenshot capture, editing, and sharing. Annotate images with arrows, text, shapes. Edit photos with powerful tools. Share instantly.">
+    <meta name="keywords" content="screenshot editor, image editor, photo editor, annotate screenshots, DOZ Studio, image annotation, screen capture editor, markup tool">
+    <meta name="author" content="DOZ UP">
+    <link rel="canonical" href="https://doz.com/studio.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://doz.com/studio.html">
+    <meta property="og:site_name" content="DOZ UP">
+    <meta property="og:title" content="DOZ Studio - Capture, Edit & Share">
+    <meta property="og:description" content="Professional screenshot capture, editing, and sharing. Annotate images with arrows, text, shapes.">
+    <meta property="og:image" content="https://doz.com/og-image.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@dozup">
+    <meta name="twitter:title" content="DOZ Studio - Capture, Edit & Share">
+    <meta name="twitter:description" content="Professional screenshot capture, editing, and sharing.">
+    <meta name="twitter:image" content="https://doz.com/og-image.png">
+
+    <meta name="theme-color" content="#0a0a1a">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="apple-touch-icon" href="/app/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        .studio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .header-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .header-btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* MAIN LAYOUT */
+        .studio-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+
+        /* LEFT TOOLBAR */
+        .toolbar {
+            width: 80px;
+            background: rgba(0,0,0,0.4);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tool-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 0.65rem;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .tool-btn.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .tool-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .tool-divider {
+            width: 40px;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 10px 0;
+        }
+
+        /* CANVAS AREA */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            position: relative;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #mainCanvas {
+            display: block;
+            max-width: 800px;
+            max-height: 600px;
+        }
+
+        #webcamVideo {
+            display: none;
+            max-width: 800px;
+            max-height: 600px;
+            transform: scaleX(-1);
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        /* CAPTURE CONTROLS */
+        .capture-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(0,0,0,0.6);
+            padding: 15px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .capture-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .capture-btn::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            background: #fff;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .capture-btn:hover::after {
+            background: #10b981;
+        }
+
+        .capture-btn.recording::after {
+            background: #ef4444;
+            border-radius: 8px;
+            top: 18px;
+            left: 18px;
+            right: 18px;
+            bottom: 18px;
+        }
+
+        .capture-option {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .capture-option:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: #fff;
+        }
+
+        .capture-option.active {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        /* RIGHT PANEL */
+        .right-panel {
+            width: 320px;
+            background: rgba(0,0,0,0.3);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .panel-tab:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .panel-tab.active {
+            color: #10b981;
+            border-bottom: 2px solid #10b981;
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .panel-section {
+            display: none;
+        }
+
+        .panel-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        /* FILTERS GRID */
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .filter-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .filter-item:hover {
+            transform: scale(1.05);
+        }
+
+        .filter-item.active {
+            border-color: #10b981;
+        }
+
+        .filter-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .filter-item span {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 5px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            font-size: 0.7rem;
+            text-align: center;
+        }
+
+        /* BEAUTY CONTROLS */
+        .beauty-control {
+            margin-bottom: 20px;
+        }
+
+        .beauty-control label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .beauty-control label span {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .slider-container {
+            position: relative;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.1);
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.5);
+        }
+
+        /* ADJUSTMENTS */
+        .adjustment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .adjustment-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .adjustment-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .adjustment-item svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 8px;
+            color: #64748b;
+        }
+
+        .adjustment-item span {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        /* STICKERS */
+        .stickers-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .sticker-item {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sticker-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.1);
+        }
+
+        /* SHARE SECTION */
+        .share-platforms {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .share-platform {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .share-platform:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .share-platform.instagram { border-color: rgba(225, 48, 108, 0.5); }
+        .share-platform.instagram:hover { background: rgba(225, 48, 108, 0.2); }
+        .share-platform.tiktok { border-color: rgba(0, 0, 0, 0.5); }
+        .share-platform.twitter { border-color: rgba(29, 161, 242, 0.5); }
+        .share-platform.twitter:hover { background: rgba(29, 161, 242, 0.2); }
+        .share-platform.facebook { border-color: rgba(24, 119, 242, 0.5); }
+        .share-platform.facebook:hover { background: rgba(24, 119, 242, 0.2); }
+
+        .share-platform svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .share-platform span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* QUICK ACTIONS */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-action {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .quick-action:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .quick-action.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+        }
+
+        /* PLACEHOLDERS */
+        .empty-canvas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 800px;
+            height: 600px;
+            background: rgba(255,255,255,0.02);
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 20px;
+        }
+
+        .empty-canvas svg {
+            width: 80px;
+            height: 80px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .empty-canvas h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-canvas p {
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .empty-canvas .actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .empty-canvas .action-btn {
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-canvas .action-btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        .empty-canvas .action-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .empty-canvas .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* WEBCAM ACTIVE STATE */
+        .webcam-active .empty-canvas {
+            display: none;
+        }
+
+        .webcam-active #webcamVideo {
+            display: block;
+        }
+
+        /* BEAUTY PRESETS */
+        .beauty-presets {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .preset-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .preset-btn.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #fff;
+        }
+
+        /* COUNTDOWN */
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .countdown-overlay.active {
+            display: flex;
+        }
+
+        .countdown-number {
+            font-size: 150px;
+            font-weight: 800;
+            color: #fff;
+            animation: countPulse 1s ease-in-out;
+        }
+
+        @keyframes countPulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* FLASH EFFECT */
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .flash-overlay.active {
+            animation: flashEffect 0.3s ease-out;
+        }
+
+        @keyframes flashEffect {
+            0% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .right-panel { width: 280px; }
+        }
+
+        @media (max-width: 900px) {
+            .studio-container { flex-direction: column; }
+            .toolbar {
+                width: 100%;
+                flex-direction: row;
+                justify-content: center;
+                overflow-x: auto;
+            }
+            .right-panel {
+                width: 100%;
+                height: 300px;
+            }
+            .tool-divider {
+                width: 1px;
+                height: 40px;
+                margin: 0 10px;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        /* GIF MODE */
+        .mode-selector {
+            display: flex;
+            gap: 5px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 25px;
+            padding: 5px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .mode-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn:hover {
+            color: #fff;
+        }
+
+        .mode-btn.active {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .gif-controls {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gif-controls.active {
+            display: flex;
+        }
+
+        .gif-timer {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ef4444;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .gif-progress {
+            width: 200px;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .gif-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .gif-frames {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .capture-btn.gif-mode {
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+        }
+
+        .capture-btn.gif-mode::after {
+            background: #ef4444;
+        }
+
+        .capture-btn.gif-recording {
+            animation: gifPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes gifPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+        }
+
+        /* GIF Preview Modal */
+        .gif-preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .gif-preview-modal.active {
+            display: flex;
+        }
+
+        .gif-preview-modal img {
+            max-width: 90%;
+            max-height: 60%;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .gif-preview-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .gif-preview-btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .gif-preview-btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        .gif-preview-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .gif-preview-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .gif-settings {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+        }
+
+        .gif-setting {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .gif-setting:last-child {
+            margin-bottom: 0;
+        }
+
+        .gif-setting label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .gif-setting select, .gif-setting input {
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1200;
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .processing-progress {
+            color: #64748b;
+        }
+
+        /* GALLERY MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: linear-gradient(180deg, #1a1a3e 0%, #0f0f2a 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(transparent 50%, rgba(0,0,0,0.8));
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: flex-end;
+            padding: 10px;
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .gallery-item .overlay span {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+    </style>
+    <!-- Time-Based Theme Styles -->
+    <link rel="stylesheet" href="/css/time-theme.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="studio-header">
+        <a href="/up" class="logo" style="text-decoration: none;">
+            <h1>DOZ Studio</h1>
+            <span>BETA</span>
+        </a>
+        <div class="header-actions">
+            <button class="header-btn secondary" onclick="openGallery()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" style="vertical-align: middle; margin-right: 5px;"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                Gallery
+            </button>
+            <button class="header-btn primary" onclick="saveImage()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" style="vertical-align: middle; margin-right: 5px;"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+                Save & Upload
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="studio-container">
+        <!-- LEFT TOOLBAR -->
+        <aside class="toolbar">
+            <button class="tool-btn active" onclick="setMode('select')" title="Select">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.414 1.415l.708-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clip-rule="evenodd"/></svg>
+                Select
+            </button>
+            <button class="tool-btn" onclick="setMode('crop')" title="Crop">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M4 3a1 1 0 00-1 1v10a1 1 0 001 1h1V4h11a1 1 0 00-1-1H4zM16 7a1 1 0 011 1v8a1 1 0 01-1 1H6a1 1 0 01-1-1v-1h10V7h1z"/></svg>
+                Crop
+            </button>
+            <button class="tool-btn" onclick="setMode('draw')" title="Draw">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                Draw
+            </button>
+            <button class="tool-btn" onclick="setMode('text')" title="Text">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                Text
+            </button>
+
+            <div class="tool-divider"></div>
+
+            <button class="tool-btn" onclick="setMode('sticker')" title="Stickers">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"/></svg>
+                Stickers
+            </button>
+            <button class="tool-btn" onclick="setMode('blur')" title="Blur">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                Blur
+            </button>
+
+            <div class="tool-divider"></div>
+
+            <button class="tool-btn" onclick="undoAction()" title="Undo">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+                Undo
+            </button>
+            <button class="tool-btn" onclick="redoAction()" title="Redo">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                Redo
+            </button>
+        </aside>
+
+        <!-- CANVAS AREA -->
+        <main class="canvas-area" id="canvasArea">
+            <!-- Mode Selector -->
+            <div class="mode-selector" id="modeSelector" style="display: none;">
+                <button class="mode-btn active" onclick="setCaptureMode('photo')">Photo</button>
+                <button class="mode-btn" onclick="setCaptureMode('gif')">GIF</button>
+                <button class="mode-btn" onclick="setCaptureMode('video')">Video</button>
+            </div>
+
+            <div class="canvas-wrapper">
+                <!-- Empty State -->
+                <div class="empty-canvas" id="emptyCanvas">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                    <h3>Create Something Amazing</h3>
+                    <p>Take a selfie, capture your screen, or upload an image</p>
+                    <div class="actions">
+                        <button class="action-btn primary" onclick="startWebcam()">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                            Selfie Camera
+                        </button>
+                        <button class="action-btn secondary" onclick="uploadImage()">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+                            Upload Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Webcam Video -->
+                <video id="webcamVideo" autoplay playsinline></video>
+
+                <!-- Main Canvas -->
+                <canvas id="mainCanvas"></canvas>
+            </div>
+
+            <!-- Capture Controls (shown when webcam active) -->
+            <div class="capture-controls" id="captureControls" style="display: none;">
+                <button class="capture-option" onclick="toggleTimer()" title="Timer" id="timerBtn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                </button>
+                <button class="capture-option" onclick="toggleFlash()" title="Flash" id="flashBtn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                </button>
+                <button class="capture-btn" onclick="handleCapture()" id="captureBtn" title="Capture"></button>
+                <button class="capture-option" onclick="switchCamera()" title="Switch Camera" id="switchCameraBtn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"/></svg>
+                </button>
+                <button class="capture-option" onclick="toggleBeauty()" title="Beauty Mode" id="beautyToggle">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
+                </button>
+            </div>
+
+            <!-- GIF Recording Info -->
+            <div class="gif-controls" id="gifControls">
+                <div class="gif-timer" id="gifTimer">0:00</div>
+                <div class="gif-progress">
+                    <div class="gif-progress-bar" id="gifProgressBar"></div>
+                </div>
+                <div class="gif-frames" id="gifFrames">0 frames captured</div>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL -->
+        <aside class="right-panel">
+            <div class="panel-tabs">
+                <button class="panel-tab active" onclick="showPanel('filters')">Filters</button>
+                <button class="panel-tab" onclick="showPanel('beauty')">Beauty</button>
+                <button class="panel-tab" onclick="showPanel('adjust')">Adjust</button>
+                <button class="panel-tab" onclick="showPanel('share')">Share</button>
+            </div>
+
+            <div class="panel-content">
+                <!-- FILTERS PANEL -->
+                <div class="panel-section active" id="panel-filters">
+                    <h4 class="section-title">Popular Filters</h4>
+                    <div class="filters-grid" id="filtersGrid">
+                        <!-- Filters will be populated by JS -->
+                    </div>
+
+                    <h4 class="section-title">Vintage</h4>
+                    <div class="filters-grid" id="vintageFilters">
+                        <!-- Vintage filters -->
+                    </div>
+
+                    <h4 class="section-title">B&W</h4>
+                    <div class="filters-grid" id="bwFilters">
+                        <!-- B&W filters -->
+                    </div>
+                </div>
+
+                <!-- BEAUTY PANEL -->
+                <div class="panel-section" id="panel-beauty">
+                    <h4 class="section-title">Quick Presets</h4>
+                    <div class="beauty-presets">
+                        <button class="preset-btn active" onclick="applyBeautyPreset('natural')">Natural</button>
+                        <button class="preset-btn" onclick="applyBeautyPreset('soft')">Soft Glow</button>
+                        <button class="preset-btn" onclick="applyBeautyPreset('glamour')">Glamour</button>
+                        <button class="preset-btn" onclick="applyBeautyPreset('studio')">Studio</button>
+                        <button class="preset-btn" onclick="applyBeautyPreset('hd')">HD Clear</button>
+                    </div>
+
+                    <h4 class="section-title">Skin Enhancement</h4>
+                    <div class="beauty-control">
+                        <label>Smoothing <span id="smoothVal">50%</span></label>
+                        <input type="range" class="slider" id="smoothSlider" min="0" max="100" value="50" oninput="updateBeauty('smooth', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Brightness <span id="brightVal">50%</span></label>
+                        <input type="range" class="slider" id="brightSlider" min="0" max="100" value="50" oninput="updateBeauty('bright', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Softness <span id="softVal">30%</span></label>
+                        <input type="range" class="slider" id="softSlider" min="0" max="100" value="30" oninput="updateBeauty('soft', this.value)">
+                    </div>
+
+                    <h4 class="section-title">Face Shape</h4>
+                    <div class="beauty-control">
+                        <label>Slim Face <span id="slimVal">0%</span></label>
+                        <input type="range" class="slider" id="slimSlider" min="0" max="100" value="0" oninput="updateBeauty('slim', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Big Eyes <span id="eyesVal">0%</span></label>
+                        <input type="range" class="slider" id="eyesSlider" min="0" max="100" value="0" oninput="updateBeauty('eyes', this.value)">
+                    </div>
+
+                    <h4 class="section-title">Skin Tone</h4>
+                    <div class="beauty-control">
+                        <label>Warmth <span id="warmthVal">50%</span></label>
+                        <input type="range" class="slider" id="warmthSlider" min="0" max="100" value="50" oninput="updateBeauty('warmth', this.value)">
+                    </div>
+                </div>
+
+                <!-- ADJUST PANEL -->
+                <div class="panel-section" id="panel-adjust">
+                    <h4 class="section-title">Light</h4>
+                    <div class="beauty-control">
+                        <label>Exposure <span id="exposureVal">0</span></label>
+                        <input type="range" class="slider" id="exposureSlider" min="-100" max="100" value="0" oninput="updateAdjust('exposure', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Contrast <span id="contrastVal">0</span></label>
+                        <input type="range" class="slider" id="contrastSlider" min="-100" max="100" value="0" oninput="updateAdjust('contrast', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Highlights <span id="highlightsVal">0</span></label>
+                        <input type="range" class="slider" id="highlightsSlider" min="-100" max="100" value="0" oninput="updateAdjust('highlights', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Shadows <span id="shadowsVal">0</span></label>
+                        <input type="range" class="slider" id="shadowsSlider" min="-100" max="100" value="0" oninput="updateAdjust('shadows', this.value)">
+                    </div>
+
+                    <h4 class="section-title">Color</h4>
+                    <div class="beauty-control">
+                        <label>Saturation <span id="saturationVal">0</span></label>
+                        <input type="range" class="slider" id="saturationSlider" min="-100" max="100" value="0" oninput="updateAdjust('saturation', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Vibrance <span id="vibranceVal">0</span></label>
+                        <input type="range" class="slider" id="vibranceSlider" min="-100" max="100" value="0" oninput="updateAdjust('vibrance', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Temperature <span id="tempVal">0</span></label>
+                        <input type="range" class="slider" id="tempSlider" min="-100" max="100" value="0" oninput="updateAdjust('temp', this.value)">
+                    </div>
+
+                    <h4 class="section-title">Effects</h4>
+                    <div class="beauty-control">
+                        <label>Vignette <span id="vignetteVal">0</span></label>
+                        <input type="range" class="slider" id="vignetteSlider" min="0" max="100" value="0" oninput="updateAdjust('vignette', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Grain <span id="grainVal">0</span></label>
+                        <input type="range" class="slider" id="grainSlider" min="0" max="100" value="0" oninput="updateAdjust('grain', this.value)">
+                    </div>
+                    <div class="beauty-control">
+                        <label>Sharpen <span id="sharpenVal">0</span></label>
+                        <input type="range" class="slider" id="sharpenSlider" min="0" max="100" value="0" oninput="updateAdjust('sharpen', this.value)">
+                    </div>
+                </div>
+
+                <!-- SHARE PANEL -->
+                <div class="panel-section" id="panel-share">
+                    <h4 class="section-title">Share To</h4>
+                    <div class="share-platforms">
+                        <button class="share-platform instagram" onclick="shareTo('instagram')">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            <span>Instagram</span>
+                        </button>
+                        <button class="share-platform tiktok" onclick="shareTo('tiktok')">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
+                            <span>TikTok</span>
+                        </button>
+                        <button class="share-platform twitter" onclick="shareTo('twitter')">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                            <span>Twitter</span>
+                        </button>
+                        <button class="share-platform facebook" onclick="shareTo('facebook')">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            <span>Facebook</span>
+                        </button>
+                    </div>
+
+                    <h4 class="section-title">Get Link</h4>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="shareLink" placeholder="Upload to get link..." readonly style="flex: 1; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 0.9rem;">
+                        <button class="quick-action" onclick="copyLink()" style="width: auto; padding: 12px 20px;">Copy</button>
+                    </div>
+
+                    <h4 class="section-title">Quick Actions</h4>
+                    <div class="quick-actions">
+                        <button class="quick-action" onclick="downloadImage()">Download</button>
+                        <button class="quick-action primary" onclick="uploadAndShare()">Upload & Share</button>
+                    </div>
+
+                    <h4 class="section-title" style="margin-top: 25px;">Stickers</h4>
+                    <div class="stickers-grid" id="stickersGrid">
+                        <!-- Stickers populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- COUNTDOWN OVERLAY -->
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-number" id="countdownNumber">3</div>
+    </div>
+
+    <!-- FLASH EFFECT -->
+    <div class="flash-overlay" id="flashOverlay"></div>
+
+    <!-- GALLERY MODAL -->
+    <div class="modal-overlay" id="galleryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Your Gallery</h2>
+                <button class="modal-close" onclick="closeGallery()">&times;</button>
+            </div>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Gallery items populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- HIDDEN FILE INPUT -->
+    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+
+    <!-- GIF Preview Modal -->
+    <div class="gif-preview-modal" id="gifPreviewModal">
+        <h2 style="color: #fff; font-size: 1.5rem;">Your GIF is Ready!</h2>
+        <img id="gifPreviewImage" src="" alt="GIF Preview">
+        <div class="gif-preview-actions">
+            <button class="gif-preview-btn secondary" onclick="closeGifPreview()">Discard</button>
+            <button class="gif-preview-btn secondary" onclick="downloadGif()">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20" style="vertical-align: middle; margin-right: 5px;"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/></svg>
+                Download
+            </button>
+            <button class="gif-preview-btn primary" onclick="saveAndShareGif()">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20" style="vertical-align: middle; margin-right: 5px;"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+                Save & Share
+            </button>
+        </div>
+    </div>
+
+    <!-- Processing Overlay -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-spinner"></div>
+        <div class="processing-text" id="processingText">Creating your GIF...</div>
+        <div class="processing-progress" id="processingProgress">0%</div>
+    </div>
+
+    <!-- Load gif.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+
+    <script>
+        // ============ STATE ============
+        let currentMode = 'select';
+        let captureMode = 'photo'; // photo, gif, video
+        let webcamStream = null;
+        let isWebcamActive = false;
+        let currentFilter = 'none';
+        let timerEnabled = false;
+        let flashEnabled = false;
+        let beautyEnabled = false;
+        let originalImage = null;
+        let capturedImages = [];
+
+        // GIF Recording State
+        let gifRecording = false;
+        let gifFrames = [];
+        let gifStartTime = null;
+        let gifRecordingInterval = null;
+        let gifTimerInterval = null;
+        let gifBlob = null;
+        let gifSettings = {
+            duration: 5,     // seconds
+            fps: 10,         // frames per second
+            quality: 10,     // 1-30, lower = better quality
+            width: 480,
+            height: 360
+        };
+
+        // Beauty settings
+        let beautySettings = {
+            smooth: 50,
+            bright: 50,
+            soft: 30,
+            slim: 0,
+            eyes: 0,
+            warmth: 50
+        };
+
+        // Adjust settings
+        let adjustSettings = {
+            exposure: 0,
+            contrast: 0,
+            highlights: 0,
+            shadows: 0,
+            saturation: 0,
+            vibrance: 0,
+            temp: 0,
+            vignette: 0,
+            grain: 0,
+            sharpen: 0
+        };
+
+        // ============ FILTERS ============
+        const filters = [
+            { name: 'Original', class: 'none', preview: '#333' },
+            { name: 'Clarendon', class: 'clarendon', css: 'contrast(1.2) saturate(1.35)' },
+            { name: 'Gingham', class: 'gingham', css: 'brightness(1.05) sepia(0.04)' },
+            { name: 'Moon', class: 'moon', css: 'grayscale(1) contrast(1.1) brightness(1.1)' },
+            { name: 'Lark', class: 'lark', css: 'contrast(0.9) brightness(1.1) saturate(0.85)' },
+            { name: 'Reyes', class: 'reyes', css: 'sepia(0.22) brightness(1.1) contrast(0.85) saturate(0.75)' },
+            { name: 'Juno', class: 'juno', css: 'saturate(1.4) contrast(1.15) brightness(1.05) sepia(0.05)' },
+            { name: 'Slumber', class: 'slumber', css: 'saturate(0.66) brightness(1.05)' },
+            { name: 'Crema', class: 'crema', css: 'sepia(0.5) contrast(1.25) brightness(1.1) saturate(0.9)' },
+            { name: 'Ludwig', class: 'ludwig', css: 'saturate(1.5) brightness(1.15)' },
+            { name: 'Aden', class: 'aden', css: 'hue-rotate(-20deg) contrast(0.9) saturate(0.85) brightness(1.2)' },
+            { name: 'Perpetua', class: 'perpetua', css: 'brightness(1.1) saturate(1.1)' }
+        ];
+
+        const vintageFilters = [
+            { name: '1977', class: '1977', css: 'sepia(0.5) hue-rotate(-30deg) saturate(1.4)' },
+            { name: 'Nashville', class: 'nashville', css: 'sepia(0.2) contrast(1.2) brightness(1.05) saturate(1.2)' },
+            { name: 'Toaster', class: 'toaster', css: 'sepia(0.15) contrast(1.3) brightness(0.9) saturate(1.3)' },
+            { name: 'Walden', class: 'walden', css: 'brightness(1.1) sepia(0.3) saturate(1.6)' }
+        ];
+
+        const bwFilters = [
+            { name: 'Inkwell', class: 'inkwell', css: 'grayscale(1) brightness(1.1) contrast(1.3)' },
+            { name: 'Willow', class: 'willow', css: 'grayscale(0.5) contrast(0.95) brightness(0.9)' },
+            { name: 'Noir', class: 'noir', css: 'grayscale(1) contrast(1.5) brightness(0.95)' }
+        ];
+
+        const stickers = [
+            '😀', '😍', '🥳', '😎', '🤩', '😇', '🥰', '😋',
+            '❤️', '💕', '✨', '🌟', '🔥', '💯', '👑', '🎉',
+            '🌈', '☀️', '🌙', '⭐', '💫', '🦋', '🌸', '🍀'
+        ];
+
+        // ============ INITIALIZATION ============
+        function init() {
+            populateFilters();
+            populateStickers();
+        }
+
+        function populateFilters() {
+            const mainGrid = document.getElementById('filtersGrid');
+            const vintageGrid = document.getElementById('vintageFilters');
+            const bwGrid = document.getElementById('bwFilters');
+
+            filters.forEach((filter, i) => {
+                mainGrid.innerHTML += createFilterItem(filter, i === 0);
+            });
+
+            vintageFilters.forEach(filter => {
+                vintageGrid.innerHTML += createFilterItem(filter);
+            });
+
+            bwFilters.forEach(filter => {
+                bwGrid.innerHTML += createFilterItem(filter);
+            });
+        }
+
+        function createFilterItem(filter, active = false) {
+            const bgColor = filter.preview || `hsl(${Math.random() * 360}, 50%, 30%)`;
+            return `
+                <div class="filter-item ${active ? 'active' : ''}" onclick="applyFilter('${filter.class}', '${filter.css || ''}', this)" style="background: ${bgColor}">
+                    <span>${filter.name}</span>
+                </div>
+            `;
+        }
+
+        function populateStickers() {
+            const grid = document.getElementById('stickersGrid');
+            stickers.forEach(sticker => {
+                grid.innerHTML += `<div class="sticker-item" onclick="addSticker('${sticker}')">${sticker}</div>`;
+            });
+        }
+
+        // ============ WEBCAM ============
+        async function startWebcam() {
+            try {
+                webcamStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user'
+                    },
+                    audio: false
+                });
+
+                const video = document.getElementById('webcamVideo');
+                video.srcObject = webcamStream;
+                video.style.display = 'block';
+                document.getElementById('emptyCanvas').style.display = 'none';
+                document.getElementById('mainCanvas').style.display = 'none';
+                document.getElementById('captureControls').style.display = 'flex';
+                document.getElementById('modeSelector').style.display = 'flex';
+                isWebcamActive = true;
+
+            } catch (err) {
+                console.error('Webcam error:', err);
+                alert('Could not access camera. Please allow camera permissions.');
+            }
+        }
+
+        function stopWebcam() {
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+            }
+            isWebcamActive = false;
+            document.getElementById('webcamVideo').style.display = 'none';
+            document.getElementById('captureControls').style.display = 'none';
+            document.getElementById('modeSelector').style.display = 'none';
+            document.getElementById('gifControls').classList.remove('active');
+        }
+
+        async function switchCamera() {
+            if (!webcamStream) return;
+
+            const currentTrack = webcamStream.getVideoTracks()[0];
+            const currentFacing = currentTrack.getSettings().facingMode;
+            const newFacing = currentFacing === 'user' ? 'environment' : 'user';
+
+            stopWebcam();
+
+            try {
+                webcamStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: newFacing },
+                    audio: false
+                });
+                document.getElementById('webcamVideo').srcObject = webcamStream;
+                document.getElementById('webcamVideo').style.display = 'block';
+                document.getElementById('captureControls').style.display = 'flex';
+                isWebcamActive = true;
+            } catch (err) {
+                startWebcam(); // Fallback to default
+            }
+        }
+
+        // ============ CAPTURE ============
+        function capturePhoto() {
+            if (!isWebcamActive) return;
+
+            if (timerEnabled) {
+                startCountdown(() => takePhoto());
+            } else {
+                takePhoto();
+            }
+        }
+
+        function startCountdown(callback) {
+            const overlay = document.getElementById('countdownOverlay');
+            const number = document.getElementById('countdownNumber');
+            let count = 3;
+
+            overlay.classList.add('active');
+            number.textContent = count;
+
+            const interval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    number.textContent = count;
+                    number.style.animation = 'none';
+                    number.offsetHeight; // Trigger reflow
+                    number.style.animation = 'countPulse 1s ease-in-out';
+                } else {
+                    clearInterval(interval);
+                    overlay.classList.remove('active');
+                    callback();
+                }
+            }, 1000);
+        }
+
+        function takePhoto() {
+            const video = document.getElementById('webcamVideo');
+            const canvas = document.getElementById('mainCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Flash effect
+            if (flashEnabled) {
+                const flash = document.getElementById('flashOverlay');
+                flash.classList.add('active');
+                setTimeout(() => flash.classList.remove('active'), 300);
+            }
+
+            // Set canvas size
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw flipped (mirror) image
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            // Apply current filter
+            applyFilterToCanvas(canvas);
+
+            // Apply beauty mode
+            if (beautyEnabled) {
+                applyBeautyToCanvas(canvas);
+            }
+
+            // Show canvas, hide video
+            stopWebcam();
+            canvas.style.display = 'block';
+            document.getElementById('emptyCanvas').style.display = 'none';
+
+            // Store original
+            originalImage = canvas.toDataURL('image/png');
+
+            // Add to gallery
+            capturedImages.unshift({
+                data: originalImage,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        // ============ GIF CAPTURE ============
+        function setCaptureMode(mode) {
+            captureMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const captureBtn = document.getElementById('captureBtn');
+
+            if (mode === 'gif') {
+                captureBtn.classList.add('gif-mode');
+                captureBtn.title = 'Record GIF';
+            } else {
+                captureBtn.classList.remove('gif-mode', 'gif-recording');
+                captureBtn.title = mode === 'video' ? 'Record Video' : 'Capture';
+            }
+        }
+
+        function handleCapture() {
+            if (captureMode === 'gif') {
+                if (gifRecording) {
+                    stopGifRecording();
+                } else {
+                    startGifRecording();
+                }
+            } else if (captureMode === 'video') {
+                // Video recording (future implementation)
+                capturePhoto();
+            } else {
+                capturePhoto();
+            }
+        }
+
+        function startGifRecording() {
+            if (!isWebcamActive) {
+                alert('Please start the camera first!');
+                return;
+            }
+
+            gifRecording = true;
+            gifFrames = [];
+            gifStartTime = Date.now();
+
+            const captureBtn = document.getElementById('captureBtn');
+            captureBtn.classList.add('gif-recording');
+
+            // Show GIF controls
+            document.getElementById('gifControls').classList.add('active');
+
+            // Capture frames
+            const frameDelay = 1000 / gifSettings.fps;
+            gifRecordingInterval = setInterval(() => {
+                captureGifFrame();
+            }, frameDelay);
+
+            // Update timer
+            gifTimerInterval = setInterval(() => {
+                updateGifTimer();
+            }, 100);
+
+            // Auto-stop after duration
+            setTimeout(() => {
+                if (gifRecording) {
+                    stopGifRecording();
+                }
+            }, gifSettings.duration * 1000);
+        }
+
+        function captureGifFrame() {
+            const video = document.getElementById('webcamVideo');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = gifSettings.width;
+            canvas.height = gifSettings.height;
+
+            // Draw mirrored frame
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            gifFrames.push(canvas);
+
+            // Update UI
+            document.getElementById('gifFrames').textContent = `${gifFrames.length} frames captured`;
+
+            // Update progress bar
+            const elapsed = (Date.now() - gifStartTime) / 1000;
+            const progress = Math.min((elapsed / gifSettings.duration) * 100, 100);
+            document.getElementById('gifProgressBar').style.width = `${progress}%`;
+        }
+
+        function updateGifTimer() {
+            const elapsed = Math.floor((Date.now() - gifStartTime) / 1000);
+            const seconds = elapsed % 60;
+            const ms = Math.floor(((Date.now() - gifStartTime) % 1000) / 10);
+            document.getElementById('gifTimer').textContent = `${seconds}:${ms.toString().padStart(2, '0')}`;
+        }
+
+        function stopGifRecording() {
+            gifRecording = false;
+
+            clearInterval(gifRecordingInterval);
+            clearInterval(gifTimerInterval);
+
+            const captureBtn = document.getElementById('captureBtn');
+            captureBtn.classList.remove('gif-recording');
+
+            // Hide GIF controls
+            document.getElementById('gifControls').classList.remove('active');
+
+            // Reset UI
+            document.getElementById('gifTimer').textContent = '0:00';
+            document.getElementById('gifProgressBar').style.width = '0%';
+            document.getElementById('gifFrames').textContent = '0 frames captured';
+
+            if (gifFrames.length > 0) {
+                createGif();
+            }
+        }
+
+        async function createGif() {
+            // Show processing overlay
+            const overlay = document.getElementById('processingOverlay');
+            const progressText = document.getElementById('processingProgress');
+            overlay.classList.add('active');
+
+            try {
+                // Create GIF using gif.js
+                const gif = new GIF({
+                    workers: 2,
+                    quality: gifSettings.quality,
+                    width: gifSettings.width,
+                    height: gifSettings.height,
+                    workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+                });
+
+                // Add all frames
+                const delay = 1000 / gifSettings.fps;
+                gifFrames.forEach((canvas, i) => {
+                    gif.addFrame(canvas, { delay: delay, copy: true });
+                    progressText.textContent = `Adding frame ${i + 1}/${gifFrames.length}`;
+                });
+
+                // Render GIF
+                gif.on('progress', (p) => {
+                    progressText.textContent = `Rendering: ${Math.round(p * 100)}%`;
+                });
+
+                gif.on('finished', (blob) => {
+                    gifBlob = blob;
+                    overlay.classList.remove('active');
+                    showGifPreview(blob);
+                });
+
+                gif.render();
+            } catch (error) {
+                console.error('GIF creation error:', error);
+                overlay.classList.remove('active');
+
+                // Fallback: Create animated image sequence preview
+                fallbackGifPreview();
+            }
+        }
+
+        function fallbackGifPreview() {
+            // If gif.js fails, show first frame with message
+            if (gifFrames.length > 0) {
+                const firstFrame = gifFrames[0];
+                gifBlob = null; // No actual GIF blob
+
+                const dataUrl = firstFrame.toDataURL('image/png');
+                document.getElementById('gifPreviewImage').src = dataUrl;
+                document.getElementById('gifPreviewModal').classList.add('active');
+
+                alert('GIF creation library failed to load. Showing preview only.');
+            }
+        }
+
+        function showGifPreview(blob) {
+            const url = URL.createObjectURL(blob);
+            document.getElementById('gifPreviewImage').src = url;
+            document.getElementById('gifPreviewModal').classList.add('active');
+        }
+
+        function closeGifPreview() {
+            document.getElementById('gifPreviewModal').classList.remove('active');
+            gifBlob = null;
+            gifFrames = [];
+        }
+
+        function downloadGif() {
+            if (!gifBlob) {
+                alert('No GIF to download!');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = `doz-studio-${Date.now()}.gif`;
+            link.href = URL.createObjectURL(gifBlob);
+            link.click();
+        }
+
+        async function saveAndShareGif() {
+            if (!gifBlob) {
+                alert('No GIF to share!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('screenshot', gifBlob, 'studio-capture.gif');
+            formData.append('deviceId', generateFingerprint());
+
+            // Get userId if logged in
+            const userId = localStorage.getItem('doz_userId');
+            const headers = {};
+            if (userId) headers['X-User-ID'] = userId;
+
+            try {
+                const res = await fetch('/upload', {
+                    method: 'POST',
+                    headers: headers,
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.url) {
+                    navigator.clipboard.writeText(data.url);
+                    alert('GIF uploaded! Link copied to clipboard:\n' + data.url);
+                    closeGifPreview();
+                }
+            } catch (e) {
+                console.error('Upload error:', e);
+                alert('Failed to upload GIF');
+            }
+        }
+
+        // ============ FILTERS ============
+        function applyFilter(filterClass, filterCss, element) {
+            currentFilter = filterCss || 'none';
+
+            // Update UI
+            document.querySelectorAll('.filter-item').forEach(el => el.classList.remove('active'));
+            if (element) element.classList.add('active');
+
+            // Apply to canvas or video
+            const canvas = document.getElementById('mainCanvas');
+            const video = document.getElementById('webcamVideo');
+
+            if (isWebcamActive) {
+                video.style.filter = filterCss || 'none';
+            } else if (canvas.style.display !== 'none') {
+                canvas.style.filter = filterCss || 'none';
+            }
+        }
+
+        function applyFilterToCanvas(canvas) {
+            if (currentFilter && currentFilter !== 'none') {
+                canvas.style.filter = currentFilter;
+            }
+        }
+
+        // ============ BEAUTY MODE ============
+        function toggleBeauty() {
+            beautyEnabled = !beautyEnabled;
+            document.getElementById('beautyToggle').classList.toggle('active', beautyEnabled);
+
+            if (isWebcamActive) {
+                // Apply real-time beauty filter via CSS
+                const video = document.getElementById('webcamVideo');
+                if (beautyEnabled) {
+                    updateBeautyFilter(video);
+                } else {
+                    video.style.filter = currentFilter || 'none';
+                }
+            }
+        }
+
+        function updateBeauty(type, value) {
+            beautySettings[type] = parseInt(value);
+            document.getElementById(`${type}Val`).textContent = value + '%';
+
+            if (beautyEnabled) {
+                const video = document.getElementById('webcamVideo');
+                const canvas = document.getElementById('mainCanvas');
+
+                if (isWebcamActive) {
+                    updateBeautyFilter(video);
+                } else {
+                    updateBeautyFilter(canvas);
+                }
+            }
+        }
+
+        function updateBeautyFilter(element) {
+            const { smooth, bright, soft, warmth } = beautySettings;
+
+            let filter = '';
+            filter += `brightness(${0.8 + (bright / 100) * 0.4}) `;
+            filter += `contrast(${0.9 + (soft / 100) * 0.2}) `;
+            filter += `saturate(${0.8 + (warmth / 100) * 0.4}) `;
+            filter += `blur(${smooth > 50 ? (smooth - 50) / 50 : 0}px) `;
+
+            if (currentFilter && currentFilter !== 'none') {
+                filter += currentFilter;
+            }
+
+            element.style.filter = filter;
+        }
+
+        function applyBeautyPreset(preset) {
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const presets = {
+                natural: { smooth: 30, bright: 50, soft: 20, slim: 0, eyes: 0, warmth: 50 },
+                soft: { smooth: 60, bright: 55, soft: 40, slim: 0, eyes: 0, warmth: 55 },
+                glamour: { smooth: 70, bright: 60, soft: 30, slim: 20, eyes: 15, warmth: 60 },
+                studio: { smooth: 50, bright: 55, soft: 25, slim: 10, eyes: 10, warmth: 45 },
+                hd: { smooth: 20, bright: 52, soft: 10, slim: 0, eyes: 0, warmth: 48 }
+            };
+
+            const settings = presets[preset];
+            Object.entries(settings).forEach(([key, value]) => {
+                beautySettings[key] = value;
+                const slider = document.getElementById(`${key}Slider`);
+                const valDisplay = document.getElementById(`${key}Val`);
+                if (slider) slider.value = value;
+                if (valDisplay) valDisplay.textContent = value + '%';
+            });
+
+            if (beautyEnabled) {
+                const target = isWebcamActive ? document.getElementById('webcamVideo') : document.getElementById('mainCanvas');
+                updateBeautyFilter(target);
+            }
+        }
+
+        // ============ ADJUSTMENTS ============
+        function updateAdjust(type, value) {
+            adjustSettings[type] = parseInt(value);
+            document.getElementById(`${type}Val`).textContent = value;
+
+            const canvas = document.getElementById('mainCanvas');
+            if (canvas.style.display !== 'none') {
+                applyAdjustments(canvas);
+            }
+        }
+
+        function applyAdjustments(element) {
+            const { exposure, contrast, saturation, vibrance, temp } = adjustSettings;
+
+            let filter = '';
+            filter += `brightness(${1 + exposure / 100}) `;
+            filter += `contrast(${1 + contrast / 100}) `;
+            filter += `saturate(${1 + saturation / 100}) `;
+
+            if (temp > 0) {
+                filter += `sepia(${temp / 200}) `;
+            } else if (temp < 0) {
+                filter += `hue-rotate(${temp / 2}deg) `;
+            }
+
+            if (currentFilter && currentFilter !== 'none') {
+                filter += currentFilter;
+            }
+
+            element.style.filter = filter;
+        }
+
+        // ============ TOOLS ============
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tool-btn').classList.add('active');
+        }
+
+        function toggleTimer() {
+            timerEnabled = !timerEnabled;
+            document.getElementById('timerBtn').classList.toggle('active', timerEnabled);
+        }
+
+        function toggleFlash() {
+            flashEnabled = !flashEnabled;
+            document.getElementById('flashBtn').classList.toggle('active', flashEnabled);
+        }
+
+        function undoAction() {
+            // Implement undo stack
+            console.log('Undo');
+        }
+
+        function redoAction() {
+            // Implement redo stack
+            console.log('Redo');
+        }
+
+        // ============ FILE UPLOAD ============
+        function uploadImage() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('mainCanvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Set canvas size
+                    const maxWidth = 800;
+                    const maxHeight = 600;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = (maxWidth / width) * height;
+                        width = maxWidth;
+                    }
+                    if (height > maxHeight) {
+                        width = (maxHeight / height) * width;
+                        height = maxHeight;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Show canvas
+                    stopWebcam();
+                    canvas.style.display = 'block';
+                    document.getElementById('emptyCanvas').style.display = 'none';
+
+                    originalImage = canvas.toDataURL('image/png');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ============ SHARING ============
+        function shareTo(platform) {
+            const canvas = document.getElementById('mainCanvas');
+            if (canvas.style.display === 'none') {
+                alert('Please capture or upload an image first!');
+                return;
+            }
+
+            const imageData = canvas.toDataURL('image/png');
+
+            // Upload first, then share
+            uploadImageToServer(imageData).then(url => {
+                const shareUrls = {
+                    instagram: `https://www.instagram.com/`,
+                    tiktok: `https://www.tiktok.com/`,
+                    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Check out my photo! #DOZUP')}`,
+                    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+                };
+
+                window.open(shareUrls[platform], '_blank');
+            });
+        }
+
+        async function uploadImageToServer(imageData) {
+            // Convert base64 to blob
+            const response = await fetch(imageData);
+            const blob = await response.blob();
+
+            const formData = new FormData();
+            formData.append('screenshot', blob, 'studio-capture.png');
+            formData.append('deviceId', generateFingerprint());
+
+            // Get userId if logged in
+            const userId = localStorage.getItem('doz_userId');
+            const headers = {};
+            if (userId) headers['X-User-ID'] = userId;
+
+            try {
+                const res = await fetch('/upload', {
+                    method: 'POST',
+                    headers: headers,
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.url) {
+                    document.getElementById('shareLink').value = data.url;
+                    return data.url;
+                }
+            } catch (e) {
+                console.error('Upload error:', e);
+            }
+            return '';
+        }
+
+        function copyLink() {
+            const link = document.getElementById('shareLink');
+            if (link.value) {
+                navigator.clipboard.writeText(link.value);
+                alert('Link copied!');
+            }
+        }
+
+        function downloadImage() {
+            const canvas = document.getElementById('mainCanvas');
+            if (canvas.style.display === 'none') {
+                alert('Please capture or upload an image first!');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = `doz-studio-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function saveImage() {
+            const canvas = document.getElementById('mainCanvas');
+            if (canvas.style.display === 'none') {
+                alert('Please capture or upload an image first!');
+                return;
+            }
+
+            uploadImageToServer(canvas.toDataURL('image/png')).then(url => {
+                if (url) {
+                    alert('Image saved and uploaded successfully!\n\n' + url);
+                }
+            });
+        }
+
+        async function uploadAndShare() {
+            const canvas = document.getElementById('mainCanvas');
+            if (canvas.style.display === 'none') {
+                alert('Please capture or upload an image first!');
+                return;
+            }
+
+            const url = await uploadImageToServer(canvas.toDataURL('image/png'));
+            if (url) {
+                navigator.clipboard.writeText(url);
+                alert('Uploaded! Link copied to clipboard:\n' + url);
+            }
+        }
+
+        // ============ STICKERS ============
+        function addSticker(emoji) {
+            const canvas = document.getElementById('mainCanvas');
+            if (canvas.style.display === 'none') {
+                alert('Please capture or upload an image first!');
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+            ctx.font = '48px Arial';
+            ctx.fillText(emoji, canvas.width / 2 - 24, canvas.height / 2 + 16);
+        }
+
+        // ============ GALLERY ============
+        function openGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+
+            if (capturedImages.length === 0) {
+                grid.innerHTML = '<p style="color: #64748b; text-align: center; grid-column: 1/-1;">No images yet. Capture some photos!</p>';
+            } else {
+                capturedImages.forEach((img, i) => {
+                    grid.innerHTML += `
+                        <div class="gallery-item" onclick="loadFromGallery(${i})">
+                            <img src="${img.data}" alt="Captured image">
+                            <div class="overlay">
+                                <span>${new Date(img.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('galleryModal').classList.add('active');
+        }
+
+        function closeGallery() {
+            document.getElementById('galleryModal').classList.remove('active');
+        }
+
+        function loadFromGallery(index) {
+            const img = capturedImages[index];
+            if (!img) return;
+
+            const canvas = document.getElementById('mainCanvas');
+            const ctx = canvas.getContext('2d');
+            const image = new Image();
+
+            image.onload = function() {
+                canvas.width = image.width;
+                canvas.height = image.height;
+                ctx.drawImage(image, 0, 0);
+
+                stopWebcam();
+                canvas.style.display = 'block';
+                document.getElementById('emptyCanvas').style.display = 'none';
+                closeGallery();
+            };
+            image.src = img.data;
+        }
+
+        // ============ PANELS ============
+        function showPanel(panel) {
+            document.querySelectorAll('.panel-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.panel-section').forEach(sec => sec.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById('panel-' + panel).classList.add('active');
+        }
+
+        // ============ UTILS ============
+        function generateFingerprint() {
+            const nav = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height, navigator.platform].join('|');
+            let hash = 0;
+            for (let i = 0; i < nav.length; i++) { hash = ((hash << 5) - hash) + nav.charCodeAt(i); hash = hash & hash; }
+            return 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+        }
+
+        // Initialize
+        init();
+    </script>
+    <!-- DOZ UP Traffic Tracking -->
+    <script src="/track.js" async></script>
+    <script src="/track-advanced.js" async></script>
+
+</body>
+</html>

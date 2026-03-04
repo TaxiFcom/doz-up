@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ ISO - Project Security Center</title>
+    <link rel="icon" href="/logo.png" type="image/svg+xml">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --text-primary: #ffffff;
+            --text-secondary: #888899;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .status-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .status-value.locked { color: var(--danger); }
+        .status-value.unlocked { color: var(--success); }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Setup Form */
+        .setup-form {
+            display: none;
+        }
+
+        .setup-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5558e3;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-biometric {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+        }
+
+        .btn-biometric:hover {
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Unlock Section */
+        .unlock-section {
+            display: none;
+        }
+
+        .unlock-section.active {
+            display: block;
+        }
+
+        .access-levels {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .level-btn {
+            flex: 1;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .level-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .level-btn.selected {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .level-btn h4 {
+            margin-bottom: 4px;
+        }
+
+        .level-btn p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .or-divider {
+            text-align: center;
+            color: var(--text-secondary);
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .or-divider::before, .or-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 20px);
+            height: 1px;
+            background: var(--border);
+        }
+
+        .or-divider::before { left: 0; }
+        .or-divider::after { right: 0; }
+
+        /* Sessions List */
+        .sessions-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .session-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .session-agent {
+            font-weight: 500;
+        }
+
+        .session-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .session-level {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .session-level.read {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .session-level.edit {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        /* Activity Log */
+        .activity-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            min-width: 50px;
+        }
+
+        .activity-text {
+            font-size: 13px;
+        }
+
+        .activity-text.error { color: var(--danger); }
+        .activity-text.success { color: var(--success); }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .setting-item {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+        }
+
+        .setting-item label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .toggle input {
+            display: none;
+        }
+
+        .toggle-track {
+            width: 44px;
+            height: 24px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        .toggle input:checked + .toggle-track {
+            background: var(--accent);
+        }
+
+        .toggle-thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+
+        .toggle input:checked + .toggle-track .toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        /* Password Change */
+        .password-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid var(--border);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+        }
+
+        /* Location Warning */
+        .location-warning {
+            display: none;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .location-warning.active {
+            display: block;
+        }
+
+        .location-warning h4 {
+            color: var(--warning);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">ISO</div>
+                <h1>DOZ ISO</h1>
+            </div>
+            <p class="subtitle">Project Security Center</p>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">Status</div>
+                <div class="status-value locked" id="statusValue">LOCKED</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Access Level</div>
+                <div class="status-value" id="accessLevel">--</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Active Sessions</div>
+                <div class="status-value" id="sessionCount">0</div>
+            </div>
+        </div>
+
+        <!-- Setup Form (shown first time) -->
+        <div class="card setup-form" id="setupForm">
+            <div class="card-title">Initial Setup</div>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                Set passwords for AI access control. You'll need separate passwords for read-only and full edit access.
+            </p>
+            <div class="form-group">
+                <label>Read-Only Password</label>
+                <input type="password" id="setupReadPassword" placeholder="Password for read-only access">
+            </div>
+            <div class="form-group">
+                <label>Full Edit Password</label>
+                <input type="password" id="setupEditPassword" placeholder="Password for full edit access">
+            </div>
+            <div class="form-group">
+                <label>Confirm Edit Password</label>
+                <input type="password" id="setupEditPasswordConfirm" placeholder="Confirm edit password">
+            </div>
+            <button class="btn btn-primary" onclick="completeSetup()">Complete Setup</button>
+        </div>
+
+        <!-- Unlock Section -->
+        <div class="card unlock-section" id="unlockSection">
+            <div class="card-title">Unlock AI Access</div>
+
+            <!-- Location Warning -->
+            <div class="location-warning" id="locationWarning">
+                <h4>Location Verification Required</h4>
+                <p id="locationReason"></p>
+            </div>
+
+            <!-- Access Level Selection -->
+            <div class="access-levels">
+                <div class="level-btn selected" data-level="read" onclick="selectLevel('read')">
+                    <h4>Read-Only</h4>
+                    <p>View & search files</p>
+                </div>
+                <div class="level-btn" data-level="edit" onclick="selectLevel('edit')">
+                    <h4>Full Edit</h4>
+                    <p>Modify files</p>
+                </div>
+            </div>
+
+            <!-- Biometric Button -->
+            <button class="btn btn-biometric" onclick="unlockBiometric()" id="biometricBtn" style="display: none;">
+                Scan Biometric
+            </button>
+
+            <div class="or-divider">or</div>
+
+            <!-- Password Input -->
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="unlockPassword" placeholder="Enter password" onkeypress="if(event.key==='Enter')unlockWithPassword()">
+            </div>
+            <button class="btn btn-primary" onclick="unlockWithPassword()" style="width: 100%;">
+                Unlock
+            </button>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="card">
+            <div class="card-title">Active AI Sessions</div>
+            <div class="sessions-list" id="sessionsList">
+                <div class="empty-state">No active sessions</div>
+            </div>
+            <button class="btn btn-danger" onclick="lockAllSessions()" style="margin-top: 16px;">
+                Lock All Sessions
+            </button>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="card">
+            <div class="card-title">Recent Activity</div>
+            <div class="activity-list" id="activityList">
+                <div class="empty-state">No recent activity</div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="card">
+            <div class="card-title">Security Settings</div>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>Session Duration</label>
+                    <select id="sessionDuration" onchange="updateSetting('sessionDuration', this.value)">
+                        <option value="1h">1 Hour</option>
+                        <option value="4h">4 Hours</option>
+                        <option value="24h">24 Hours</option>
+                        <option value="until_locked">Until Locked</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Inactivity Timeout (minutes)</label>
+                    <select id="inactivityTimeout" onchange="updateSetting('inactivityTimeout', parseInt(this.value))">
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="120">2 hours</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Absence Lockout (hours)</label>
+                    <select id="absenceLockout" onchange="updateSetting('absenceLockout', parseInt(this.value))">
+                        <option value="12">12 hours</option>
+                        <option value="24">24 hours</option>
+                        <option value="48">48 hours</option>
+                        <option value="72">72 hours</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Location Verification</label>
+                    <label class="toggle">
+                        <input type="checkbox" id="locationVerification" onchange="updateLocationSetting(this.checked)">
+                        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                        <span>Enabled</span>
+                    </label>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label style="display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                    Password Management
+                </label>
+                <div class="password-buttons">
+                    <button class="btn btn-secondary" onclick="showPasswordModal('read')">
+                        Change Read Password
+                    </button>
+                    <button class="btn btn-secondary" onclick="showPasswordModal('edit')">
+                        Change Edit Password
+                    </button>
+                    <button class="btn btn-secondary" onclick="setupBiometric()">
+                        Setup Biometric
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal">
+            <h3>Change <span id="passwordLevel"></span> Password</h3>
+            <div class="form-group">
+                <label>Current Password</label>
+                <input type="password" id="currentPassword" placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="newPassword" placeholder="Enter new password">
+            </div>
+            <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm new password">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // State
+        let selectedLevel = 'read';
+        let changingPasswordLevel = null;
+        let currentLocation = null;
+
+        // Get user location
+        async function getLocation() {
+            try {
+                // Try IP-based location first (more reliable)
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                currentLocation = {
+                    lat: data.latitude,
+                    lon: data.longitude,
+                    city: data.city,
+                    country: data.country_name,
+                    ip: data.ip
+                };
+            } catch (e) {
+                // Fallback to browser geolocation
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => {
+                            currentLocation = {
+                                lat: pos.coords.latitude,
+                                lon: pos.coords.longitude
+                            };
+                        },
+                        err => console.log('Location not available')
+                    );
+                }
+            }
+        }
+
+        // Initialize
+        async function init() {
+            await getLocation();
+            await loadStatus();
+            await loadSessions();
+            await loadActivity();
+            await loadSettings();
+
+            // Check for biometric support
+            if (window.PublicKeyCredential) {
+                document.getElementById('biometricBtn').style.display = 'block';
+            }
+        }
+
+        // Load status
+        async function loadStatus() {
+            try {
+                const res = await fetch('/api/iso/status');
+                const data = await res.json();
+
+                if (!data.setupComplete) {
+                    document.getElementById('setupForm').classList.add('active');
+                    document.getElementById('unlockSection').classList.remove('active');
+                } else {
+                    document.getElementById('setupForm').classList.remove('active');
+                    document.getElementById('unlockSection').classList.add('active');
+                }
+
+                document.getElementById('statusValue').textContent = data.locked ? 'LOCKED' : 'UNLOCKED';
+                document.getElementById('statusValue').className = 'status-value ' + (data.locked ? 'locked' : 'unlocked');
+                document.getElementById('sessionCount').textContent = data.activeSessions;
+            } catch (e) {
+                showToast('Failed to load status', 'error');
+            }
+        }
+
+        // Load sessions
+        async function loadSessions() {
+            try {
+                const res = await fetch('/api/iso/sessions');
+                const sessions = await res.json();
+
+                const activeSessions = sessions.filter(s => s.active);
+                const list = document.getElementById('sessionsList');
+
+                if (activeSessions.length === 0) {
+                    list.innerHTML = '<div class="empty-state">No active sessions</div>';
+                    document.getElementById('accessLevel').textContent = '--';
+                    return;
+                }
+
+                // Show highest access level
+                const hasEdit = activeSessions.some(s => s.level === 'edit');
+                document.getElementById('accessLevel').textContent = hasEdit ? 'EDIT' : 'READ';
+
+                list.innerHTML = activeSessions.map(s => `
+                    <div class="session-item">
+                        <div class="session-info">
+                            <span class="session-agent">${s.agent}</span>
+                            <span class="session-meta">${new Date(s.createdAt).toLocaleTimeString()} - ${s.ip}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="session-level ${s.level}">${s.level}</span>
+                            <button class="btn btn-danger" style="padding: 6px 12px;" onclick="revokeSession('${s.id}')">
+                                Revoke
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load sessions', e);
+            }
+        }
+
+        // Load activity
+        async function loadActivity() {
+            try {
+                const res = await fetch('/api/iso/audit?limit=50');
+                const activities = await res.json();
+
+                const list = document.getElementById('activityList');
+
+                if (activities.length === 0) {
+                    list.innerHTML = '<div class="empty-state">No recent activity</div>';
+                    return;
+                }
+
+                list.innerHTML = activities.map(a => {
+                    const time = new Date(a.timestamp);
+                    const isError = a.action.includes('FAIL') || a.action.includes('DENIED');
+                    const isSuccess = a.action.includes('UNLOCK') || a.action.includes('SUCCESS');
+
+                    return `
+                        <div class="activity-item">
+                            <span class="activity-time">${time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span>
+                            <span class="activity-text ${isError ? 'error' : isSuccess ? 'success' : ''}">${a.details}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('Failed to load activity', e);
+            }
+        }
+
+        // Load settings
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/iso/settings');
+                const settings = await res.json();
+
+                document.getElementById('sessionDuration').value = settings.sessionDuration;
+                document.getElementById('inactivityTimeout').value = settings.inactivityTimeout;
+                document.getElementById('absenceLockout').value = settings.absenceLockout;
+                document.getElementById('locationVerification').checked = settings.locationVerification?.enabled ?? true;
+            } catch (e) {
+                console.error('Failed to load settings', e);
+            }
+        }
+
+        // Complete setup
+        async function completeSetup() {
+            const readPassword = document.getElementById('setupReadPassword').value;
+            const editPassword = document.getElementById('setupEditPassword').value;
+            const editConfirm = document.getElementById('setupEditPasswordConfirm').value;
+
+            if (!readPassword || !editPassword) {
+                showToast('Please enter both passwords', 'error');
+                return;
+            }
+
+            if (editPassword !== editConfirm) {
+                showToast('Edit passwords do not match', 'error');
+                return;
+            }
+
+            if (readPassword.length < 6 || editPassword.length < 6) {
+                showToast('Passwords must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/iso/setup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ readPassword, editPassword })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Setup complete!', 'success');
+                    await loadStatus();
+                } else {
+                    showToast(data.error || 'Setup failed', 'error');
+                }
+            } catch (e) {
+                showToast('Setup failed', 'error');
+            }
+        }
+
+        // Select access level
+        function selectLevel(level) {
+            selectedLevel = level;
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.level === level);
+            });
+        }
+
+        // Unlock with password
+        async function unlockWithPassword() {
+            const password = document.getElementById('unlockPassword').value;
+
+            if (!password) {
+                showToast('Please enter password', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/iso/unlock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password,
+                        level: selectedLevel,
+                        location: currentLocation,
+                        agent: 'Web Dashboard'
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast(`${selectedLevel} access granted!`, 'success');
+                    document.getElementById('unlockPassword').value = '';
+                    await loadStatus();
+                    await loadSessions();
+                    await loadActivity();
+                } else if (data.locationVerification) {
+                    // Show location warning
+                    document.getElementById('locationWarning').classList.add('active');
+                    document.getElementById('locationReason').textContent = data.reason;
+                } else {
+                    showToast(data.error || 'Unlock failed', 'error');
+                }
+            } catch (e) {
+                showToast('Unlock failed', 'error');
+            }
+        }
+
+        // Unlock with biometric
+        async function unlockBiometric() {
+            if (!window.PublicKeyCredential) {
+                showToast('Biometric not supported', 'error');
+                return;
+            }
+
+            try {
+                // Get challenge from server
+                const challengeRes = await fetch('/api/iso/biometric/challenge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: 'admin' })
+                });
+                const challengeData = await challengeRes.json();
+
+                // Request credential
+                const credential = await navigator.credentials.get({
+                    publicKey: {
+                        challenge: Uint8Array.from(atob(challengeData.challenge), c => c.charCodeAt(0)),
+                        rpId: location.hostname,
+                        userVerification: 'required'
+                    }
+                });
+
+                // Verify with server
+                const verifyRes = await fetch('/api/iso/biometric/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        credentialId: credential.id,
+                        signature: btoa(String.fromCharCode(...new Uint8Array(credential.response.signature))),
+                        location: currentLocation,
+                        agent: 'Biometric Auth'
+                    })
+                });
+
+                const data = await verifyRes.json();
+
+                if (data.success) {
+                    showToast('Biometric verified!', 'success');
+                    await loadStatus();
+                    await loadSessions();
+                    await loadActivity();
+                } else {
+                    showToast(data.error || 'Biometric failed', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Biometric authentication failed', 'error');
+            }
+        }
+
+        // Setup biometric
+        async function setupBiometric() {
+            if (!window.PublicKeyCredential) {
+                showToast('Biometric not supported on this device', 'error');
+                return;
+            }
+
+            try {
+                // Get challenge
+                const challengeRes = await fetch('/api/iso/biometric/challenge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: 'admin' })
+                });
+                const challengeData = await challengeRes.json();
+
+                // Create credential
+                const credential = await navigator.credentials.create({
+                    publicKey: {
+                        challenge: Uint8Array.from(atob(challengeData.challenge), c => c.charCodeAt(0)),
+                        rp: { name: 'DOZ ISO', id: location.hostname },
+                        user: {
+                            id: Uint8Array.from('admin', c => c.charCodeAt(0)),
+                            name: 'admin',
+                            displayName: 'Admin'
+                        },
+                        pubKeyCredParams: [
+                            { type: 'public-key', alg: -7 },
+                            { type: 'public-key', alg: -257 }
+                        ],
+                        authenticatorSelection: {
+                            authenticatorAttachment: 'platform',
+                            userVerification: 'required'
+                        }
+                    }
+                });
+
+                // Register with server
+                const registerRes = await fetch('/api/iso/biometric/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: 'admin',
+                        credential: {
+                            id: credential.id,
+                            publicKey: btoa(String.fromCharCode(...new Uint8Array(credential.response.getPublicKey())))
+                        },
+                        level: selectedLevel
+                    })
+                });
+
+                const data = await registerRes.json();
+
+                if (data.success) {
+                    showToast('Biometric registered!', 'success');
+                    document.getElementById('biometricBtn').style.display = 'block';
+                } else {
+                    showToast(data.error || 'Registration failed', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Biometric setup failed', 'error');
+            }
+        }
+
+        // Revoke session
+        async function revokeSession(sessionId) {
+            try {
+                const res = await fetch(`/api/iso/sessions/${sessionId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Session revoked', 'success');
+                    await loadStatus();
+                    await loadSessions();
+                    await loadActivity();
+                } else {
+                    showToast(data.error || 'Failed to revoke', 'error');
+                }
+            } catch (e) {
+                showToast('Failed to revoke session', 'error');
+            }
+        }
+
+        // Lock all sessions
+        async function lockAllSessions() {
+            try {
+                const res = await fetch('/api/iso/lock', { method: 'POST' });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('All sessions locked', 'success');
+                    await loadStatus();
+                    await loadSessions();
+                    await loadActivity();
+                } else {
+                    showToast(data.error || 'Failed to lock', 'error');
+                }
+            } catch (e) {
+                showToast('Failed to lock sessions', 'error');
+            }
+        }
+
+        // Update setting
+        async function updateSetting(key, value) {
+            try {
+                const res = await fetch('/api/iso/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ [key]: value })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Setting updated', 'success');
+                } else {
+                    showToast(data.error || 'Failed to update', 'error');
+                }
+            } catch (e) {
+                showToast('Failed to update setting', 'error');
+            }
+        }
+
+        // Update location setting
+        async function updateLocationSetting(enabled) {
+            try {
+                const res = await fetch('/api/iso/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        locationVerification: { enabled }
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Location verification ' + (enabled ? 'enabled' : 'disabled'), 'success');
+                }
+            } catch (e) {
+                showToast('Failed to update setting', 'error');
+            }
+        }
+
+        // Show password modal
+        function showPasswordModal(level) {
+            changingPasswordLevel = level;
+            document.getElementById('passwordLevel').textContent = level.charAt(0).toUpperCase() + level.slice(1);
+            document.getElementById('passwordModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // Change password
+        async function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (!current || !newPass) {
+                showToast('Please fill all fields', 'error');
+                return;
+            }
+
+            if (newPass !== confirm) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            if (newPass.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/iso/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        level: changingPasswordLevel,
+                        currentPassword: current,
+                        newPassword: newPass
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Password changed!', 'success');
+                    closeModal();
+                    await loadActivity();
+                } else {
+                    showToast(data.error || 'Failed to change password', 'error');
+                }
+            } catch (e) {
+                showToast('Failed to change password', 'error');
+            }
+        }
+
+        // Show toast
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Auto-refresh
+        setInterval(async () => {
+            await loadSessions();
+        }, 30000);
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started with DOZ UP - Complete Beginner Guide</title>
+    <meta name="description" content="Learn how to get started with DOZ UP. This guide covers installation, first screenshot capture, and basic features.">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="stylesheet" href="/css/i18n.css">
+    <link rel="stylesheet" href="/css/onboarding.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        .header {
+            background: rgba(10, 10, 26, 0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .logo img { height: 32px; }
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        .breadcrumb a {
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover { color: #10b981; }
+
+        .tutorial-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+        .tutorial-header {
+            margin-bottom: 40px;
+        }
+        .tutorial-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .tutorial-meta {
+            display: flex;
+            gap: 20px;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        .tutorial-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tutorial-meta svg {
+            width: 18px;
+            height: 18px;
+        }
+        .difficulty-beginner { color: #10b981 !important; }
+
+        .tutorial-content h2 {
+            font-size: 1.5rem;
+            margin: 40px 0 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .tutorial-content h2:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+        .tutorial-content p {
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .step {
+            display: flex;
+            gap: 20px;
+            margin: 25px 0;
+            padding: 25px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+        }
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        .step-content p {
+            color: #94a3b8;
+            margin-bottom: 0;
+        }
+
+        .tip-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .tip-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        .tip-box p {
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .keyboard-shortcut {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .key {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        .cta-box h3 {
+            margin-bottom: 15px;
+        }
+        .cta-box p {
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: #10b981;
+        }
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .tutorial-header h1 { font-size: 1.8rem; }
+            .tutorial-meta { flex-wrap: wrap; gap: 12px; }
+            .step { flex-direction: column; gap: 15px; }
+            .nav-links { flex-direction: column; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <img src="/logo.png" alt="DOZ UP">
+                <span>DOZ UP</span>
+            </a>
+            <nav class="breadcrumb">
+                <a href="/tutorials/" data-i18n="nav.tutorials">Tutorials</a>
+                <span>/</span>
+                <span data-i18n="tutorial.started.title">Getting Started</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="tutorial-container">
+        <header class="tutorial-header">
+            <h1 data-i18n="tutorial.started.title">Getting Started Guide</h1>
+            <div class="tutorial-meta">
+                <span class="difficulty-beginner">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                    <span data-i18n="difficulty.beginner">Beginner</span>
+                </span>
+                <span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    5 min read
+                </span>
+            </div>
+        </header>
+
+        <article class="tutorial-content">
+            <h2 data-i18n="tutorial.started.what">What is DOZ UP?</h2>
+            <p data-i18n="tutorial.started.what.desc">DOZ UP is a powerful screenshot and image sharing tool designed for developers, designers, and teams. Capture screenshots instantly, annotate them with the built-in Studio editor, and share them with auto-generated links that work across all devices.</p>
+
+            <h2 data-i18n="tutorial.started.install">Step 1: Install DOZ UP</h2>
+            <p data-i18n="tutorial.started.install.intro">DOZ UP is available for all major platforms. Choose your preferred method:</p>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3 data-i18n="tutorial.started.install.desktop">Desktop App (Windows/Mac/Linux)</h3>
+                    <p data-i18n="tutorial.started.install.desktop.desc">Download the desktop app for the best experience with system-wide hotkeys and automatic upload.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3 data-i18n="tutorial.started.install.web">Web App</h3>
+                    <p data-i18n="tutorial.started.install.web.desc">Use DOZ UP directly in your browser - no installation required. Perfect for quick uploads.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3 data-i18n="tutorial.started.install.extension">Browser Extension</h3>
+                    <p data-i18n="tutorial.started.install.extension.desc">Capture screenshots of web pages directly from your browser with one click.</p>
+                </div>
+            </div>
+
+            <h2 data-i18n="tutorial.started.first">Step 2: Your First Screenshot</h2>
+            <p data-i18n="tutorial.started.first.intro">Once installed, capturing your first screenshot is easy:</p>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3 data-i18n="tutorial.started.first.hotkey">Use the Hotkey</h3>
+                    <p>Press <span class="keyboard-shortcut"><span class="key">Ctrl</span><span class="key">Shift</span><span class="key">S</span></span> to instantly capture your screen</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3 data-i18n="tutorial.started.first.select">Select Area</h3>
+                    <p data-i18n="tutorial.started.first.select.desc">Click and drag to select the area you want to capture</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3 data-i18n="tutorial.started.first.share">Auto Upload & Share</h3>
+                    <p data-i18n="tutorial.started.first.share.desc">Your screenshot is automatically uploaded and the link is copied to your clipboard</p>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h4>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span data-i18n="common.tip">Pro Tip</span>
+                </h4>
+                <p data-i18n="tutorial.started.tip">You can also paste images directly from your clipboard using <span class="keyboard-shortcut"><span class="key">Ctrl</span><span class="key">V</span></span> on the upload page!</p>
+            </div>
+
+            <h2 data-i18n="tutorial.started.share">Step 3: Share Your Screenshot</h2>
+            <p data-i18n="tutorial.started.share.intro">After capturing, your screenshot link is automatically copied. Simply paste it anywhere - Slack, Discord, email, or any messaging app. Recipients can view the full-quality image on any device.</p>
+
+            <h2 data-i18n="tutorial.started.next">What's Next?</h2>
+            <p data-i18n="tutorial.started.next.intro">Now that you've captured your first screenshot, explore these features:</p>
+
+            <ul style="color: #94a3b8; padding-left: 20px; margin-bottom: 20px;">
+                <li style="margin-bottom: 10px;" data-i18n="tutorial.started.next.studio">Edit in Studio - Add annotations, arrows, and blur sensitive info</li>
+                <li style="margin-bottom: 10px;" data-i18n="tutorial.started.next.gallery">Gallery - Browse and manage all your uploads</li>
+                <li style="margin-bottom: 10px;" data-i18n="tutorial.started.next.settings">Settings - Customize hotkeys and preferences</li>
+            </ul>
+
+            <div class="cta-box">
+                <h3 data-i18n="tutorial.started.cta.title">Ready to capture?</h3>
+                <p data-i18n="tutorial.started.cta.desc">Download DOZ UP now and start sharing screenshots in seconds</p>
+                <a href="/download.html" class="cta-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span data-i18n="nav.download">Download</span>
+                </a>
+            </div>
+        </article>
+
+        <nav class="nav-links">
+            <a href="/tutorials/" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span data-i18n="tutorial.nav.back">All Tutorials</span>
+            </a>
+            <a href="/tutorials/screenshot-capture.html" class="nav-link">
+                <span data-i18n="tutorial.capture.title">Screenshot Capture</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+        </nav>
+    </main>
+
+    <script src="/js/onboarding.js"></script>
+</body>
+</html>

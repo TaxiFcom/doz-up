@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Photo Collage Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .header-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .header-btn.primary {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: #fff;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* MAIN CONTAINER */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 300px;
+            background: rgba(0,0,0,0.4);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        /* LAYOUT OPTIONS */
+        .layouts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .layout-option {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 8px;
+            transition: all 0.2s;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+        }
+
+        .layout-option:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .layout-option.active {
+            border-color: #ec4899;
+            background: rgba(236, 72, 153, 0.1);
+        }
+
+        .layout-cell {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+
+        /* Layout Previews */
+        .layout-option[data-layout="2x1"] .layout-cell { width: calc(50% - 1.5px); height: 100%; }
+        .layout-option[data-layout="1x2"] .layout-cell { width: 100%; height: calc(50% - 1.5px); }
+        .layout-option[data-layout="2x2"] .layout-cell { width: calc(50% - 1.5px); height: calc(50% - 1.5px); }
+        .layout-option[data-layout="3x1"] .layout-cell { width: calc(33.33% - 2px); height: 100%; }
+        .layout-option[data-layout="1x3"] .layout-cell { width: 100%; height: calc(33.33% - 2px); }
+        .layout-option[data-layout="3x3"] .layout-cell { width: calc(33.33% - 2px); height: calc(33.33% - 2px); }
+        .layout-option[data-layout="2-1"] .layout-cell:first-child { width: 100%; height: calc(50% - 1.5px); }
+        .layout-option[data-layout="2-1"] .layout-cell:not(:first-child) { width: calc(50% - 1.5px); height: calc(50% - 1.5px); }
+        .layout-option[data-layout="1-2"] .layout-cell:first-child,
+        .layout-option[data-layout="1-2"] .layout-cell:nth-child(2) { width: calc(50% - 1.5px); height: calc(50% - 1.5px); }
+        .layout-option[data-layout="1-2"] .layout-cell:last-child { width: 100%; height: calc(50% - 1.5px); }
+
+        /* PHOTOS LIST */
+        .photos-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .photo-add-btn {
+            width: 100%;
+            padding: 40px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #64748b;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .photo-add-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #ec4899;
+            color: #fff;
+        }
+
+        .photo-add-btn svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .photos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .photo-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            cursor: move;
+        }
+
+        .photo-item.dragging {
+            opacity: 0.5;
+        }
+
+        .photo-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .photo-info {
+            flex: 1;
+        }
+
+        .photo-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .photo-info p {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .photo-remove {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .photo-remove:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        /* CUSTOMIZATION */
+        .customize-section {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .option-row label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .option-row input[type="range"] {
+            width: 120px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.1);
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .option-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ec4899;
+            cursor: pointer;
+        }
+
+        .option-row input[type="color"] {
+            width: 40px;
+            height: 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .option-row select {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        /* CANVAS AREA */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        .collage-canvas-wrapper {
+            position: relative;
+            background: #1a1a2e;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        #collageCanvas {
+            display: block;
+        }
+
+        /* COLLAGE PREVIEW */
+        .collage-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .collage-cell {
+            position: absolute;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.2);
+        }
+
+        .collage-cell:hover {
+            border-color: #ec4899;
+        }
+
+        .collage-cell.has-image {
+            border: none;
+            background: none;
+        }
+
+        .collage-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .collage-cell .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        .collage-cell .placeholder svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* RIGHT PANEL - FILTERS */
+        .right-panel {
+            width: 280px;
+            background: rgba(0,0,0,0.3);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .filter-presets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-preset {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .filter-preset:hover {
+            transform: scale(1.05);
+        }
+
+        .filter-preset.active {
+            border-color: #ec4899;
+        }
+
+        .filter-preset img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .filter-preset span {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 5px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            font-size: 0.7rem;
+            text-align: center;
+        }
+
+        /* FRAMES */
+        .frames-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .frame-option {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .frame-option:hover {
+            transform: scale(1.1);
+        }
+
+        .frame-option.active {
+            border-color: #ec4899;
+        }
+
+        .frame-option.none { background: rgba(255,255,255,0.05); }
+        .frame-option.white { background: #fff; }
+        .frame-option.black { background: #000; border: 1px solid rgba(255,255,255,0.3); }
+        .frame-option.gradient-1 { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+        .frame-option.gradient-2 { background: linear-gradient(135deg, #06b6d4, #10b981); }
+        .frame-option.gradient-3 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+        .frame-option.wood { background: linear-gradient(135deg, #92400e, #78350f); }
+        .frame-option.gold { background: linear-gradient(135deg, #fbbf24, #d97706); }
+
+        /* STICKERS */
+        .stickers-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .sticker-item {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sticker-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.1);
+        }
+
+        .sticker-item.dragging {
+            opacity: 0.5;
+        }
+
+        /* PLACED STICKERS */
+        .placed-sticker {
+            position: absolute;
+            font-size: 2.5rem;
+            cursor: move;
+            user-select: none;
+            z-index: 100;
+            transition: transform 0.1s;
+        }
+
+        .placed-sticker:hover {
+            transform: scale(1.1);
+        }
+
+        .placed-sticker .delete-sticker {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 18px;
+            height: 18px;
+            background: #ef4444;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .placed-sticker:hover .delete-sticker {
+            display: flex;
+        }
+
+        /* HIDDEN INPUT */
+        #photoInput { display: none; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .right-panel { display: none; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; max-height: 250px; }
+            .collage-container { width: 90vw; height: 90vw; max-width: 500px; max-height: 500px; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px 25px;
+            color: #fff;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+    </style>
+    <!-- Time-Based Theme Styles -->
+    <link rel="stylesheet" href="/css/time-theme.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <a href="/up" class="logo" style="text-decoration: none;">
+            <h1>DOZ Collage</h1>
+            <span>NEW</span>
+        </a>
+        <div class="header-actions">
+            <button class="header-btn secondary" onclick="resetCollage()">Reset</button>
+            <button class="header-btn secondary" onclick="downloadCollage()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" style="vertical-align: middle; margin-right: 5px;"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/></svg>
+                Download
+            </button>
+            <button class="header-btn primary" onclick="saveAndShare()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" style="vertical-align: middle; margin-right: 5px;"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+                Save & Share
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar">
+            <!-- Layouts -->
+            <div class="sidebar-section">
+                <h4 class="section-title">Choose Layout</h4>
+                <div class="layouts-grid">
+                    <div class="layout-option active" data-layout="2x2" onclick="setLayout('2x2')">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-option" data-layout="2x1" onclick="setLayout('2x1')">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-option" data-layout="1x2" onclick="setLayout('1x2')">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-option" data-layout="3x1" onclick="setLayout('3x1')">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-option" data-layout="1x3" onclick="setLayout('1x3')">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-option" data-layout="3x3" onclick="setLayout('3x3')">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-option" data-layout="2-1" onclick="setLayout('2-1')">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-option" data-layout="1-2" onclick="setLayout('1-2')">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-option" data-layout="free" onclick="setLayout('free')">
+                        <div class="layout-cell" style="width: 40%; height: 40%; position: absolute; top: 10%; left: 10%;"></div>
+                        <div class="layout-cell" style="width: 50%; height: 50%; position: absolute; bottom: 10%; right: 10%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photos -->
+            <div class="photos-section">
+                <h4 class="section-title">Your Photos</h4>
+                <button class="photo-add-btn" onclick="addPhotos()">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                    Add Photos
+                </button>
+                <div class="photos-list" id="photosList">
+                    <!-- Photos will be added here -->
+                </div>
+            </div>
+
+            <!-- Customization -->
+            <div class="customize-section">
+                <h4 class="section-title">Customize</h4>
+                <div class="option-row">
+                    <label>Spacing</label>
+                    <input type="range" id="spacingSlider" min="0" max="30" value="10" onchange="updateSpacing(this.value)">
+                </div>
+                <div class="option-row">
+                    <label>Corner Radius</label>
+                    <input type="range" id="radiusSlider" min="0" max="30" value="10" onchange="updateRadius(this.value)">
+                </div>
+                <div class="option-row">
+                    <label>Background</label>
+                    <input type="color" id="bgColor" value="#000000" onchange="updateBackground(this.value)">
+                </div>
+                <div class="option-row">
+                    <label>Aspect Ratio</label>
+                    <select id="aspectRatio" onchange="updateAspectRatio(this.value)">
+                        <option value="1:1">1:1 Square</option>
+                        <option value="4:5">4:5 Portrait</option>
+                        <option value="16:9">16:9 Wide</option>
+                        <option value="9:16">9:16 Story</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CANVAS AREA -->
+        <main class="canvas-area">
+            <div class="collage-canvas-wrapper">
+                <div class="collage-container" id="collageContainer">
+                    <!-- Cells will be generated by JS -->
+                </div>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL -->
+        <aside class="right-panel">
+            <h4 class="section-title">Filters</h4>
+            <div class="filter-presets" id="filtersGrid">
+                <div class="filter-preset active" onclick="applyFilter('none')" style="background: #333;">
+                    <span>Original</span>
+                </div>
+                <div class="filter-preset" onclick="applyFilter('grayscale(1)')" style="background: #555; filter: grayscale(1);">
+                    <span>B&W</span>
+                </div>
+                <div class="filter-preset" onclick="applyFilter('sepia(0.8)')" style="background: #8b6914; filter: sepia(0.8);">
+                    <span>Sepia</span>
+                </div>
+                <div class="filter-preset" onclick="applyFilter('contrast(1.3) saturate(1.3)')" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">
+                    <span>Vivid</span>
+                </div>
+                <div class="filter-preset" onclick="applyFilter('brightness(1.1) saturate(0.8)')" style="background: linear-gradient(135deg, #fecaca, #fde68a);">
+                    <span>Fade</span>
+                </div>
+                <div class="filter-preset" onclick="applyFilter('contrast(1.2) brightness(1.1)')" style="background: linear-gradient(135deg, #0f172a, #1e3a5f);">
+                    <span>Cool</span>
+                </div>
+            </div>
+
+            <h4 class="section-title">Frames</h4>
+            <div class="frames-grid">
+                <div class="frame-option none active" onclick="setFrame('none')"></div>
+                <div class="frame-option white" onclick="setFrame('#ffffff')"></div>
+                <div class="frame-option black" onclick="setFrame('#000000')"></div>
+                <div class="frame-option gradient-1" onclick="setFrame('gradient-1')"></div>
+                <div class="frame-option gradient-2" onclick="setFrame('gradient-2')"></div>
+                <div class="frame-option gradient-3" onclick="setFrame('gradient-3')"></div>
+                <div class="frame-option wood" onclick="setFrame('wood')"></div>
+                <div class="frame-option gold" onclick="setFrame('gold')"></div>
+            </div>
+
+            <h4 class="section-title" style="margin-top: 20px;">Stickers</h4>
+            <div class="stickers-grid" id="stickersGrid">
+                <!-- Stickers populated by JS -->
+            </div>
+        </aside>
+    </div>
+
+    <!-- HIDDEN INPUT -->
+    <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotoUpload(event)">
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============ STATE ============
+        let currentLayout = '2x2';
+        let photos = [];
+        let cellImages = {};
+        let collageSettings = {
+            spacing: 10,
+            radius: 10,
+            background: '#000000',
+            aspectRatio: '1:1',
+            filter: 'none',
+            frame: 'none',
+            stickers: [] // Array of {emoji, x, y, id}
+        };
+
+        let draggedSticker = null;
+        let stickerIdCounter = 0;
+
+        let selectedCellIndex = null;
+
+        const layouts = {
+            '2x2': [
+                { x: 0, y: 0, w: 50, h: 50 },
+                { x: 50, y: 0, w: 50, h: 50 },
+                { x: 0, y: 50, w: 50, h: 50 },
+                { x: 50, y: 50, w: 50, h: 50 }
+            ],
+            '2x1': [
+                { x: 0, y: 0, w: 50, h: 100 },
+                { x: 50, y: 0, w: 50, h: 100 }
+            ],
+            '1x2': [
+                { x: 0, y: 0, w: 100, h: 50 },
+                { x: 0, y: 50, w: 100, h: 50 }
+            ],
+            '3x1': [
+                { x: 0, y: 0, w: 33.33, h: 100 },
+                { x: 33.33, y: 0, w: 33.33, h: 100 },
+                { x: 66.66, y: 0, w: 33.34, h: 100 }
+            ],
+            '1x3': [
+                { x: 0, y: 0, w: 100, h: 33.33 },
+                { x: 0, y: 33.33, w: 100, h: 33.33 },
+                { x: 0, y: 66.66, w: 100, h: 33.34 }
+            ],
+            '3x3': [
+                { x: 0, y: 0, w: 33.33, h: 33.33 },
+                { x: 33.33, y: 0, w: 33.33, h: 33.33 },
+                { x: 66.66, y: 0, w: 33.34, h: 33.33 },
+                { x: 0, y: 33.33, w: 33.33, h: 33.33 },
+                { x: 33.33, y: 33.33, w: 33.33, h: 33.33 },
+                { x: 66.66, y: 33.33, w: 33.34, h: 33.33 },
+                { x: 0, y: 66.66, w: 33.33, h: 33.34 },
+                { x: 33.33, y: 66.66, w: 33.33, h: 33.34 },
+                { x: 66.66, y: 66.66, w: 33.34, h: 33.34 }
+            ],
+            '2-1': [
+                { x: 0, y: 0, w: 100, h: 50 },
+                { x: 0, y: 50, w: 50, h: 50 },
+                { x: 50, y: 50, w: 50, h: 50 }
+            ],
+            '1-2': [
+                { x: 0, y: 0, w: 50, h: 50 },
+                { x: 50, y: 0, w: 50, h: 50 },
+                { x: 0, y: 50, w: 100, h: 50 }
+            ],
+            'free': [
+                { x: 10, y: 10, w: 45, h: 45 },
+                { x: 45, y: 45, w: 50, h: 50 }
+            ]
+        };
+
+        const stickers = [
+            '😀', '😍', '🥳', '😎', '🤩', '❤️', '💕', '✨',
+            '🌟', '🔥', '💯', '👑', '🎉', '🌈', '☀️', '🌙',
+            '⭐', '💫', '🦋', '🌸'
+        ];
+
+        // ============ INITIALIZATION ============
+        function init() {
+            renderCollage();
+            populateStickers();
+        }
+
+        function populateStickers() {
+            const grid = document.getElementById('stickersGrid');
+            stickers.forEach(sticker => {
+                const item = document.createElement('div');
+                item.className = 'sticker-item';
+                item.textContent = sticker;
+                item.draggable = true;
+                item.dataset.emoji = sticker;
+
+                // Drag events for sticker palette items
+                item.addEventListener('dragstart', (e) => {
+                    draggedSticker = sticker;
+                    item.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', sticker);
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+
+                item.addEventListener('dragend', () => {
+                    item.classList.remove('dragging');
+                    draggedSticker = null;
+                });
+
+                // Click to add at center
+                item.addEventListener('click', () => addSticker(sticker));
+
+                grid.appendChild(item);
+            });
+
+            // Setup drop zone on collage container
+            setupCollageDropZone();
+        }
+
+        function setupCollageDropZone() {
+            const container = document.getElementById('collageContainer');
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                container.style.outline = '2px dashed #ec4899';
+            });
+
+            container.addEventListener('dragleave', (e) => {
+                container.style.outline = 'none';
+            });
+
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                container.style.outline = 'none';
+
+                const emoji = e.dataTransfer.getData('text/plain') || draggedSticker;
+                if (!emoji) return;
+
+                const rect = container.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+                placeSticker(emoji, x, y);
+            });
+        }
+
+        // ============ LAYOUTS ============
+        function setLayout(layout) {
+            currentLayout = layout;
+
+            // Update UI
+            document.querySelectorAll('.layout-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.layout === layout);
+            });
+
+            renderCollage();
+        }
+
+        function renderCollage() {
+            const container = document.getElementById('collageContainer');
+            const layoutCells = layouts[currentLayout];
+            const spacing = collageSettings.spacing;
+            const radius = collageSettings.radius;
+
+            container.innerHTML = '';
+            container.style.background = collageSettings.background;
+
+            layoutCells.forEach((cell, index) => {
+                const div = document.createElement('div');
+                div.className = 'collage-cell';
+                div.style.left = `calc(${cell.x}% + ${spacing/2}px)`;
+                div.style.top = `calc(${cell.y}% + ${spacing/2}px)`;
+                div.style.width = `calc(${cell.w}% - ${spacing}px)`;
+                div.style.height = `calc(${cell.h}% - ${spacing}px)`;
+                div.style.borderRadius = `${radius}px`;
+
+                if (cellImages[index]) {
+                    div.classList.add('has-image');
+                    const img = document.createElement('img');
+                    img.src = cellImages[index];
+                    img.style.filter = collageSettings.filter;
+                    div.appendChild(img);
+                } else {
+                    div.innerHTML = `
+                        <div class="placeholder">
+                            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                            Click to add
+                        </div>
+                    `;
+                }
+
+                div.onclick = () => selectCell(index);
+                container.appendChild(div);
+            });
+        }
+
+        function selectCell(index) {
+            selectedCellIndex = index;
+
+            if (photos.length > 0) {
+                // Show photo picker or use next available photo
+                const nextPhoto = photos.find((p, i) => !Object.values(cellImages).includes(p.data));
+                if (nextPhoto) {
+                    cellImages[index] = nextPhoto.data;
+                    renderCollage();
+                } else {
+                    // Trigger file upload
+                    document.getElementById('photoInput').click();
+                }
+            } else {
+                document.getElementById('photoInput').click();
+            }
+        }
+
+        // ============ PHOTOS ============
+        function addPhotos() {
+            selectedCellIndex = null;
+            document.getElementById('photoInput').click();
+        }
+
+        function handlePhotoUpload(event) {
+            const files = Array.from(event.target.files);
+
+            files.forEach((file, i) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const photoData = {
+                        id: Date.now() + i,
+                        name: file.name,
+                        size: (file.size / 1024).toFixed(1) + ' KB',
+                        data: e.target.result
+                    };
+                    photos.push(photoData);
+                    renderPhotosList();
+
+                    // Auto-assign to selected cell or next empty cell
+                    if (selectedCellIndex !== null && !cellImages[selectedCellIndex]) {
+                        cellImages[selectedCellIndex] = photoData.data;
+                        selectedCellIndex = null;
+                    } else {
+                        // Find next empty cell
+                        const layoutCells = layouts[currentLayout];
+                        for (let j = 0; j < layoutCells.length; j++) {
+                            if (!cellImages[j]) {
+                                cellImages[j] = photoData.data;
+                                break;
+                            }
+                        }
+                    }
+                    renderCollage();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            event.target.value = '';
+        }
+
+        function renderPhotosList() {
+            const list = document.getElementById('photosList');
+            list.innerHTML = '';
+
+            photos.forEach((photo, index) => {
+                list.innerHTML += `
+                    <div class="photo-item" draggable="true" data-index="${index}">
+                        <img class="photo-thumb" src="${photo.data}" alt="${photo.name}">
+                        <div class="photo-info">
+                            <h4>Photo ${index + 1}</h4>
+                            <p>${photo.size}</p>
+                        </div>
+                        <button class="photo-remove" onclick="removePhoto(${index})">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function removePhoto(index) {
+            const removedPhoto = photos[index];
+
+            // Remove from cellImages
+            Object.keys(cellImages).forEach(key => {
+                if (cellImages[key] === removedPhoto.data) {
+                    delete cellImages[key];
+                }
+            });
+
+            photos.splice(index, 1);
+            renderPhotosList();
+            renderCollage();
+        }
+
+        // ============ CUSTOMIZATION ============
+        function updateSpacing(value) {
+            collageSettings.spacing = parseInt(value);
+            renderCollage();
+        }
+
+        function updateRadius(value) {
+            collageSettings.radius = parseInt(value);
+            renderCollage();
+        }
+
+        function updateBackground(value) {
+            collageSettings.background = value;
+            renderCollage();
+        }
+
+        function updateAspectRatio(value) {
+            collageSettings.aspectRatio = value;
+            const container = document.getElementById('collageContainer');
+
+            switch(value) {
+                case '1:1':
+                    container.style.width = '600px';
+                    container.style.height = '600px';
+                    break;
+                case '4:5':
+                    container.style.width = '480px';
+                    container.style.height = '600px';
+                    break;
+                case '16:9':
+                    container.style.width = '640px';
+                    container.style.height = '360px';
+                    break;
+                case '9:16':
+                    container.style.width = '360px';
+                    container.style.height = '640px';
+                    break;
+            }
+            renderCollage();
+        }
+
+        function applyFilter(filter) {
+            collageSettings.filter = filter;
+
+            document.querySelectorAll('.filter-preset').forEach(el => el.classList.remove('active'));
+            event.target.closest('.filter-preset').classList.add('active');
+
+            renderCollage();
+        }
+
+        function setFrame(frame) {
+            collageSettings.frame = frame;
+
+            document.querySelectorAll('.frame-option').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const container = document.getElementById('collageContainer');
+
+            if (frame === 'none') {
+                container.style.border = 'none';
+                container.style.padding = '0';
+            } else if (frame.startsWith('#')) {
+                container.style.border = `15px solid ${frame}`;
+            } else if (frame.startsWith('gradient')) {
+                const gradients = {
+                    'gradient-1': 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                    'gradient-2': 'linear-gradient(135deg, #06b6d4, #10b981)',
+                    'gradient-3': 'linear-gradient(135deg, #f59e0b, #ef4444)'
+                };
+                container.style.border = '15px solid';
+                container.style.borderImage = gradients[frame] + ' 1';
+            } else if (frame === 'wood') {
+                container.style.border = '15px solid #92400e';
+            } else if (frame === 'gold') {
+                container.style.border = '15px solid';
+                container.style.borderImage = 'linear-gradient(135deg, #fbbf24, #d97706) 1';
+            }
+        }
+
+        function addSticker(emoji) {
+            // Add sticker at center of collage
+            placeSticker(emoji, 50, 50);
+        }
+
+        function placeSticker(emoji, xPercent, yPercent) {
+            const container = document.getElementById('collageContainer');
+            const stickerId = `sticker-${stickerIdCounter++}`;
+
+            // Add to state
+            const stickerData = {
+                id: stickerId,
+                emoji: emoji,
+                x: xPercent,
+                y: yPercent
+            };
+            collageSettings.stickers.push(stickerData);
+
+            // Create DOM element
+            const stickerEl = document.createElement('div');
+            stickerEl.className = 'placed-sticker';
+            stickerEl.id = stickerId;
+            stickerEl.textContent = emoji;
+            stickerEl.style.left = `${xPercent}%`;
+            stickerEl.style.top = `${yPercent}%`;
+            stickerEl.style.transform = 'translate(-50%, -50%)';
+
+            // Delete button
+            const deleteBtn = document.createElement('span');
+            deleteBtn.className = 'delete-sticker';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                removeSticker(stickerId);
+            };
+            stickerEl.appendChild(deleteBtn);
+
+            // Make sticker draggable within collage
+            makeStickerDraggable(stickerEl, stickerData);
+
+            container.appendChild(stickerEl);
+            showToast('Sticker added! Drag to reposition.');
+        }
+
+        function makeStickerDraggable(element, stickerData) {
+            let isDragging = false;
+            let startX, startY, startLeft, startTop;
+
+            element.addEventListener('mousedown', (e) => {
+                if (e.target.classList.contains('delete-sticker')) return;
+                isDragging = true;
+                element.style.cursor = 'grabbing';
+
+                const container = document.getElementById('collageContainer');
+                const rect = container.getBoundingClientRect();
+
+                startX = e.clientX;
+                startY = e.clientY;
+                startLeft = parseFloat(element.style.left);
+                startTop = parseFloat(element.style.top);
+
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                const container = document.getElementById('collageContainer');
+                const rect = container.getBoundingClientRect();
+
+                const deltaX = ((e.clientX - startX) / rect.width) * 100;
+                const deltaY = ((e.clientY - startY) / rect.height) * 100;
+
+                const newX = Math.min(100, Math.max(0, startLeft + deltaX));
+                const newY = Math.min(100, Math.max(0, startTop + deltaY));
+
+                element.style.left = `${newX}%`;
+                element.style.top = `${newY}%`;
+
+                // Update state
+                stickerData.x = newX;
+                stickerData.y = newY;
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    element.style.cursor = 'move';
+                }
+            });
+        }
+
+        function removeSticker(stickerId) {
+            // Remove from DOM
+            const element = document.getElementById(stickerId);
+            if (element) element.remove();
+
+            // Remove from state
+            collageSettings.stickers = collageSettings.stickers.filter(s => s.id !== stickerId);
+            showToast('Sticker removed');
+        }
+
+        function renderStickers() {
+            // Re-render all stickers (used after layout changes)
+            const container = document.getElementById('collageContainer');
+
+            // Remove existing sticker elements
+            container.querySelectorAll('.placed-sticker').forEach(el => el.remove());
+
+            // Re-add from state
+            collageSettings.stickers.forEach(stickerData => {
+                const stickerEl = document.createElement('div');
+                stickerEl.className = 'placed-sticker';
+                stickerEl.id = stickerData.id;
+                stickerEl.textContent = stickerData.emoji;
+                stickerEl.style.left = `${stickerData.x}%`;
+                stickerEl.style.top = `${stickerData.y}%`;
+                stickerEl.style.transform = 'translate(-50%, -50%)';
+
+                const deleteBtn = document.createElement('span');
+                deleteBtn.className = 'delete-sticker';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeSticker(stickerData.id);
+                };
+                stickerEl.appendChild(deleteBtn);
+
+                makeStickerDraggable(stickerEl, stickerData);
+                container.appendChild(stickerEl);
+            });
+        }
+
+        // ============ EXPORT ============
+        function resetCollage() {
+            photos = [];
+            cellImages = {};
+
+            // Remove sticker elements
+            const container = document.getElementById('collageContainer');
+            container.querySelectorAll('.placed-sticker').forEach(el => el.remove());
+
+            collageSettings = {
+                spacing: 10,
+                radius: 10,
+                background: '#000000',
+                aspectRatio: '1:1',
+                filter: 'none',
+                frame: 'none',
+                stickers: []
+            };
+            stickerIdCounter = 0;
+
+            document.getElementById('spacingSlider').value = 10;
+            document.getElementById('radiusSlider').value = 10;
+            document.getElementById('bgColor').value = '#000000';
+            document.getElementById('aspectRatio').value = '1:1';
+
+            renderPhotosList();
+            renderCollage();
+            showToast('Collage reset!');
+        }
+
+        async function downloadCollage() {
+            const canvas = await generateCanvas();
+            const link = document.createElement('a');
+            link.download = `doz-collage-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('Collage downloaded!');
+        }
+
+        async function saveAndShare() {
+            const canvas = await generateCanvas();
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+            const formData = new FormData();
+            formData.append('screenshot', blob, 'collage.png');
+            formData.append('deviceId', generateFingerprint());
+
+            // Get userId if logged in
+            const userId = localStorage.getItem('doz_userId');
+            const headers = {};
+            if (userId) headers['X-User-ID'] = userId;
+
+            try {
+                const res = await fetch('/upload', {
+                    method: 'POST',
+                    headers: headers,
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.url) {
+                    navigator.clipboard.writeText(data.url);
+                    showToast('Uploaded! Link copied to clipboard');
+                }
+            } catch (e) {
+                console.error('Upload error:', e);
+                showToast('Upload failed');
+            }
+        }
+
+        async function generateCanvas() {
+            const container = document.getElementById('collageContainer');
+            const rect = container.getBoundingClientRect();
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const scale = 2; // High resolution
+
+            canvas.width = rect.width * scale;
+            canvas.height = rect.height * scale;
+
+            // Draw background
+            ctx.fillStyle = collageSettings.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw each cell
+            const layoutCells = layouts[currentLayout];
+            const spacing = collageSettings.spacing * scale;
+            const radius = collageSettings.radius * scale;
+
+            for (let i = 0; i < layoutCells.length; i++) {
+                const cell = layoutCells[i];
+                const imgData = cellImages[i];
+
+                if (imgData) {
+                    const x = (cell.x / 100) * canvas.width + spacing / 2;
+                    const y = (cell.y / 100) * canvas.height + spacing / 2;
+                    const w = (cell.w / 100) * canvas.width - spacing;
+                    const h = (cell.h / 100) * canvas.height - spacing;
+
+                    // Create rounded rect clipping path
+                    ctx.save();
+                    roundedRect(ctx, x, y, w, h, radius);
+                    ctx.clip();
+
+                    // Draw image
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    await new Promise((resolve) => {
+                        img.onload = resolve;
+                        img.src = imgData;
+                    });
+
+                    // Cover fit
+                    const imgRatio = img.width / img.height;
+                    const cellRatio = w / h;
+                    let drawW, drawH, drawX, drawY;
+
+                    if (imgRatio > cellRatio) {
+                        drawH = h;
+                        drawW = h * imgRatio;
+                        drawX = x - (drawW - w) / 2;
+                        drawY = y;
+                    } else {
+                        drawW = w;
+                        drawH = w / imgRatio;
+                        drawX = x;
+                        drawY = y - (drawH - h) / 2;
+                    }
+
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                    ctx.restore();
+                }
+            }
+
+            // Draw stickers on top
+            if (collageSettings.stickers && collageSettings.stickers.length > 0) {
+                const stickerFontSize = 50 * scale; // Sticker size
+                ctx.font = `${stickerFontSize}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                for (const sticker of collageSettings.stickers) {
+                    const sx = (sticker.x / 100) * canvas.width;
+                    const sy = (sticker.y / 100) * canvas.height;
+                    ctx.fillText(sticker.emoji, sx, sy);
+                }
+            }
+
+            return canvas;
+        }
+
+        function roundedRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        // ============ UTILS ============
+        function generateFingerprint() {
+            const nav = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height].join('|');
+            let hash = 0;
+            for (let i = 0; i < nav.length; i++) { hash = ((hash << 5) - hash) + nav.charCodeAt(i); hash = hash & hash; }
+            return 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show', 'success');
+            setTimeout(() => toast.classList.remove('show', 'success'), 3000);
+        }
+
+        // Initialize
+        init();
+    </script>
+
+</body>
+</html>

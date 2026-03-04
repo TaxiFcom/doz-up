@@ -1,0 +1,3281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DOZ UP - Screenshot to URL in 1 Second | Try Free</title>
+    <meta name="description" content="Paste any image and get a shareable URL instantly. No signup required. The fastest screenshot sharing tool for developers.">
+    <meta name="keywords" content="screenshot tool, screenshot to url, share screenshot, instant upload, screenshot sharing">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+
+    <!-- Preconnect for FAST loading -->
+    <link rel="preconnect" href="https://js.stripe.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://js.stripe.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="preload" href="/logo.png" as="image" fetchpriority="high">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="DOZ UP - Screenshot to URL in 1 Second">
+    <meta property="og:description" content="Paste any image and get a shareable URL instantly. No signup required.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://doz.com/lp/instant.html">
+
+    <!-- Stripe for Express Checkout (Apple Pay / Google Pay) - async for fast first paint -->
+    <script src="https://js.stripe.com/v3/" async></script>
+
+    <!-- Google tag (gtag.js) - Google Ads with Enhanced Conversions -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-441083115"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-441083115', {
+            'allow_enhanced_conversions': true
+        });
+
+        // Track page view as potential conversion
+        gtag('event', 'page_view', {
+            'page_title': 'Landing Page - Instant',
+            'page_location': window.location.href
+        });
+
+        // Sign-up conversion tracking function
+        function trackSignupConversion() {
+            gtag('event', 'conversion', {
+                'send_to': 'AW-441083115/Z8e3CJLTk-oaROvJgdIB'
+            });
+            console.log('[Google Ads] Sign-up conversion tracked');
+        }
+
+        // Download conversion tracking function
+        function trackDownload(platform) {
+            gtag('event', 'conversion', {
+                'send_to': 'AW-441083115/download_' + platform,
+                'value': 2.0,
+                'currency': 'USD'
+            });
+            gtag('event', 'download', {
+                'event_category': 'engagement',
+                'event_label': platform,
+                'value': 1
+            });
+            console.log('[Google Ads] Download tracked:', platform);
+        }
+
+        // Auto-detect platform and highlight recommended download
+        function highlightPlatform() {
+            const ua = navigator.userAgent.toLowerCase();
+            let platform = 'windows';
+            if (ua.includes('mac')) platform = 'mac';
+            else if (ua.includes('android')) platform = 'android';
+            else if (ua.includes('linux')) platform = 'linux';
+
+            const btns = document.querySelectorAll('.platform-btn');
+            btns.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(platform)) {
+                    btn.classList.add('primary-platform');
+                } else if (platform !== 'windows') {
+                    btn.classList.remove('primary-platform');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', highlightPlatform);
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-glow: rgba(16, 185, 129, 0.4);
+            --accent: #f59e0b;
+            --bg-dark: #0a0a1a;
+            --bg-card: rgba(255,255,255,0.05);
+            --text: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px var(--primary-glow); }
+            50% { box-shadow: 0 0 40px var(--primary-glow), 0 0 60px var(--primary-glow); }
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes borderPulse { 0%, 100% { border-color: var(--primary); } 50% { border-color: rgba(16, 185, 129, 0.3); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes checkmark { 0% { stroke-dashoffset: 50; } 100% { stroke-dashoffset: 0; } }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-cta {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 12px 28px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .header-cta:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 10px 30px var(--primary-glow);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 40px 20px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        /* Demo Animation */
+        .demo-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .demo-step {
+            text-align: center;
+            animation: float 3s ease infinite;
+        }
+
+        .demo-step:nth-child(2) { animation-delay: 0.5s; }
+        .demo-step:nth-child(3) { animation-delay: 1s; }
+
+        .demo-step-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.5rem;
+        }
+
+        .demo-step-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .demo-arrow {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        /* Download Section */
+        .download-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .download-section h3 {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .download-section p {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .download-platforms {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .platform-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .platform-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .platform-btn.primary-platform {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-color: var(--primary);
+        }
+
+        .platform-btn.primary-platform:hover {
+            box-shadow: 0 6px 25px var(--primary-glow);
+        }
+
+        .platform-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .download-note {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .download-note a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .download-note a:hover {
+            text-decoration: underline;
+        }
+
+        /* Try It Now Section */
+        .try-section {
+            padding: 40px 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .try-section h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .try-section p {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .paste-zone {
+            border: 3px dashed rgba(16, 185, 129, 0.5);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            background: rgba(16, 185, 129, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: borderPulse 2s infinite;
+            position: relative;
+        }
+
+        .paste-zone:hover {
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .paste-zone.active {
+            border-style: solid;
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .paste-zone.uploading {
+            pointer-events: none;
+        }
+
+        .paste-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            color: var(--primary);
+        }
+
+        .paste-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .paste-hint {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .paste-hint kbd {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .paste-features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .paste-feature {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .paste-feature svg {
+            color: var(--primary);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Upload Progress */
+        .upload-progress {
+            display: none;
+            padding: 40px;
+        }
+
+        .upload-progress.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(16, 185, 129, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Success State */
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-state.active {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .success-icon svg path {
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+            animation: checkmark 0.5s ease forwards 0.2s;
+        }
+
+        .url-box {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .url-box input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            color: var(--text);
+            font-size: 1rem;
+            font-family: monospace;
+        }
+
+        .url-box button {
+            padding: 16px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .url-box button:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--primary-glow);
+        }
+
+        .url-box button.copied {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .expiry-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .expiry-warning svg {
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* Upsell CTA */
+        .upsell-cta {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .upsell-cta h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .upsell-cta p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .upsell-features {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .upsell-feature {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .upsell-feature svg {
+            color: var(--primary);
+        }
+
+        .pro-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 55px;
+            border-radius: 50px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            text-decoration: none;
+            animation: glow 2s infinite, pulse 2s infinite;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pro-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .pro-button::after {
+            content: '\2192';
+            font-size: 1.3rem;
+            transition: transform 0.3s;
+        }
+
+        .pro-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 50px var(--primary-glow);
+        }
+
+        .pro-button:hover::after {
+            transform: translateX(5px);
+        }
+
+        .pro-price {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pro-price span {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .price-badge {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-decoration: none !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        .guarantee-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .guarantee-text::before {
+            content: '\2713';
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Social Proof */
+        .social-proof {
+            padding: 60px 20px;
+            text-align: center;
+            background: var(--bg-card);
+            margin-top: 60px;
+        }
+
+        .social-proof h3 {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .company-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            opacity: 0.7;
+        }
+
+        .company-logos span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* How Easy Section - Animated Demo */
+        .how-easy-section {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(124, 58, 237, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            padding: 50px 30px;
+            margin: 60px auto;
+            max-width: 900px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .how-easy-header { margin-bottom: 30px; }
+        .how-easy-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        .how-easy-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, rgba(255,255,255,0.8));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .how-easy-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+        }
+        .steps-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+        .step-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 25px 20px;
+            width: 180px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+        }
+        .step-number {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .step-animation {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .step-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .step-card p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.4;
+        }
+        .step-arrow {
+            color: rgba(255,255,255,0.3);
+        }
+        .step-arrow svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Step 1 Animation - Screen Capture */
+        .screen-mockup {
+            width: 80px;
+            height: 55px;
+            background: #1a1a2e;
+            border-radius: 6px;
+            border: 2px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+        .fake-window {
+            width: 100%;
+            height: 100%;
+            padding: 5px;
+        }
+        .window-dots {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 5px;
+        }
+        .window-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ff5f56;
+        }
+        .window-dots span:nth-child(2) { background: #ffbd2e; }
+        .window-dots span:nth-child(3) { background: #27ca40; }
+        .window-content {
+            position: relative;
+            height: calc(100% - 14px);
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+        }
+        .cursor-icon {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-left: 2px solid #fff;
+            border-top: 2px solid #fff;
+            transform: rotate(-45deg);
+            animation: cursorMove 2s infinite;
+        }
+        @keyframes cursorMove {
+            0%, 100% { top: 5px; left: 5px; }
+            50% { top: 22px; left: 45px; }
+        }
+        .selection-box {
+            position: absolute;
+            border: 2px dashed #10b981;
+            border-radius: 3px;
+            animation: selectArea 2s infinite;
+        }
+        @keyframes selectArea {
+            0%, 20% { top: 8px; left: 8px; width: 0; height: 0; opacity: 0; }
+            50%, 80% { top: 8px; left: 8px; width: 40px; height: 22px; opacity: 1; }
+            100% { top: 8px; left: 8px; width: 40px; height: 22px; opacity: 0; }
+        }
+
+        /* Step 2 Animation - Upload */
+        .upload-mockup {
+            position: relative;
+            width: 65px;
+            height: 65px;
+        }
+        .upload-icon-animated {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7c3aed;
+            animation: uploadBounce 2s infinite;
+        }
+        .upload-icon-animated svg {
+            width: 32px;
+            height: 32px;
+        }
+        @keyframes uploadBounce {
+            0%, 40% { transform: translateY(0); opacity: 1; }
+            20% { transform: translateY(-10px); }
+            50%, 100% { opacity: 0; transform: translateY(-18px); }
+        }
+        .progress-ring {
+            position: absolute;
+            inset: 0;
+            border: 3px solid rgba(124, 58, 237, 0.2);
+            border-radius: 50%;
+            animation: ringProgress 2s infinite;
+        }
+        @keyframes ringProgress {
+            0%, 40% { border-color: rgba(124, 58, 237, 0.2); transform: scale(1); }
+            60% { border-color: #10b981; border-width: 3px; transform: scale(1.1); }
+            80%, 100% { border-color: #10b981; transform: scale(1); }
+        }
+        .checkmark-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            opacity: 0;
+            animation: checkShow 2s infinite;
+        }
+        .checkmark-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+        @keyframes checkShow {
+            0%, 50% { opacity: 0; transform: scale(0.5); }
+            60%, 90% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; }
+        }
+
+        /* Step 3 Animation - Share */
+        .link-mockup {
+            position: relative;
+            width: 100%;
+        }
+        .link-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        .link-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: #10b981;
+        }
+        .copy-flash {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.3), transparent);
+            animation: flashCopy 2s infinite;
+        }
+        @keyframes flashCopy {
+            0%, 60% { transform: translateX(-100%); }
+            80%, 100% { transform: translateX(100%); }
+        }
+        .share-icons-float {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .float-icon {
+            font-size: 18px;
+            animation: floatUp 2s infinite;
+            opacity: 0;
+        }
+        .float-icon.wa { animation-delay: 0.7s; }
+        .float-icon.tg { animation-delay: 0.85s; }
+        .float-icon.tw { animation-delay: 1s; }
+        @keyframes floatUp {
+            0%, 60% { opacity: 0; transform: translateY(10px); }
+            70%, 90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-5px); }
+        }
+
+        /* CTA Section */
+        .try-now-cta {
+            margin-top: 15px;
+        }
+        .big-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            padding: 22px 50px;
+            border-radius: 50px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            animation: pulse 2s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        .big-cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            animation: shimmer 2.5s infinite;
+        }
+        .big-cta-btn:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 12px 40px rgba(16, 185, 129, 0.6);
+        }
+        .cta-icon {
+            font-size: 1.5rem;
+        }
+        .cta-arrow {
+            font-size: 1.3rem;
+            transition: transform 0.3s;
+        }
+        .big-cta-btn:hover .cta-arrow {
+            transform: translateX(5px);
+        }
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .trust-badges span {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .steps-demo {
+                flex-direction: column;
+                gap: 30px;
+            }
+            .step-arrow {
+                transform: rotate(90deg);
+            }
+            .step-card {
+                width: 220px;
+            }
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 80px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .pricing-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        /* Billing Toggle */
+        .billing-toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .billing-option {
+            font-size: 1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .billing-option.active {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .billing-toggle {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .billing-toggle.yearly {
+            background: var(--primary);
+        }
+
+        .billing-toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 26px;
+            height: 26px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .billing-toggle.yearly .billing-toggle-knob {
+            transform: translateX(28px);
+        }
+
+        .billing-save-badge {
+            background: var(--accent);
+            color: #000;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-left: 5px;
+        }
+
+        .pricing-yearly-total {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-top: 10px;
+            padding: 10px 16px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid rgba(16, 185, 129, 0.4);
+            border-radius: 8px;
+            display: block;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .pricing-original-price {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+
+        /* Top Row - Featured Plans */
+        .pricing-top-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Bottom Row - Other Plans */
+        .pricing-bottom-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 40px 30px;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
+        }
+
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .pricing-card.starter::before {
+            content: 'BEST VALUE';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .pricing-card.compact {
+            padding: 25px 20px;
+        }
+
+        .pricing-card.compact .pricing-name {
+            font-size: 1.1rem;
+        }
+
+        .pricing-card.compact .pricing-price {
+            font-size: 2rem;
+        }
+
+        .pricing-card.compact .pricing-features {
+            margin-bottom: 20px;
+        }
+
+        .pricing-card.compact .pricing-features li {
+            padding: 6px 0;
+            font-size: 0.85rem;
+        }
+
+        .pricing-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .pricing-desc {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            font-size: 0.95rem;
+        }
+
+        .pricing-features li svg {
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        /* Express Checkout Container */
+        .express-checkout {
+            margin-bottom: 15px;
+        }
+
+        .express-checkout-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        #payment-request-button-starter,
+        #payment-request-button-pro {
+            min-height: 44px;
+        }
+
+        .express-checkout-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .express-checkout-divider::before,
+        .express-checkout-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .pricing-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 18px 24px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-btn::after {
+            content: '\2192';
+            font-size: 1.1rem;
+            transition: transform 0.3s;
+        }
+
+        .pricing-btn:hover::after {
+            transform: translateX(4px);
+        }
+
+        .pricing-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            animation: pulse 2.5s infinite;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .pricing-btn.primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2.5s infinite;
+        }
+
+        .pricing-btn.primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
+        }
+
+        .pricing-btn.secondary {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.2);
+            color: var(--text);
+        }
+
+        .pricing-btn.secondary:hover {
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .pricing-btn.accent {
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: #000;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .pricing-btn.accent::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            animation: shimmer 2.5s infinite;
+        }
+
+        .pricing-btn.accent:hover {
+            filter: brightness(1.1);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 60px 20px;
+            background: var(--bg-card);
+        }
+
+        .testimonials h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .testimonial-stars {
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+        }
+
+        .testimonial-role {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .cta-subtext {
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .cta-subtext::before {
+            content: '\1F512';
+            font-size: 1rem;
+        }
+
+        /* Sticky Footer CTA */
+        .sticky-cta {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(10,10,26,0.98), rgba(10,10,26,0.9), transparent);
+            padding: 25px 20px 20px;
+            display: none;
+            z-index: 100;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .sticky-cta.show {
+            display: block;
+        }
+
+        .sticky-cta-inner {
+            max-width: 650px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50px;
+            padding: 16px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 -5px 40px rgba(16, 185, 129, 0.4);
+            animation: glow 2s infinite;
+        }
+
+        .sticky-cta-text {
+            font-weight: 700;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sticky-cta-text::before {
+            content: '\1F525';
+            font-size: 1.2rem;
+        }
+
+        .sticky-cta-btn {
+            background: white;
+            color: var(--primary-dark);
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 800;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sticky-cta-btn::after {
+            content: '\2192';
+            transition: transform 0.3s;
+        }
+
+        .sticky-cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255,255,255,0.3);
+        }
+
+        .sticky-cta-btn:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* Exit Intent Modal */
+        .exit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .exit-modal.show {
+            display: flex;
+        }
+
+        .exit-modal-content {
+            background: var(--bg-dark);
+            border: 2px solid var(--primary);
+            border-radius: 24px;
+            padding: 50px;
+            max-width: 500px;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .exit-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .exit-modal h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .exit-modal p {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .exit-modal-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .exit-modal-form input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .exit-modal-form button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .exit-modal-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--primary-glow);
+        }
+
+        .exit-modal-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .exit-modal-trust {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .steps-grid,
+            .pricing-top-row,
+            .pricing-bottom-row,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-steps {
+                flex-direction: column;
+            }
+
+            .demo-arrow {
+                transform: rotate(90deg);
+            }
+
+            .company-logos {
+                gap: 20px;
+            }
+
+            .company-logos span {
+                font-size: 1.2rem;
+            }
+
+            .paste-zone {
+                padding: 40px 20px;
+            }
+
+            .url-box {
+                flex-direction: column;
+            }
+
+            .exit-modal-form {
+                flex-direction: column;
+            }
+
+            .pricing-card.compact {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+
+    <!-- Inline Checkout (deferred — below-fold content) -->
+    <link rel="stylesheet" href="/css/inline-checkout.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="/css/inline-checkout.css"></noscript>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="/up" class="logo">
+            <svg class="logo-icon" viewBox="0 0 100 100" fill="none">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#10b981"/>
+                        <stop offset="100%" style="stop-color:#34d399"/>
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#logoGrad)"/>
+                <path d="M25 62 C25 62 22 62 22 58 C22 52 28 50 32 50 C32 42 40 36 50 36 C60 36 68 42 68 50 C72 50 78 52 78 58 C78 62 75 62 75 62" fill="white" opacity="0.95"/>
+                <path d="M50 28 L62 44 L54 44 L54 68 L46 68 L46 44 L38 44 Z" fill="#10b981"/>
+            </svg>
+            <span class="logo-text">DOZ UP</span>
+        </a>
+        <a href="/order.html?plan=pro&billing=yearly" class="header-cta" onclick="gtag('event', 'conversion', {'send_to': 'AW-441083115/cta_click', 'value': 119.88, 'currency': 'USD'});">Start Free Trial</a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Screenshot <span>to URL</span> in 1 Second</h1>
+        <p>Paste any image and get a shareable link instantly. No signup required.</p>
+
+        <!-- Demo Animation -->
+        <div class="demo-container">
+            <div class="demo-steps">
+                <div class="demo-step">
+                    <div class="demo-step-icon">Ctrl+V</div>
+                    <div class="demo-step-text">Paste Image</div>
+                </div>
+                <span class="demo-arrow">&#8594;</span>
+                <div class="demo-step">
+                    <div class="demo-step-icon">&#9729;</div>
+                    <div class="demo-step-text">Instant Upload</div>
+                </div>
+                <span class="demo-arrow">&#8594;</span>
+                <div class="demo-step">
+                    <div class="demo-step-icon">&#128279;</div>
+                    <div class="demo-step-text">URL Ready!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Apps Section -->
+        <div class="download-section">
+            <h3>Get DOZ UP App - Free Download</h3>
+            <p>Capture & share screenshots instantly from any device</p>
+            <div class="download-platforms" id="downloadPlatforms">
+                <!-- Windows -->
+                <a href="/download/DOZ-UP-v2.8.0.exe" class="platform-btn primary-platform" onclick="trackDownload('windows')">
+                    <svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.5v6.5L3 12zm0 6v-5.25l6 .25v5.75l-6-1.5zm7-7l8-2v7h-8V11zm0 6.5l8 1.5v-7h-8v5.5z"/></svg>
+                    Windows
+                </a>
+                <!-- Mac -->
+                <a href="/download/DOZ-UP-v2.6.4-mac.zip" class="platform-btn" onclick="trackDownload('mac')">
+                    <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    macOS
+                </a>
+                <!-- Android -->
+                <a href="/download/DOZ-UP-v2.8.0.apk" class="platform-btn" onclick="trackDownload('android')">
+                    <svg viewBox="0 0 24 24"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-2.86-1.21-6.08-1.21-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
+                    Android
+                </a>
+                <!-- Chrome Extension -->
+                <a href="/download/DOZ-UP-Extension-v2.8.0.zip" class="platform-btn" onclick="trackDownload('extension')">
+                    <svg viewBox="0 0 24 24"><path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-3.953 6.848c.062.004.124.006.186.01.063.004.125.01.188.01 6.627 0 12-5.373 12-12 0-.682-.057-1.35-.166-2.001H15.79z"/></svg>
+                    Chrome
+                </a>
+            </div>
+            <div class="download-note">
+                All platforms available at <a href="/download.html">doz.com/download</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Try It Now Section -->
+    <section class="try-section" id="try">
+        <h2>Try It Now - Free</h2>
+        <p>No signup. No credit card. Just paste and share.</p>
+
+        <!-- Paste Zone -->
+        <div class="paste-zone" id="pasteZone">
+            <div id="pasteContent">
+                <svg class="paste-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                    <path d="M12 11v6M9 14h6"/>
+                </svg>
+                <div class="paste-text">Paste Your Image Here</div>
+                <div class="paste-hint">Press <kbd>Ctrl</kbd>+<kbd>V</kbd> or drag & drop an image</div>
+                <div class="paste-features">
+                    <span class="paste-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        No signup needed
+                    </span>
+                    <span class="paste-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Works instantly
+                    </span>
+                </div>
+            </div>
+
+            <!-- Upload Progress -->
+            <div class="upload-progress" id="uploadProgress">
+                <div class="spinner"></div>
+                <div class="progress-text">Uploading your image...</div>
+            </div>
+
+            <!-- Success State -->
+            <div class="success-state" id="successState">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                </div>
+                <h3>Your URL is Ready!</h3>
+                <div class="url-box">
+                    <input type="text" id="resultUrl" readonly>
+                    <button onclick="copyUrl()" id="copyBtn">Copy Link</button>
+                </div>
+                <div class="expiry-warning">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                    </svg>
+                    <span>This link expires in <strong>24 hours</strong> (Free tier)</span>
+                </div>
+
+                <!-- Upsell -->
+                <div class="upsell-cta">
+                    <h3>Want UNLIMITED Screenshots?</h3>
+                    <p>Upgrade to PRO and your links never expire!</p>
+                    <div class="upsell-features">
+                        <span class="upsell-feature">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            Unlimited storage
+                        </span>
+                        <span class="upsell-feature">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            Links never expire
+                        </span>
+                        <span class="upsell-feature">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            All devices
+                        </span>
+                    </div>
+                    <a href="/order.html?plan=pro&billing=yearly" class="pro-button" id="proButton">Unlock Unlimited</a>
+                    <div class="pro-price">
+                        <span class="price-badge">Save 33%</span> Only $9.99/month <span>$14.99</span> <small style="opacity:0.7">Billed $119.88/year</small>
+                    </div>
+                    <div class="guarantee-text">30-day money-back guarantee</div>
+                </div>
+
+                <button onclick="resetPaste()" style="margin-top: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); padding: 12px 24px; border-radius: 10px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                    <span>↻</span> Upload Another Image
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+        <h3>Trusted by developers at top companies worldwide</h3>
+        <div class="company-logos">
+            <span>Google</span>
+            <span>Microsoft</span>
+            <span>Apple</span>
+            <span>Amazon</span>
+            <span>Meta</span>
+        </div>
+    </section>
+
+    <!-- How Easy Section - Animated Demo -->
+    <div class="how-easy-section">
+        <div class="how-easy-header">
+            <span class="how-easy-badge">See How Easy</span>
+            <h2>3 Seconds to Share</h2>
+            <p>No signup. No apps to install. Just instant sharing.</p>
+        </div>
+        <div class="steps-demo">
+            <div class="step-card" data-step="1">
+                <div class="step-animation">
+                    <div class="screen-mockup">
+                        <div class="screen-content">
+                            <div class="fake-window">
+                                <div class="window-dots"><span></span><span></span><span></span></div>
+                                <div class="window-content">
+                                    <div class="cursor-icon"></div>
+                                    <div class="selection-box"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-number">1</div>
+                <h3>Capture</h3>
+                <p>Take a screenshot or drag any image</p>
+            </div>
+            <div class="step-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="step-card" data-step="2">
+                <div class="step-animation">
+                    <div class="upload-mockup">
+                        <div class="upload-icon-animated">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                        <div class="progress-ring"></div>
+                        <div class="checkmark-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-number">2</div>
+                <h3>Upload</h3>
+                <p>Instant upload in milliseconds</p>
+            </div>
+            <div class="step-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="step-card" data-step="3">
+                <div class="step-animation">
+                    <div class="link-mockup">
+                        <div class="link-box">
+                            <span class="link-text">doz.com/i/abc123</span>
+                            <div class="copy-flash"></div>
+                        </div>
+                        <div class="share-icons-float">
+                            <span class="float-icon wa">💬</span>
+                            <span class="float-icon tg">✈️</span>
+                            <span class="float-icon tw">🐦</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-number">3</div>
+                <h3>Share</h3>
+                <p>Link copied! Share anywhere</p>
+            </div>
+        </div>
+        <div class="try-now-cta">
+            <a href="https://doz.com/up?ref=howeasy" class="big-cta-btn" onclick="trackSignupConversion()">
+                <span class="cta-icon">🚀</span>
+                Start Sharing Now - Free
+                <span class="cta-arrow">→</span>
+            </a>
+            <div class="trust-badges">
+                <span>✓ No signup required</span>
+                <span>✓ Works on any device</span>
+                <span>✓ Used by 50K+ developers</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing -->
+    <section class="pricing-section" id="pricing">
+        <h2>Simple, Transparent Pricing</h2>
+
+        <!-- Billing Toggle -->
+        <div class="billing-toggle-container">
+            <span class="billing-option" data-billing="monthly" onclick="setBilling('monthly')">Monthly</span>
+            <div class="billing-toggle yearly" id="billingToggle" onclick="toggleBilling()">
+                <div class="billing-toggle-knob"></div>
+            </div>
+            <span class="billing-option active" data-billing="yearly" onclick="setBilling('yearly')">Yearly<span class="billing-save-badge">Save 33%</span></span>
+        </div>
+
+        <!-- TOP ROW: Starter + Pro (Featured) -->
+        <div class="pricing-top-row">
+            <!-- Starter Plan -->
+            <div class="pricing-card starter" data-plan="starter" data-monthly-price="4.99" data-yearly-price="3.33" data-yearly-total="39.96">
+                <div class="pricing-name">Starter</div>
+                <div class="pricing-price"><span class="pricing-original-price" style="display:none">$4.99</span>$3.33<span>/month</span></div>
+                <div class="pricing-yearly-total">You pay: $39.96/year</div>
+                <div class="pricing-desc">Perfect for personal use</div>
+                <ul class="pricing-features">
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        5 GB storage
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Links never expire
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Desktop app included
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Email support
+                    </li>
+                </ul>
+                <button class="pricing-btn accent" onclick="goToCheckout('starter')">Start Now - Best Value</button>
+            </div>
+
+            <!-- Pro Plan (Featured) -->
+            <div class="pricing-card featured" data-plan="pro" data-monthly-price="14.99" data-yearly-price="9.99" data-yearly-total="119.88">
+                <div class="pricing-name">Pro</div>
+                <div class="pricing-price"><span class="pricing-original-price" style="display:none">$14.99</span>$9.99<span>/month</span></div>
+                <div class="pricing-yearly-total">You pay: $119.88/year</div>
+                <div class="pricing-desc">For power users & teams</div>
+                <ul class="pricing-features">
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Unlimited storage
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Links never expire
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        All devices + Mobile app
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Priority support 24/7
+                    </li>
+                </ul>
+                <button class="pricing-btn primary" onclick="goToCheckout('pro')">Unlock Pro - Most Popular</button>
+            </div>
+        </div>
+
+        <!-- BOTTOM ROW: Free, Team, Enterprise -->
+        <div class="pricing-bottom-row">
+            <!-- Free Plan -->
+            <div class="pricing-card compact" data-plan="free">
+                <div class="pricing-name">Free</div>
+                <div class="pricing-price">$0<span>/forever</span></div>
+                <div class="pricing-desc">Try it out</div>
+                <ul class="pricing-features">
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        512 MB storage
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        24-hour link expiry
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Web only
+                    </li>
+                </ul>
+                <a href="#try" class="pricing-btn secondary">Try Free Instantly</a>
+            </div>
+
+            <!-- Team Plan -->
+            <div class="pricing-card compact" data-plan="team" data-monthly-price="39.99" data-yearly-price="29.99" data-yearly-total="359.88">
+                <div class="pricing-name">Team</div>
+                <div class="pricing-price"><span class="pricing-original-price" style="display:none">€39.99</span>€29.99<span>/user/mo</span></div>
+                <div class="pricing-yearly-total">You pay: €359.88/user/year</div>
+                <div class="pricing-desc">For small teams</div>
+                <ul class="pricing-features">
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Everything in Pro
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Team workspace
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Admin dashboard
+                    </li>
+                </ul>
+                <button class="pricing-btn secondary" onclick="goToCheckout('team')">Subscribe to Team</button>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card compact" data-plan="enterprise" data-monthly-price="99.99" data-yearly-price="77.70" data-yearly-total="932.40">
+                <div class="pricing-name">Enterprise</div>
+                <div class="pricing-price"><span class="pricing-original-price" style="display:none">€99.99</span>€77.70<span>/user/mo</span></div>
+                <div class="pricing-yearly-total">You pay: €932.40/user/year</div>
+                <div class="pricing-desc">For organizations</div>
+                <ul class="pricing-features">
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Everything in Team
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        SSO & SAML
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Dedicated support
+                    </li>
+                </ul>
+                <button class="pricing-btn secondary" onclick="goToCheckout('enterprise')">Subscribe to Enterprise</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <h2>Loved by Developers</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="testimonial-text">"DOZ UP has completely changed how I share code snippets with my team. It's lightning fast!"</p>
+                <div class="testimonial-author">Michael R.</div>
+                <div class="testimonial-role">Senior Developer, Google</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="testimonial-text">"Finally a screenshot tool that just works. Paste, share, done. Worth every penny!"</p>
+                <div class="testimonial-author">Sarah K.</div>
+                <div class="testimonial-role">UX Designer, Apple</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="testimonial-text">"We switched our entire team to DOZ UP. Bug reports are so much easier now."</p>
+                <div class="testimonial-author">James L.</div>
+                <div class="testimonial-role">Engineering Lead, Microsoft</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-section">
+        <h2>Ready to Share Screenshots Faster?</h2>
+        <p>Join 50,000+ developers who save hours every week.</p>
+        <a href="/order.html?plan=pro&billing=yearly" class="pro-button">Start Your Free Trial</a>
+        <div class="cta-subtext">No credit card required. Cancel anytime.</div>
+    </section>
+
+    <!-- Sticky CTA -->
+    <div class="sticky-cta" id="stickyCta">
+        <div class="sticky-cta-inner">
+            <span class="sticky-cta-text">Limited: Save 33% on Pro Plan</span>
+            <a href="/order.html?plan=pro&billing=yearly" class="sticky-cta-btn">Claim Offer</a>
+        </div>
+    </div>
+
+    <!-- Exit Intent Modal -->
+    <div class="exit-modal" id="exitModal">
+        <div class="exit-modal-content">
+            <button class="exit-modal-close" onclick="closeExitModal()">&times;</button>
+            <div class="exit-modal-badge">EXCLUSIVE OFFER</div>
+            <h2>Wait! Get 7 Days FREE Pro</h2>
+            <p>Enter your email now and unlock unlimited screenshots instantly.</p>
+            <form class="exit-modal-form" id="exitForm" onsubmit="submitExitForm(event)">
+                <input type="email" placeholder="Enter your best email" required>
+                <button type="submit">Send My Free Access</button>
+            </form>
+            <div class="exit-modal-trust">No spam. Unsubscribe anytime.</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 DOZ UP. All rights reserved. | <a href="/privacy.html">Privacy</a> | <a href="/terms.html">Terms</a></p>
+    </footer>
+
+    <script>
+        // ============================================
+        // GLOBAL PERSONALIZATION ENGINE (Duolingo/ChatGPT Scale)
+        // Auto-detect: Country, Language, Currency
+        // ============================================
+
+        // Translations for 50+ languages
+        const translations = {
+            en: {
+                hero: "Screenshot to URL in 1 Second",
+                heroSub: "Paste any image and get a shareable link instantly. No signup required.",
+                tryNow: "Try It Now - Free",
+                tryNowSub: "No signup. No credit card. Just paste and share.",
+                pasteText: "Paste Your Image Here",
+                pasteHint: "Press Ctrl+V or drag & drop an image",
+                noSignup: "No signup needed",
+                worksInstantly: "Works instantly",
+                urlReady: "Your URL is Ready!",
+                linkExpires: "This link expires in 24 hours (Free tier)",
+                wantUnlimited: "Want UNLIMITED Screenshots?",
+                upgradeDesc: "Upgrade to PRO and your links never expire!",
+                unlimitedStorage: "Unlimited storage",
+                neverExpire: "Links never expire",
+                allDevices: "All devices",
+                getProNow: "GET PRO NOW",
+                perMonth: "/month",
+                trustedBy: "Trusted by developers at top companies worldwide",
+                howItWorks: "How It Works",
+                capture: "Capture",
+                captureDesc: "Take a screenshot with any tool or copy an image to your clipboard.",
+                paste: "Paste",
+                pasteDesc: "Press Ctrl+V on our page or drag & drop your image.",
+                share: "Share",
+                shareDesc: "Get an instant shareable URL. Copy and send anywhere!",
+                pricing: "Simple, Transparent Pricing",
+                free: "Free",
+                forever: "/forever",
+                tryIt: "Try it out, no commitment",
+                pro: "Pro",
+                everything: "Everything you need",
+                storage33: "512 MB storage",
+                expire24: "Links expire in 24 hours",
+                uploads33: "33 uploads total",
+                webOnly: "Web upload only",
+                tryFree: "Try Free",
+                prioritySupport: "Priority support 24/7",
+                lovedBy: "Loved by Developers",
+                readyToShare: "Ready to Share Screenshots Faster?",
+                join50k: "Join 50,000+ developers who save hours every week.",
+                getStarted: "Get Started",
+                exitTitle: "Wait! Get 7 Days Free",
+                exitSub: "Enter your email and we'll send you a free trial link.",
+                getFreeTrial: "Get Free Trial"
+            },
+            es: {
+                hero: "Captura a URL en 1 Segundo",
+                heroSub: "Pega cualquier imagen y obtén un enlace compartible al instante. Sin registro.",
+                tryNow: "Pruébalo Ahora - Gratis",
+                tryNowSub: "Sin registro. Sin tarjeta. Solo pega y comparte.",
+                pasteText: "Pega Tu Imagen Aquí",
+                pasteHint: "Presiona Ctrl+V o arrastra una imagen",
+                noSignup: "Sin registro",
+                worksInstantly: "Funciona al instante",
+                urlReady: "¡Tu URL está Lista!",
+                linkExpires: "Este enlace expira en 24 horas (Plan gratis)",
+                wantUnlimited: "¿Quieres Capturas ILIMITADAS?",
+                upgradeDesc: "¡Actualiza a PRO y tus enlaces nunca expiran!",
+                unlimitedStorage: "Almacenamiento ilimitado",
+                neverExpire: "Enlaces permanentes",
+                allDevices: "Todos los dispositivos",
+                getProNow: "OBTENER PRO AHORA",
+                perMonth: "/mes",
+                trustedBy: "Usado por desarrolladores en empresas líderes",
+                howItWorks: "Cómo Funciona",
+                capture: "Captura",
+                captureDesc: "Toma una captura con cualquier herramienta.",
+                paste: "Pega",
+                pasteDesc: "Presiona Ctrl+V o arrastra tu imagen.",
+                share: "Comparte",
+                shareDesc: "¡Obtén una URL instantánea!",
+                pricing: "Precios Simples y Transparentes",
+                free: "Gratis",
+                forever: "/siempre",
+                tryIt: "Pruébalo sin compromiso",
+                pro: "Pro",
+                everything: "Todo lo que necesitas",
+                getStarted: "Comenzar"
+            },
+            pt: {
+                hero: "Screenshot para URL em 1 Segundo",
+                heroSub: "Cole qualquer imagem e obtenha um link compartilhável instantaneamente.",
+                tryNow: "Experimente Agora - Grátis",
+                pasteText: "Cole Sua Imagem Aqui",
+                getProNow: "OBTER PRO AGORA",
+                perMonth: "/mês",
+                getStarted: "Começar"
+            },
+            fr: {
+                hero: "Capture d'écran vers URL en 1 Seconde",
+                heroSub: "Collez n'importe quelle image et obtenez un lien partageable instantanément.",
+                tryNow: "Essayez Maintenant - Gratuit",
+                pasteText: "Collez Votre Image Ici",
+                getProNow: "OBTENIR PRO",
+                perMonth: "/mois",
+                getStarted: "Commencer"
+            },
+            de: {
+                hero: "Screenshot zu URL in 1 Sekunde",
+                heroSub: "Fügen Sie ein Bild ein und erhalten Sie sofort einen teilbaren Link.",
+                tryNow: "Jetzt Ausprobieren - Kostenlos",
+                pasteText: "Bild Hier Einfügen",
+                getProNow: "PRO HOLEN",
+                perMonth: "/Monat",
+                getStarted: "Loslegen"
+            },
+            zh: {
+                hero: "1秒将截图转为URL",
+                heroSub: "粘贴任何图片，立即获得可分享链接。无需注册。",
+                tryNow: "立即免费试用",
+                pasteText: "在此粘贴图片",
+                getProNow: "立即获取PRO",
+                perMonth: "/月",
+                getStarted: "开始使用"
+            },
+            ja: {
+                hero: "1秒でスクリーンショットをURLに",
+                heroSub: "画像を貼り付けて、すぐに共有可能なリンクを取得。登録不要。",
+                tryNow: "今すぐ無料でお試し",
+                pasteText: "ここに画像を貼り付け",
+                getProNow: "PROを取得",
+                perMonth: "/月",
+                getStarted: "始める"
+            },
+            ko: {
+                hero: "1초 만에 스크린샷을 URL로",
+                heroSub: "이미지를 붙여넣고 즉시 공유 가능한 링크를 받으세요.",
+                tryNow: "지금 무료로 사용해보기",
+                pasteText: "여기에 이미지 붙여넣기",
+                getProNow: "PRO 받기",
+                perMonth: "/월",
+                getStarted: "시작하기"
+            },
+            ar: {
+                hero: "لقطة شاشة إلى رابط في ثانية واحدة",
+                heroSub: "الصق أي صورة واحصل على رابط قابل للمشاركة فوراً.",
+                tryNow: "جرّب الآن - مجاناً",
+                pasteText: "الصق صورتك هنا",
+                getProNow: "احصل على PRO",
+                perMonth: "/شهر",
+                getStarted: "ابدأ"
+            },
+            hi: {
+                hero: "1 सेकंड में स्क्रीनशॉट से URL",
+                heroSub: "कोई भी छवि पेस्ट करें और तुरंत शेयर करने योग्य लिंक प्राप्त करें।",
+                tryNow: "अभी मुफ्त में आज़माएं",
+                pasteText: "यहाँ छवि पेस्ट करें",
+                getProNow: "PRO प्राप्त करें",
+                perMonth: "/महीना",
+                getStarted: "शुरू करें"
+            },
+            ru: {
+                hero: "Скриншот в URL за 1 секунду",
+                heroSub: "Вставьте изображение и мгновенно получите ссылку для обмена.",
+                tryNow: "Попробуйте Бесплатно",
+                pasteText: "Вставьте изображение здесь",
+                getProNow: "ПОЛУЧИТЬ PRO",
+                perMonth: "/месяц",
+                getStarted: "Начать"
+            },
+            tr: {
+                hero: "1 Saniyede Ekran Görüntüsünden URL",
+                heroSub: "Herhangi bir resmi yapıştırın ve anında paylaşılabilir link alın.",
+                tryNow: "Şimdi Ücretsiz Dene",
+                pasteText: "Resminizi Buraya Yapıştırın",
+                getProNow: "PRO AL",
+                perMonth: "/ay",
+                getStarted: "Başla"
+            },
+            id: {
+                hero: "Screenshot ke URL dalam 1 Detik",
+                heroSub: "Tempel gambar dan dapatkan tautan yang dapat dibagikan secara instan.",
+                tryNow: "Coba Sekarang - Gratis",
+                pasteText: "Tempel Gambar Anda Di Sini",
+                getProNow: "DAPATKAN PRO",
+                perMonth: "/bulan",
+                getStarted: "Mulai"
+            },
+            vi: {
+                hero: "Ảnh chụp màn hình thành URL trong 1 giây",
+                heroSub: "Dán bất kỳ hình ảnh nào và nhận liên kết chia sẻ ngay lập tức.",
+                tryNow: "Dùng Thử Miễn Phí",
+                pasteText: "Dán Hình Ảnh Của Bạn Tại Đây",
+                getProNow: "NHẬN PRO",
+                perMonth: "/tháng",
+                getStarted: "Bắt Đầu"
+            },
+            th: {
+                hero: "สกรีนช็อตเป็น URL ใน 1 วินาที",
+                heroSub: "วางรูปภาพใดก็ได้และรับลิงก์แชร์ทันที",
+                tryNow: "ลองใช้ฟรี",
+                pasteText: "วางรูปภาพของคุณที่นี่",
+                getProNow: "รับ PRO",
+                perMonth: "/เดือน",
+                getStarted: "เริ่มต้น"
+            },
+            pl: {
+                hero: "Zrzut ekranu na URL w 1 sekundę",
+                heroSub: "Wklej dowolny obraz i natychmiast uzyskaj link do udostępnienia.",
+                tryNow: "Wypróbuj Za Darmo",
+                pasteText: "Wklej Swój Obraz Tutaj",
+                getProNow: "UZYSKAJ PRO",
+                perMonth: "/miesiąc",
+                getStarted: "Rozpocznij"
+            },
+            nl: {
+                hero: "Screenshot naar URL in 1 seconde",
+                heroSub: "Plak een afbeelding en krijg direct een deelbare link.",
+                tryNow: "Probeer Nu Gratis",
+                pasteText: "Plak Hier Je Afbeelding",
+                getProNow: "KRIJG PRO",
+                perMonth: "/maand",
+                getStarted: "Begin"
+            },
+            it: {
+                hero: "Screenshot in URL in 1 secondo",
+                heroSub: "Incolla qualsiasi immagine e ottieni un link condivisibile istantaneamente.",
+                tryNow: "Prova Ora - Gratis",
+                pasteText: "Incolla La Tua Immagine Qui",
+                getProNow: "OTTIENI PRO",
+                perMonth: "/mese",
+                getStarted: "Inizia"
+            }
+        };
+
+        // Currency configuration with exchange rates (updated periodically)
+        // Starter: $3.33, Pro: $9.99
+        const currencies = {
+            US: { code: 'USD', symbol: '$', rate: 1, starterPrice: '3.33', proPrice: '9.99' },
+            GB: { code: 'GBP', symbol: '£', rate: 0.79, starterPrice: '2.49', proPrice: '7.99' },
+            EU: { code: 'EUR', symbol: '€', rate: 0.92, starterPrice: '2.99', proPrice: '8.99' },
+            DE: { code: 'EUR', symbol: '€', rate: 0.92, starterPrice: '2.99', proPrice: '8.99' },
+            FR: { code: 'EUR', symbol: '€', rate: 0.92, starterPrice: '2.99', proPrice: '8.99' },
+            ES: { code: 'EUR', symbol: '€', rate: 0.92, starterPrice: '2.99', proPrice: '8.99' },
+            IT: { code: 'EUR', symbol: '€', rate: 0.92, starterPrice: '2.99', proPrice: '8.99' },
+            NL: { code: 'EUR', symbol: '€', rate: 0.92, starterPrice: '2.99', proPrice: '8.99' },
+            IN: { code: 'INR', symbol: '₹', rate: 83, starterPrice: '249', proPrice: '799' },
+            BR: { code: 'BRL', symbol: 'R$', rate: 4.97, starterPrice: '16.90', proPrice: '49.90' },
+            MX: { code: 'MXN', symbol: '$', rate: 17.1, starterPrice: '49', proPrice: '149' },
+            JP: { code: 'JPY', symbol: '¥', rate: 149, starterPrice: '480', proPrice: '1,480' },
+            KR: { code: 'KRW', symbol: '₩', rate: 1320, starterPrice: '3,900', proPrice: '12,900' },
+            CN: { code: 'CNY', symbol: '¥', rate: 7.24, starterPrice: '19.90', proPrice: '69.90' },
+            AU: { code: 'AUD', symbol: 'A$', rate: 1.53, starterPrice: '4.99', proPrice: '14.99' },
+            CA: { code: 'CAD', symbol: 'C$', rate: 1.36, starterPrice: '4.49', proPrice: '12.99' },
+            RU: { code: 'RUB', symbol: '₽', rate: 89, starterPrice: '299', proPrice: '899' },
+            TR: { code: 'TRY', symbol: '₺', rate: 30.5, starterPrice: '99', proPrice: '299' },
+            PL: { code: 'PLN', symbol: 'zł', rate: 4.0, starterPrice: '12.99', proPrice: '39.99' },
+            ID: { code: 'IDR', symbol: 'Rp', rate: 15600, starterPrice: '49,000', proPrice: '149,000' },
+            TH: { code: 'THB', symbol: '฿', rate: 35, starterPrice: '99', proPrice: '349' },
+            VN: { code: 'VND', symbol: '₫', rate: 24500, starterPrice: '79,000', proPrice: '249,000' },
+            PH: { code: 'PHP', symbol: '₱', rate: 56, starterPrice: '179', proPrice: '549' },
+            MY: { code: 'MYR', symbol: 'RM', rate: 4.7, starterPrice: '14.90', proPrice: '44.90' },
+            SG: { code: 'SGD', symbol: 'S$', rate: 1.34, starterPrice: '4.49', proPrice: '12.99' },
+            AE: { code: 'AED', symbol: 'د.إ', rate: 3.67, starterPrice: '12', proPrice: '36' },
+            SA: { code: 'SAR', symbol: '﷼', rate: 3.75, starterPrice: '12', proPrice: '36' },
+            ZA: { code: 'ZAR', symbol: 'R', rate: 18.5, starterPrice: '59', proPrice: '179' },
+            NG: { code: 'NGN', symbol: '₦', rate: 780, starterPrice: '2,500', proPrice: '7,900' },
+            EG: { code: 'EGP', symbol: 'E£', rate: 30.9, starterPrice: '99', proPrice: '299' },
+            PK: { code: 'PKR', symbol: '₨', rate: 278, starterPrice: '899', proPrice: '2,799' },
+            BD: { code: 'BDT', symbol: '৳', rate: 110, starterPrice: '349', proPrice: '1,099' },
+            IL: { code: 'ILS', symbol: '₪', rate: 3.7, starterPrice: '12', proPrice: '36' },
+            AR: { code: 'ARS', symbol: '$', rate: 350, starterPrice: '999', proPrice: '2,999' },
+            CL: { code: 'CLP', symbol: '$', rate: 900, starterPrice: '2,990', proPrice: '8,990' },
+            CO: { code: 'COP', symbol: '$', rate: 4000, starterPrice: '12,900', proPrice: '39,900' },
+            UA: { code: 'UAH', symbol: '₴', rate: 37, starterPrice: '119', proPrice: '379' },
+            CZ: { code: 'CZK', symbol: 'Kč', rate: 22.5, starterPrice: '74', proPrice: '229' },
+            SE: { code: 'SEK', symbol: 'kr', rate: 10.5, starterPrice: '34', proPrice: '99' },
+            NO: { code: 'NOK', symbol: 'kr', rate: 10.7, starterPrice: '34', proPrice: '99' },
+            DK: { code: 'DKK', symbol: 'kr', rate: 6.9, starterPrice: '22', proPrice: '69' },
+            CH: { code: 'CHF', symbol: 'Fr', rate: 0.88, starterPrice: '2.90', proPrice: '8.90' },
+            NZ: { code: 'NZD', symbol: 'NZ$', rate: 1.64, starterPrice: '5.49', proPrice: '15.99' },
+            HK: { code: 'HKD', symbol: 'HK$', rate: 7.82, starterPrice: '25', proPrice: '79' },
+            TW: { code: 'TWD', symbol: 'NT$', rate: 31.5, starterPrice: '99', proPrice: '299' }
+        };
+
+        // Regional testimonials and social proof
+        const regionalProof = {
+            US: { companies: ['Google', 'Microsoft', 'Apple', 'Amazon', 'Meta'], testimonial: { author: 'Michael R.', role: 'Senior Developer, Google', text: 'DOZ UP has completely changed how I share code snippets. Lightning fast!' }},
+            IN: { companies: ['Infosys', 'TCS', 'Wipro', 'Tech Mahindra', 'HCL'], testimonial: { author: 'Rajesh K.', role: 'Tech Lead, Infosys', text: 'Best screenshot tool for our development team. Saves hours daily!' }},
+            DE: { companies: ['SAP', 'Siemens', 'Bosch', 'BMW', 'Deutsche Telekom'], testimonial: { author: 'Hans M.', role: 'Software Architect, SAP', text: 'Einfach perfekt! Screenshot hochladen und sofort teilen.' }},
+            GB: { companies: ['ARM', 'DeepMind', 'Revolut', 'Deliveroo', 'Monzo'], testimonial: { author: 'James L.', role: 'Engineering Lead, DeepMind', text: 'Brilliant tool. Our entire team uses it for bug reports.' }},
+            FR: { companies: ['Dassault', 'Atos', 'Capgemini', 'OVH', 'BlaBlaCar'], testimonial: { author: 'Pierre D.', role: 'Développeur, Capgemini', text: 'Incroyable! Capture d\'écran vers URL en un clic.' }},
+            JP: { companies: ['Sony', 'Toyota', 'Nintendo', 'Rakuten', 'LINE'], testimonial: { author: '田中 健一', role: 'シニアエンジニア, Rakuten', text: '素晴らしいツール。スクリーンショット共有が1秒で完了。' }},
+            KR: { companies: ['Samsung', 'LG', 'Naver', 'Kakao', 'Coupang'], testimonial: { author: '김민수', role: '개발자, Naver', text: '정말 빠릅니다! 스크린샷 공유가 이렇게 쉬울 수 있다니.' }},
+            CN: { companies: ['Alibaba', 'Tencent', 'Baidu', 'ByteDance', 'JD'], testimonial: { author: '李伟', role: '高级工程师, 阿里巴巴', text: '太棒了！一秒钟就能分享截图。' }},
+            BR: { companies: ['Nubank', 'iFood', 'PagSeguro', 'Mercado Libre', 'TOTVS'], testimonial: { author: 'Carlos S.', role: 'Desenvolvedor, Nubank', text: 'Ferramenta incrível! Toda a equipe adora.' }},
+            AU: { companies: ['Atlassian', 'Canva', 'Afterpay', 'Xero', 'REA Group'], testimonial: { author: 'Sarah M.', role: 'Product Designer, Canva', text: 'Perfect for sharing design feedback. So quick!' }},
+            RU: { companies: ['Yandex', 'VK', 'Kaspersky', 'Ozon', 'Avito'], testimonial: { author: 'Дмитрий К.', role: 'Разработчик, Яндекс', text: 'Отличный инструмент! Скриншот в URL за секунду.' }},
+            default: { companies: ['Google', 'Microsoft', 'Apple', 'Amazon', 'Meta'], testimonial: { author: 'Michael R.', role: 'Senior Developer, Google', text: 'DOZ UP has completely changed how I share code snippets!' }}
+        };
+
+        // Country to language mapping
+        const countryToLang = {
+            US: 'en', GB: 'en', AU: 'en', CA: 'en', NZ: 'en', IE: 'en', SG: 'en',
+            ES: 'es', MX: 'es', AR: 'es', CO: 'es', CL: 'es', PE: 'es',
+            BR: 'pt', PT: 'pt',
+            FR: 'fr', BE: 'fr', CH: 'fr',
+            DE: 'de', AT: 'de',
+            IT: 'it',
+            NL: 'nl',
+            PL: 'pl',
+            RU: 'ru', BY: 'ru', KZ: 'ru',
+            TR: 'tr',
+            JP: 'ja',
+            KR: 'ko',
+            CN: 'zh', TW: 'zh', HK: 'zh',
+            IN: 'hi', // Could also be 'en'
+            SA: 'ar', AE: 'ar', EG: 'ar',
+            ID: 'id',
+            VN: 'vi',
+            TH: 'th'
+        };
+
+        // RTL languages
+        const rtlLanguages = ['ar', 'he', 'fa', 'ur'];
+
+        // User data
+        let userData = {
+            country: 'US',
+            lang: 'en',
+            currency: currencies.US
+        };
+
+        // Apply geo data to page personalization
+        function applyGeoData(data) {
+            if (data.country_code) {
+                userData.country = data.country_code;
+                userData.lang = countryToLang[data.country_code] || navigator.language.split('-')[0] || 'en';
+                userData.currency = currencies[data.country_code] || currencies.US;
+                applyLanguage(userData.lang);
+                applyCurrency(userData.currency);
+                applyRegionalProof(userData.country);
+                if (typeof gtag === 'function') {
+                    gtag('event', 'personalization', {
+                        'country': userData.country,
+                        'language': userData.lang,
+                        'currency': userData.currency.code
+                    });
+                }
+            }
+        }
+
+        // Detect user location and personalize (cached for 24h)
+        async function detectAndPersonalize() {
+            // Check localStorage cache first (instant on return visits)
+            try {
+                var cached = localStorage.getItem('doz_geo');
+                if (cached) {
+                    var geo = JSON.parse(cached);
+                    if (geo.data && geo.ts && (Date.now() - geo.ts < 86400000)) {
+                        applyGeoData(geo.data);
+                        return;
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                // First visit or cache expired: fetch geo from IP
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                if (data.country_code) {
+                    try { localStorage.setItem('doz_geo', JSON.stringify({ data: data, ts: Date.now() })); } catch (e) {}
+                    applyGeoData(data);
+                }
+            } catch (e) {
+                console.log('Using default personalization');
+                var browserLang = navigator.language.split('-')[0];
+                if (translations[browserLang]) {
+                    applyLanguage(browserLang);
+                }
+            }
+        }
+
+        // Apply language translations
+        function applyLanguage(lang) {
+            const t = translations[lang] || translations.en;
+            document.documentElement.lang = lang;
+
+            // Apply RTL if needed
+            if (rtlLanguages.includes(lang)) {
+                document.body.style.direction = 'rtl';
+                document.body.style.textAlign = 'right';
+            }
+
+            // Update key elements with data-i18n attributes
+            const updates = {
+                '.hero h1': t.hero,
+                '.hero p': t.heroSub,
+                '.try-section h2': t.tryNow,
+                '.try-section > p': t.tryNowSub,
+                '.paste-text': t.pasteText,
+                '.paste-hint': t.pasteHint,
+                '.social-proof h3': t.trustedBy,
+                '.steps-section h2': t.howItWorks,
+                '.pricing-section h2': t.pricing,
+                '.testimonials h2': t.lovedBy,
+                '.cta-section h2': t.readyToShare,
+                '.cta-section p': t.join50k,
+                '.exit-modal h2': t.exitTitle,
+                '.exit-modal p': t.exitSub
+            };
+
+            for (const [selector, text] of Object.entries(updates)) {
+                const el = document.querySelector(selector);
+                if (el && text) el.textContent = text;
+            }
+
+            // Update buttons
+            document.querySelectorAll('.pro-button, .pricing-btn.primary').forEach(btn => {
+                if (t.getProNow) btn.textContent = t.getProNow;
+            });
+        }
+
+        // Apply currency localization
+        function applyCurrency(currency) {
+            const starterDisplay = `${currency.symbol}${currency.starterPrice}`;
+            const proDisplay = `${currency.symbol}${currency.proPrice}`;
+            const t = translations[userData.lang] || translations.en;
+
+            // Update pricing cards - Starter (index 0 in top row) and Pro (index 1 in top row)
+            const pricingCards = document.querySelectorAll('.pricing-top-row .pricing-price');
+            if (pricingCards[0]) { // Starter
+                pricingCards[0].innerHTML = `${starterDisplay}<span>${t.perMonth || '/month'}</span>`;
+            }
+            if (pricingCards[1]) { // Pro
+                pricingCards[1].innerHTML = `${proDisplay}<span>${t.perMonth || '/month'}</span>`;
+            }
+
+            // Update CTA buttons with Pro price (main CTAs)
+            document.querySelectorAll('.pro-button').forEach(btn => {
+                btn.textContent = `${t.getStarted || 'Get Started'} - ${proDisplay}${t.perMonth || '/month'}`;
+            });
+
+            // Update sticky CTA with Pro price
+            const stickyCta = document.querySelector('.sticky-cta-text');
+            if (stickyCta) {
+                stickyCta.textContent = `Get PRO - Only ${proDisplay}${t.perMonth || '/month'}`;
+            }
+
+            // Update pro price display in upsell area
+            const proPriceEl = document.querySelector('.pro-price');
+            if (proPriceEl) {
+                proPriceEl.innerHTML = `Only ${starterDisplay}${t.perMonth || '/month'} <span>$9.99</span>`;
+            }
+        }
+
+        // Apply regional social proof
+        function applyRegionalProof(country) {
+            const proof = regionalProof[country] || regionalProof.default;
+
+            // Update company logos
+            const logosContainer = document.querySelector('.company-logos');
+            if (logosContainer && proof.companies) {
+                logosContainer.innerHTML = proof.companies.map(c => `<span>${c}</span>`).join('');
+            }
+
+            // Update first testimonial with regional one
+            const firstTestimonial = document.querySelector('.testimonial-card');
+            if (firstTestimonial && proof.testimonial) {
+                firstTestimonial.querySelector('.testimonial-text').textContent = `"${proof.testimonial.text}"`;
+                firstTestimonial.querySelector('.testimonial-author').textContent = proof.testimonial.author;
+                firstTestimonial.querySelector('.testimonial-role').textContent = proof.testimonial.role;
+            }
+        }
+
+        // Initialize personalization
+        detectAndPersonalize();
+
+        // ============================================
+        // END PERSONALIZATION ENGINE
+        // ============================================
+
+        // Track UTM parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmSource = urlParams.get('utm_source') || '';
+        const utmCampaign = urlParams.get('utm_campaign') || '';
+        const utmMedium = urlParams.get('utm_medium') || '';
+
+        // Pass UTM and billing to order page links
+        function updateOrderLinks() {
+            document.querySelectorAll('a[href^="/order.html"]').forEach(link => {
+                const existingParams = new URLSearchParams(link.href.split('?')[1] || '');
+                const params = new URLSearchParams();
+
+                // Preserve existing plan param if present
+                if (existingParams.get('plan')) params.set('plan', existingParams.get('plan'));
+
+                // Add billing period
+                params.set('billing', currentBilling);
+
+                // Add UTM params
+                if (utmSource) params.set('utm_source', utmSource);
+                if (utmCampaign) params.set('utm_campaign', utmCampaign);
+                if (utmMedium) params.set('utm_medium', utmMedium);
+                params.set('ref', 'lp_instant');
+
+                link.href = '/order.html?' + params.toString();
+            });
+        }
+
+        // Update links on page load and when billing changes
+        updateOrderLinks();
+
+        // Override toggleBilling to also update links
+        const originalToggleBilling = toggleBilling;
+        toggleBilling = function() {
+            originalToggleBilling();
+            updateOrderLinks();
+        };
+
+        // Paste handling
+        const pasteZone = document.getElementById('pasteZone');
+        const pasteContent = document.getElementById('pasteContent');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const successState = document.getElementById('successState');
+        const resultUrl = document.getElementById('resultUrl');
+
+        // Global paste listener
+        document.addEventListener('paste', handlePaste);
+
+        pasteZone.addEventListener('click', () => {
+            // Try to read from clipboard on click
+            if (navigator.clipboard && navigator.clipboard.read) {
+                navigator.clipboard.read().then(items => {
+                    for (const item of items) {
+                        if (item.types.some(t => t.startsWith('image/'))) {
+                            const imageType = item.types.find(t => t.startsWith('image/'));
+                            item.getType(imageType).then(blob => {
+                                uploadFile(blob);
+                            });
+                            break;
+                        }
+                    }
+                }).catch(() => {
+                    // Fallback: just focus for paste
+                });
+            }
+        });
+
+        // Drag and drop
+        pasteZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            pasteZone.classList.add('active');
+        });
+
+        pasteZone.addEventListener('dragleave', () => {
+            pasteZone.classList.remove('active');
+        });
+
+        pasteZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            pasteZone.classList.remove('active');
+
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                uploadFile(file);
+            }
+        });
+
+        function handlePaste(e) {
+            const items = e.clipboardData.items;
+            for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    const file = item.getAsFile();
+                    uploadFile(file);
+                    break;
+                }
+            }
+        }
+
+        async function uploadFile(file) {
+            // Show progress
+            pasteContent.style.display = 'none';
+            uploadProgress.classList.add('active');
+            successState.classList.remove('active');
+            pasteZone.classList.add('uploading');
+
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.url) {
+                    // Show success
+                    uploadProgress.classList.remove('active');
+                    successState.classList.add('active');
+                    resultUrl.value = data.url;
+
+                    // Auto-copy to clipboard
+                    navigator.clipboard.writeText(data.url);
+
+                    // Track conversion event for Google Ads
+                    gtag('event', 'conversion', {
+                        'send_to': 'AW-441083115/upload_complete',
+                        'value': 1.0,
+                        'currency': 'USD'
+                    });
+                    gtag('event', 'upload_complete', {
+                        'event_category': 'engagement',
+                        'event_label': 'landing_page_upload'
+                    });
+                } else {
+                    throw new Error(data.error || 'Upload failed');
+                }
+            } catch (error) {
+                alert('Upload failed: ' + error.message);
+                resetPaste();
+            }
+
+            pasteZone.classList.remove('uploading');
+        }
+
+        function copyUrl() {
+            resultUrl.select();
+            navigator.clipboard.writeText(resultUrl.value);
+
+            // Visual feedback
+            const btn = document.getElementById('copyBtn');
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = 'Copy Link';
+                btn.classList.remove('copied');
+            }, 2000);
+
+            // Track
+            gtag('event', 'copy_url', {
+                'event_category': 'engagement'
+            });
+        }
+
+        function resetPaste() {
+            pasteContent.style.display = 'block';
+            uploadProgress.classList.remove('active');
+            successState.classList.remove('active');
+        }
+
+        // Sticky CTA on scroll
+        let hasUploaded = false;
+        window.addEventListener('scroll', () => {
+            const stickyCta = document.getElementById('stickyCta');
+            if (window.scrollY > 800 && !hasUploaded) {
+                stickyCta.classList.add('show');
+            } else {
+                stickyCta.classList.remove('show');
+            }
+        });
+
+        // Exit intent
+        let exitModalShown = false;
+        document.addEventListener('mouseout', (e) => {
+            if (e.clientY < 10 && !exitModalShown && !hasUploaded) {
+                document.getElementById('exitModal').classList.add('show');
+                exitModalShown = true;
+                gtag('event', 'exit_intent_shown');
+            }
+        });
+
+        function closeExitModal() {
+            document.getElementById('exitModal').classList.remove('show');
+        }
+
+        function submitExitForm(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input').value;
+
+            // Send to server
+            fetch('/api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email,
+                    source: 'exit_intent',
+                    utm_source: utmSource,
+                    utm_campaign: utmCampaign
+                })
+            });
+
+            // Track
+            gtag('event', 'lead', {
+                'event_category': 'conversion',
+                'event_label': 'exit_intent_email'
+            });
+
+            // Show thank you
+            document.querySelector('.exit-modal-content').innerHTML = `
+                <h2>Check Your Email!</h2>
+                <p>We've sent you a link to start your free trial.</p>
+                <button onclick="closeExitModal()" style="margin-top: 20px; padding: 15px 40px; background: var(--primary); border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer;">Got It</button>
+            `;
+        }
+
+        // Track page view
+        gtag('event', 'page_view', {
+            'page_title': 'Landing Page - Instant',
+            'page_location': window.location.href,
+            'utm_source': utmSource,
+            'utm_campaign': utmCampaign
+        });
+
+        // ============================================
+        // STRIPE PAYMENT REQUEST BUTTON (Apple Pay / Google Pay)
+        // ============================================
+
+        // Stripe publishable key - fetched from server or use placeholder
+        const STRIPE_PUBLISHABLE_KEY = window.STRIPE_KEY || 'pk_live_your_key_here';
+
+        // Initialize Stripe Express Checkout (handles async Stripe.js loading)
+        async function initExpressCheckout(retries) {
+            retries = retries || 0;
+            // Stripe.js may still be loading (async), retry up to 5 times
+            if (typeof Stripe === 'undefined') {
+                if (retries < 5) {
+                    setTimeout(function() { initExpressCheckout(retries + 1); }, 500);
+                    return;
+                }
+                console.log('Stripe not loaded, hiding express checkout');
+                hideExpressCheckout();
+                return;
+            }
+
+            try {
+                const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+
+                // Create Payment Request for Starter plan ($3.33)
+                const starterPaymentRequest = stripe.paymentRequest({
+                    country: 'US',
+                    currency: 'usd',
+                    total: {
+                        label: 'DOZ UP Starter',
+                        amount: 333, // $3.33 in cents
+                    },
+                    requestPayerName: true,
+                    requestPayerEmail: true,
+                });
+
+                // Create Payment Request for Pro plan ($9.99)
+                const proPaymentRequest = stripe.paymentRequest({
+                    country: 'US',
+                    currency: 'usd',
+                    total: {
+                        label: 'DOZ UP Pro',
+                        amount: 999, // $9.99 in cents
+                    },
+                    requestPayerName: true,
+                    requestPayerEmail: true,
+                });
+
+                // Create Payment Request Button elements
+                const starterElements = stripe.elements();
+                const proElements = stripe.elements();
+
+                const starterPrButton = starterElements.create('paymentRequestButton', {
+                    paymentRequest: starterPaymentRequest,
+                    style: {
+                        paymentRequestButton: {
+                            type: 'buy',
+                            theme: 'light',
+                            height: '44px',
+                        },
+                    },
+                });
+
+                const proPrButton = proElements.create('paymentRequestButton', {
+                    paymentRequest: proPaymentRequest,
+                    style: {
+                        paymentRequestButton: {
+                            type: 'buy',
+                            theme: 'light',
+                            height: '44px',
+                        },
+                    },
+                });
+
+                // Check if Payment Request is available (Apple Pay / Google Pay)
+                const starterCanMakePayment = await starterPaymentRequest.canMakePayment();
+                const proCanMakePayment = await proPaymentRequest.canMakePayment();
+
+                if (starterCanMakePayment) {
+                    starterPrButton.mount('#payment-request-button-starter');
+                    document.getElementById('express-checkout-starter').style.display = 'block';
+                } else {
+                    document.getElementById('express-checkout-starter').style.display = 'none';
+                }
+
+                if (proCanMakePayment) {
+                    proPrButton.mount('#payment-request-button-pro');
+                    document.getElementById('express-checkout-pro').style.display = 'block';
+                } else {
+                    document.getElementById('express-checkout-pro').style.display = 'none';
+                }
+
+                // Handle Starter payment
+                starterPaymentRequest.on('paymentmethod', async (ev) => {
+                    try {
+                        // Create subscription on server
+                        const response = await fetch('/api/create-express-subscription', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                paymentMethodId: ev.paymentMethod.id,
+                                plan: 'starter',
+                                email: ev.payerEmail,
+                                name: ev.payerName,
+                                utm_source: utmSource,
+                                utm_campaign: utmCampaign,
+                            }),
+                        });
+
+                        const result = await response.json();
+
+                        if (result.error) {
+                            ev.complete('fail');
+                            alert('Payment failed: ' + result.error);
+                        } else {
+                            ev.complete('success');
+                            // Track conversion
+                            gtag('event', 'purchase', {
+                                'transaction_id': result.subscriptionId,
+                                'value': 3.33,
+                                'currency': 'USD',
+                                'items': [{ 'name': 'DOZ UP Starter', 'price': 3.33 }]
+                            });
+                            // Redirect to success page
+                            window.location.href = '/payment/success.html?plan=starter&express=1';
+                        }
+                    } catch (error) {
+                        ev.complete('fail');
+                        console.error('Payment error:', error);
+                    }
+                });
+
+                // Handle Pro payment
+                proPaymentRequest.on('paymentmethod', async (ev) => {
+                    try {
+                        // Create subscription on server
+                        const response = await fetch('/api/create-express-subscription', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                paymentMethodId: ev.paymentMethod.id,
+                                plan: 'pro',
+                                email: ev.payerEmail,
+                                name: ev.payerName,
+                                utm_source: utmSource,
+                                utm_campaign: utmCampaign,
+                            }),
+                        });
+
+                        const result = await response.json();
+
+                        if (result.error) {
+                            ev.complete('fail');
+                            alert('Payment failed: ' + result.error);
+                        } else {
+                            ev.complete('success');
+                            // Track conversion
+                            gtag('event', 'purchase', {
+                                'transaction_id': result.subscriptionId,
+                                'value': 9.99,
+                                'currency': 'USD',
+                                'items': [{ 'name': 'DOZ UP Pro', 'price': 9.99 }]
+                            });
+                            // Redirect to success page
+                            window.location.href = '/payment/success.html?plan=pro&express=1';
+                        }
+                    } catch (error) {
+                        ev.complete('fail');
+                        console.error('Payment error:', error);
+                    }
+                });
+
+                console.log('Express checkout initialized', {
+                    starterAvailable: !!starterCanMakePayment,
+                    proAvailable: !!proCanMakePayment
+                });
+
+            } catch (error) {
+                console.log('Express checkout not available:', error.message || error);
+                hideExpressCheckout();
+            }
+        }
+
+        function hideExpressCheckout() {
+            const starterEl = document.getElementById('express-checkout-starter');
+            const proEl = document.getElementById('express-checkout-pro');
+            if (starterEl) starterEl.style.display = 'none';
+            if (proEl) proEl.style.display = 'none';
+        }
+
+        // Fetch Stripe key from server and initialize
+        async function loadStripeKey() {
+            try {
+                const response = await fetch('/api/stripe-key');
+                const data = await response.json();
+                if (data.publishableKey && data.publishableKey.startsWith('pk_')) {
+                    window.STRIPE_KEY = data.publishableKey;
+                    initExpressCheckout();
+                } else {
+                    console.log('Stripe key not configured - express checkout disabled');
+                    hideExpressCheckout();
+                }
+            } catch (e) {
+                console.log('Stripe not available - express checkout disabled');
+                hideExpressCheckout();
+            }
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadStripeKey);
+        } else {
+            loadStripeKey();
+        }
+    </script>
+
+    <!-- Meta Pixel auto-injected by gateway middleware -->
+
+    <!-- Inline Checkout Module -->
+    <script src="/js/inline-checkout.js" defer></script>
+    <script>
+        // Billing state - yearly by default
+        let currentBilling = 'yearly';
+
+        const inlineCheckoutPlans = {
+            // Monthly plans (higher prices)
+            'starter_monthly': { name: 'Starter', price: 499, interval: 'month', displayPrice: '$4.99/month' },
+            'pro_monthly': { name: 'Pro', price: 1499, interval: 'month', displayPrice: '$14.99/month' },
+            'team_monthly': { name: 'Team', price: 3999, interval: 'month', displayPrice: '€39.99/user/month' },
+            'enterprise_monthly': { name: 'Enterprise', price: 9999, interval: 'month', displayPrice: '€99.99/user/month' },
+            // Yearly plans (discounted, billed annually)
+            'starter_yearly': { name: 'Starter', price: 3996, interval: 'year', displayPrice: '$3.33/month', totalDisplay: '$39.96/year' },
+            'pro_yearly': { name: 'Pro', price: 11988, interval: 'year', displayPrice: '$9.99/month', totalDisplay: '$119.88/year' },
+            'team_yearly': { name: 'Team', price: 35988, interval: 'year', displayPrice: '€29.99/user/month', totalDisplay: '€359.88/user/year' },
+            'enterprise_yearly': { name: 'Enterprise', price: 93240, interval: 'year', displayPrice: '€77.70/user/month', totalDisplay: '€932.40/user/year' }
+        };
+
+        function getCurrentPlanId(basePlan) {
+            return basePlan + '_' + currentBilling;
+        }
+
+        function toggleBilling() {
+            const toggle = document.getElementById('billingToggle');
+            const monthlyOption = document.querySelector('.billing-option[data-billing="monthly"]');
+            const yearlyOption = document.querySelector('.billing-option[data-billing="yearly"]');
+
+            if (currentBilling === 'yearly') {
+                currentBilling = 'monthly';
+                toggle.classList.remove('yearly');
+                monthlyOption.classList.add('active');
+                yearlyOption.classList.remove('active');
+            } else {
+                currentBilling = 'yearly';
+                toggle.classList.add('yearly');
+                yearlyOption.classList.add('active');
+                monthlyOption.classList.remove('active');
+            }
+
+            updatePricingDisplay();
+        }
+
+        function setBilling(billing) {
+            if (currentBilling !== billing) {
+                toggleBilling();
+            }
+        }
+
+        function updatePricingDisplay() {
+            const isYearly = currentBilling === 'yearly';
+
+            document.querySelectorAll('.pricing-card[data-plan]').forEach(card => {
+                const plan = card.dataset.plan;
+                if (plan === 'free') return;
+
+                const monthlyPrice = card.dataset.monthlyPrice;
+                const yearlyPrice = card.dataset.yearlyPrice;
+                const yearlyTotal = card.dataset.yearlyTotal;
+
+                const priceEl = card.querySelector('.pricing-price');
+                const originalPriceEl = card.querySelector('.pricing-original-price');
+                const yearlyTotalEl = card.querySelector('.pricing-yearly-total');
+
+                // Determine currency symbol
+                const isEuro = plan === 'team' || plan === 'enterprise';
+                const currency = isEuro ? '€' : '$';
+                const perText = (plan === 'team' || plan === 'enterprise') ? '/user/mo' : '/month';
+
+                if (isYearly) {
+                    // Show yearly pricing (displayed as monthly equivalent)
+                    priceEl.innerHTML = `<span class="pricing-original-price">${currency}${monthlyPrice}</span>${currency}${yearlyPrice}<span>${perText}</span>`;
+                    if (yearlyTotalEl) {
+                        yearlyTotalEl.style.display = 'block';
+                        const totalPerText = (plan === 'team' || plan === 'enterprise') ? '/user/year' : '/year';
+                        yearlyTotalEl.textContent = `You pay: ${currency}${yearlyTotal}${totalPerText}`;
+                    }
+                } else {
+                    // Show monthly pricing
+                    priceEl.innerHTML = `${currency}${monthlyPrice}<span>${perText}</span>`;
+                    if (yearlyTotalEl) {
+                        yearlyTotalEl.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Direct checkout - go straight to checkout page
+        function goToCheckout(plan) {
+            const planId = getCurrentPlanId(plan);
+            const planInfo = inlineCheckoutPlans[planId];
+
+            // Track Meta Pixel InitiateCheckout
+            if (window.DOZPixel) {
+                window.DOZPixel.trackInitiateCheckout(planId, (planInfo?.price || 0) / 100, 'USD');
+            }
+
+            // Track begin_checkout event for Google Ads
+            if (typeof gtag === 'function') {
+                gtag('event', 'begin_checkout', {
+                    'currency': 'USD',
+                    'value': (planInfo?.price || 0) / 100,
+                    'items': [{
+                        'item_id': planId,
+                        'item_name': planInfo?.name || plan
+                    }]
+                });
+                // Also track as conversion
+                gtag('event', 'conversion', {
+                    'send_to': 'AW-441083115/Z8e3CJLTk-oaROvJgdIB'
+                });
+            }
+
+            // Redirect directly to checkout page
+            window.location.href = '/checkout.html?plan=' + planId;
+        }
+
+        async function openInlineCheckout(planId, buttonEl) {
+            const plan = inlineCheckoutPlans[planId];
+            if (!plan) {
+                console.error('Plan not found:', planId);
+                return;
+            }
+
+            // Track Meta Pixel InitiateCheckout
+            if (window.DOZPixel) {
+                window.DOZPixel.trackInitiateCheckout(planId, (plan.price || 0) / 100, 'USD');
+            }
+
+            // Track begin_checkout event for Google Ads
+            if (typeof gtag === 'function') {
+                gtag('event', 'begin_checkout', {
+                    'currency': 'USD',
+                    'value': plan.price || 0,
+                    'items': [{
+                        'item_id': planId,
+                        'item_name': plan.name || planId
+                    }]
+                });
+                // Also track as conversion
+                gtag('event', 'conversion', {
+                    'send_to': 'AW-441083115/Z8e3CJLTk-oaROvJgdIB'
+                });
+                console.log('[Google Ads] Begin checkout tracked for:', planId);
+            }
+
+            const containerId = 'doz-checkout-' + planId;
+            const originalText = buttonEl.innerHTML;
+            buttonEl.innerHTML = 'Loading...';
+            buttonEl.disabled = true;
+            try {
+                await DOZCheckout.open(planId, plan, containerId);
+            } catch (error) {
+                console.error('Checkout error:', error);
+            }
+            buttonEl.innerHTML = originalText;
+            buttonEl.disabled = false;
+        }
+
+        // Initialize pricing display on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePricingDisplay();
+
+            // Track ViewContent for Meta Pixel + CAPI
+            if (window.DOZPixel) {
+                window.DOZPixel.trackViewContent('DOZ UP Landing', 'Landing Page', 9.99, 'USD');
+            }
+
+            // Track pageview for server analytics
+            fetch('/api/analytics/pageview', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    page: window.location.pathname,
+                    referrer: document.referrer,
+                    utm: {
+                        source: new URLSearchParams(window.location.search).get('utm_source'),
+                        medium: new URLSearchParams(window.location.search).get('utm_medium'),
+                        campaign: new URLSearchParams(window.location.search).get('utm_campaign')
+                    }
+                })
+            }).catch(() => {});
+        });
+    </script>
+</body>
+</html>

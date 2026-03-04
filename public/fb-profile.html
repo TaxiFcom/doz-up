@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOZ UP - Facebook Profile Picture</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #222; }
+
+.profile {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, #0a0a0f 0%, #0d1a12 50%, #101025 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Glow effects */
+.profile::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    left: -30%;
+    width: 160%;
+    height: 160%;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(0, 210, 106, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 30% 70%, rgba(0, 122, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 70% 30%, rgba(88, 86, 214, 0.06) 0%, transparent 35%);
+}
+
+/* Subtle grid */
+.grid {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 30px 30px;
+    z-index: 1;
+}
+
+/* Outer glow ring */
+.glow-ring {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 255, 136, 0.1);
+    box-shadow: 0 0 60px rgba(0, 210, 106, 0.08), inset 0 0 60px rgba(0, 210, 106, 0.05);
+    z-index: 1;
+}
+
+.logo-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-box {
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(135deg, #00d26a 0%, #00ff88 50%, #06d6a0 100%);
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 20px 60px rgba(0, 210, 106, 0.35),
+        0 0 100px rgba(0, 255, 136, 0.15),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.logo-box svg {
+    width: 100px;
+    height: 100px;
+}
+
+.brand-text {
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.brand-name {
+    font-size: 56px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.brand-name .up {
+    background: linear-gradient(135deg, #00ff88 0%, #00d26a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brand-url {
+    font-size: 16px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 500;
+    letter-spacing: 2px;
+    margin-top: 8px;
+}
+
+/* Corner accents */
+.corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    z-index: 2;
+}
+.corner-tl { top: 20px; left: 20px; border-top: 2px solid rgba(0,255,136,0.2); border-left: 2px solid rgba(0,255,136,0.2); }
+.corner-tr { top: 20px; right: 20px; border-top: 2px solid rgba(0,255,136,0.2); border-right: 2px solid rgba(0,255,136,0.2); }
+.corner-bl { bottom: 20px; left: 20px; border-bottom: 2px solid rgba(0,255,136,0.2); border-left: 2px solid rgba(0,255,136,0.2); }
+.corner-br { bottom: 20px; right: 20px; border-bottom: 2px solid rgba(0,255,136,0.2); border-right: 2px solid rgba(0,255,136,0.2); }
+</style>
+</head>
+<body>
+<div class="profile">
+    <div class="grid"></div>
+    <div class="glow-ring"></div>
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <div class="logo-container">
+        <div class="logo-box">
+            <svg viewBox="0 0 100 100" fill="none">
+                <!-- Cloud -->
+                <ellipse cx="50" cy="62" rx="30" ry="10" fill="white" opacity="0.95"/>
+                <path d="M22 60 C22 60 14 60 14 52 C14 42 22 38 30 38 C30 26 38 16 50 16 C62 16 70 26 70 38 C78 38 86 42 86 52 C86 60 78 60 78 60" fill="white" opacity="0.95"/>
+                <!-- Arrow -->
+                <path d="M50 10 L64 28 L56 28 L56 55 L44 55 L44 28 L36 28 Z" fill="url(#arrowG2)"/>
+                <defs>
+                    <linearGradient id="arrowG2" x1="50%" y1="100%" x2="50%" y2="0%">
+                        <stop offset="0%" stop-color="#00a854"/>
+                        <stop offset="100%" stop-color="#00ff88"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div class="brand-text">
+            <div class="brand-name">DOZ <span class="up">UP</span></div>
+            <div class="brand-url">up.doz.com</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

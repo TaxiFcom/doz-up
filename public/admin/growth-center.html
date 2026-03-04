@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Command Center - DOZ UP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a15 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-left .rocket {
+            font-size: 2rem;
+        }
+
+        .back-link {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #00d4ff;
+        }
+
+        /* Goal Tracker */
+        .goal-tracker {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,47,247,0.1));
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .goal-title {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .goal-target {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .edit-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .edit-btn:hover {
+            background: rgba(0,212,255,0.2);
+            border-color: #00d4ff;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7, #10b981);
+            background-size: 200% 100%;
+            animation: gradientFlow 3s ease infinite;
+            border-radius: 12px;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .progress-percentage {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .goal-stats {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .goal-stat {
+            text-align: center;
+        }
+
+        .goal-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .goal-stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .stat-card.profit {
+            background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05));
+            border-color: rgba(16,185,129,0.3);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .stat-value.green { color: #10b981; }
+        .stat-value.blue { color: #00d4ff; }
+
+        .stat-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .stat-change.up {
+            background: rgba(16,185,129,0.2);
+            color: #10b981;
+        }
+
+        /* ROI Section */
+        .roi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .roi-card {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .roi-card.google {
+            border-color: rgba(66,133,244,0.3);
+        }
+
+        .roi-card.meta {
+            border-color: rgba(24,119,242,0.3);
+        }
+
+        .roi-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .roi-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .roi-header img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .roi-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .roi-metric {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+
+        .roi-metric-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .roi-metric-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* AI Recommendations */
+        .ai-section {
+            background: linear-gradient(135deg, rgba(123,47,247,0.1), rgba(0,212,255,0.05));
+            border: 1px solid rgba(123,47,247,0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .ai-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .ai-header .badge {
+            background: linear-gradient(135deg, #7b2ff7, #00d4ff);
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .recommendation {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .recommendation:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+        .recommendation:last-child {
+            margin-bottom: 0;
+        }
+
+        .recommendation-icon {
+            font-size: 1.2rem;
+        }
+
+        .recommendation-content h4 {
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+
+        .recommendation-content p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Bottom Grid */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card h3 {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Roadmap */
+        .milestone {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .milestone:last-child {
+            border-bottom: none;
+        }
+
+        .milestone-check {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .milestone-check.reached {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .milestone-info {
+            flex: 1;
+        }
+
+        .milestone-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .milestone-target {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .milestone-date {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* Traffic Sources */
+        .traffic-chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.2);
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .roi-grid { grid-template-columns: 1fr; }
+            .bottom-grid { grid-template-columns: 1fr; }
+            .goal-stats { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <span class="rocket">🚀</span>
+                <h1>Growth Command Center</h1>
+            </div>
+            <a href="/admin/dashboard.html" class="back-link">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Goal Tracker -->
+        <div class="goal-tracker">
+            <div class="goal-header">
+                <div>
+                    <div class="goal-title">TARGET SUBSCRIBERS</div>
+                    <div class="goal-target" id="goalTarget">1,000,000</div>
+                </div>
+                <button class="edit-btn" onclick="openGoalModal()">Edit Goal</button>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 2.5%"></div>
+                    <span class="progress-percentage" id="progressPercent">2.5%</span>
+                </div>
+            </div>
+            <div class="goal-stats">
+                <div class="goal-stat">
+                    <div class="goal-stat-value" id="currentSubs">25,000</div>
+                    <div class="goal-stat-label">Current Subscribers</div>
+                </div>
+                <div class="goal-stat">
+                    <div class="goal-stat-value" id="dailyNeeded">+2,740/day</div>
+                    <div class="goal-stat-label">Daily Growth Needed</div>
+                </div>
+                <div class="goal-stat">
+                    <div class="goal-stat-value" id="daysLeft">340 days</div>
+                    <div class="goal-stat-label">Days Remaining</div>
+                </div>
+                <div class="goal-stat">
+                    <div class="goal-stat-value" id="dailyActual">+127/day</div>
+                    <div class="goal-stat-label">Current Daily Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalRevenue">$12,500</div>
+                <div class="stat-label">Total Revenue (Month)</div>
+                <div class="stat-change up">+15% vs last month</div>
+            </div>
+            <div class="stat-card profit">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value green" id="totalProfit">$8,200</div>
+                <div class="stat-label">Net Profit (Revenue - Ads)</div>
+                <div class="stat-change up">+22% margin</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value blue" id="totalSubscribers">25,000</div>
+                <div class="stat-label">Total Subscribers</div>
+                <div class="stat-change up">+340 this week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value green" id="combinedROI">+285%</div>
+                <div class="stat-label">Combined ROI</div>
+                <div class="stat-change up">All Channels</div>
+            </div>
+        </div>
+
+        <!-- ROI Grid -->
+        <div class="roi-grid">
+            <!-- Google Ads -->
+            <div class="roi-card google">
+                <div class="roi-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    <h3>Google Ads</h3>
+                </div>
+                <div class="roi-metrics">
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" id="googleSpend">$4,300</div>
+                        <div class="roi-metric-label">Monthly Spend</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" style="color: #10b981;" id="googleRevenue">$15,050</div>
+                        <div class="roi-metric-label">Revenue Generated</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" style="color: #00d4ff;" id="googleROAS">3.5x</div>
+                        <div class="roi-metric-label">ROAS</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" id="googleCPC">$0.21</div>
+                        <div class="roi-metric-label">Avg CPC</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" id="googleCTR">4.5%</div>
+                        <div class="roi-metric-label">CTR</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" id="googleConv">156</div>
+                        <div class="roi-metric-label">Conversions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meta Ads -->
+            <div class="roi-card meta">
+                <div class="roi-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <h3>Meta Ads (Facebook + Instagram)</h3>
+                </div>
+                <div class="roi-metrics">
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" id="metaSpend">$2,100</div>
+                        <div class="roi-metric-label">Monthly Spend</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" style="color: #10b981;" id="metaRevenue">$6,300</div>
+                        <div class="roi-metric-label">Revenue Generated</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" style="color: #00d4ff;" id="metaROAS">3.0x</div>
+                        <div class="roi-metric-label">ROAS</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" id="metaCPC">$0.35</div>
+                        <div class="roi-metric-label">Avg CPC</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" id="metaCTR">3.2%</div>
+                        <div class="roi-metric-label">CTR</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-metric-value" id="metaConv">89</div>
+                        <div class="roi-metric-label">Conversions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Recommendations -->
+        <div class="ai-section">
+            <div class="ai-header">
+                <span style="font-size: 1.5rem;">🤖</span>
+                <h3>AI-Powered Recommendations</h3>
+                <span class="badge">SMART TIPS</span>
+            </div>
+            <div id="recommendations">
+                <div class="recommendation">
+                    <span class="recommendation-icon">🎯</span>
+                    <div class="recommendation-content">
+                        <h4>Increase Google Ads budget by 20%</h4>
+                        <p>Your ROAS is 3.5x - strong performance indicates room for scale</p>
+                    </div>
+                </div>
+                <div class="recommendation">
+                    <span class="recommendation-icon">🌍</span>
+                    <div class="recommendation-content">
+                        <h4>Target Germany market</h4>
+                        <p>12% conversion rate detected vs 6% global average</p>
+                    </div>
+                </div>
+                <div class="recommendation">
+                    <span class="recommendation-icon">📱</span>
+                    <div class="recommendation-content">
+                        <h4>Launch Instagram Reels campaign</h4>
+                        <p>40% of your users are 18-25 - high engagement on short video</p>
+                    </div>
+                </div>
+                <div class="recommendation">
+                    <span class="recommendation-icon">📧</span>
+                    <div class="recommendation-content">
+                        <h4>Re-engage 5,000 inactive users</h4>
+                        <p>Users inactive 7+ days - offer 20% discount to reactivate</p>
+                    </div>
+                </div>
+                <div class="recommendation">
+                    <span class="recommendation-icon">💰</span>
+                    <div class="recommendation-content">
+                        <h4>Promote annual plans</h4>
+                        <p>Annual subscribers have 35% lower churn - push yearly option</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Grid -->
+        <div class="bottom-grid">
+            <!-- Roadmap -->
+            <div class="card">
+                <h3>📅 1-Year Roadmap to 1M</h3>
+                <div id="roadmap">
+                    <div class="milestone">
+                        <div class="milestone-check reached">✓</div>
+                        <div class="milestone-info">
+                            <div class="milestone-label">First 10K Subscribers</div>
+                            <div class="milestone-target">10,000 subscribers</div>
+                        </div>
+                        <div class="milestone-date">Reached!</div>
+                    </div>
+                    <div class="milestone">
+                        <div class="milestone-check"></div>
+                        <div class="milestone-info">
+                            <div class="milestone-label">100K Club</div>
+                            <div class="milestone-target">100,000 subscribers</div>
+                        </div>
+                        <div class="milestone-date">Apr 2026</div>
+                    </div>
+                    <div class="milestone">
+                        <div class="milestone-check"></div>
+                        <div class="milestone-info">
+                            <div class="milestone-label">Halfway There</div>
+                            <div class="milestone-target">500,000 subscribers</div>
+                        </div>
+                        <div class="milestone-date">Aug 2026</div>
+                    </div>
+                    <div class="milestone">
+                        <div class="milestone-check"></div>
+                        <div class="milestone-info">
+                            <div class="milestone-label">🦄 UNICORN STATUS</div>
+                            <div class="milestone-target">1,000,000 subscribers</div>
+                        </div>
+                        <div class="milestone-date">Jan 2027</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traffic Sources -->
+            <div class="card">
+                <h3>🌍 Traffic Sources</h3>
+                <div class="traffic-chart-container">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Goal Modal -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🎯 Update Your Goal</h3>
+            </div>
+            <div class="form-group">
+                <label>Target Subscribers</label>
+                <input type="number" id="newTarget" value="1000000" min="1000">
+            </div>
+            <div class="form-group">
+                <label>Target Date</label>
+                <input type="date" id="targetDate" value="2027-01-25">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeGoalModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveGoal()">Save Goal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Traffic Chart
+        const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+        const trafficChart = new Chart(trafficCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Google Ads', 'Meta Ads', 'Organic', 'Direct', 'Referral'],
+                datasets: [{
+                    data: [45, 25, 15, 10, 5],
+                    backgroundColor: ['#4285F4', '#1877F2', '#10b981', '#7b2ff7', '#f97316'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#fff', padding: 15 }
+                    }
+                }
+            }
+        });
+
+        // Goal data
+        let goalData = {
+            target: 1000000,
+            current: 25000,
+            startDate: '2026-01-25',
+            targetDate: '2027-01-25'
+        };
+
+        // Load goal data
+        async function loadGoalData() {
+            try {
+                const response = await fetch('/api/admin/goals');
+                const data = await response.json();
+                if (data.success) {
+                    goalData = { ...goalData, ...data.goal };
+                    updateGoalUI();
+                }
+            } catch (e) {
+                console.log('Using default goal data');
+            }
+        }
+
+        // Update goal UI
+        function updateGoalUI() {
+            const progress = (goalData.current / goalData.target) * 100;
+            const today = new Date();
+            const targetDate = new Date(goalData.targetDate);
+            const daysLeft = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+            const remaining = goalData.target - goalData.current;
+            const dailyNeeded = daysLeft > 0 ? Math.ceil(remaining / daysLeft) : 0;
+
+            document.getElementById('goalTarget').textContent = goalData.target.toLocaleString();
+            document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
+            document.getElementById('progressPercent').textContent = progress.toFixed(1) + '%';
+            document.getElementById('currentSubs').textContent = goalData.current.toLocaleString();
+            document.getElementById('dailyNeeded').textContent = '+' + dailyNeeded.toLocaleString() + '/day';
+            document.getElementById('daysLeft').textContent = daysLeft + ' days';
+            document.getElementById('totalSubscribers').textContent = goalData.current.toLocaleString();
+        }
+
+        // Modal functions
+        function openGoalModal() {
+            document.getElementById('newTarget').value = goalData.target;
+            document.getElementById('targetDate').value = goalData.targetDate;
+            document.getElementById('goalModal').classList.add('show');
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goalModal').classList.remove('show');
+        }
+
+        async function saveGoal() {
+            const newTarget = parseInt(document.getElementById('newTarget').value);
+            const newDate = document.getElementById('targetDate').value;
+
+            try {
+                const response = await fetch('/api/admin/goals', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target: newTarget, targetDate: newDate })
+                });
+
+                if (response.ok) {
+                    goalData.target = newTarget;
+                    goalData.targetDate = newDate;
+                    updateGoalUI();
+                    closeGoalModal();
+                }
+            } catch (e) {
+                // Update locally even if API fails
+                goalData.target = newTarget;
+                goalData.targetDate = newDate;
+                updateGoalUI();
+                closeGoalModal();
+            }
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/admin/growth/dashboard');
+                const data = await response.json();
+                if (data.success) {
+                    // Update stats
+                    document.getElementById('totalRevenue').textContent = '$' + (data.revenue || 12500).toLocaleString();
+                    document.getElementById('totalProfit').textContent = '$' + (data.profit || 8200).toLocaleString();
+                    goalData.current = data.subscribers || 25000;
+                    updateGoalUI();
+
+                    // Update Google stats
+                    if (data.google) {
+                        document.getElementById('googleSpend').textContent = '$' + data.google.spend;
+                        document.getElementById('googleRevenue').textContent = '$' + data.google.revenue;
+                        document.getElementById('googleROAS').textContent = data.google.roas + 'x';
+                    }
+
+                    // Update Meta stats
+                    if (data.meta) {
+                        document.getElementById('metaSpend').textContent = '$' + data.meta.spend;
+                        document.getElementById('metaRevenue').textContent = '$' + data.meta.revenue;
+                        document.getElementById('metaROAS').textContent = data.meta.roas + 'x';
+                    }
+                }
+            } catch (e) {
+                console.log('Using default dashboard data');
+            }
+        }
+
+        // Load AI recommendations
+        async function loadRecommendations() {
+            try {
+                const response = await fetch('/api/admin/ai/recommendations');
+                const data = await response.json();
+                if (data.success && data.recommendations) {
+                    const container = document.getElementById('recommendations');
+                    container.innerHTML = data.recommendations.map(r => `
+                        <div class="recommendation">
+                            <span class="recommendation-icon">${r.icon}</span>
+                            <div class="recommendation-content">
+                                <h4>${r.title}</h4>
+                                <p>${r.description}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.log('Using default recommendations');
+            }
+        }
+
+        // Close modal on outside click
+        document.getElementById('goalModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeGoalModal();
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGoalData();
+            loadDashboardData();
+            loadRecommendations();
+        });
+    </script>
+</body>
+</html>

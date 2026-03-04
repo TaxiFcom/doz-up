@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Secure Checkout</title>
+    <meta name="description" content="Complete your DOZ UP subscription - Secure payment powered by Stripe">
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1973180083621280');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1973180083621280&ev=PageView&noscript=1"/></noscript>
+
+    <!-- Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-441083115"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-441083115', { 'allow_enhanced_conversions': true });
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-glow: rgba(16, 185, 129, 0.3);
+            --bg-dark: #0a0a1a;
+            --bg-card: rgba(255,255,255,0.06);
+            --text: #ffffff;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+            min-height: 100vh;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .secure-badge svg { color: var(--primary); }
+
+        .checkout-container {
+            width: 100%;
+            max-width: 520px;
+            padding: 0 20px 40px;
+        }
+
+        .order-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 20px;
+        }
+
+        .order-card h2 {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .plan-name {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .plan-desc {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 12px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .price-label { color: var(--text-muted); font-size: 0.95rem; }
+
+        .price-value { font-size: 1.1rem; font-weight: 700; }
+
+        .price-total {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .savings-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .features-list li svg { color: var(--primary); flex-shrink: 0; }
+
+        .checkout-btn {
+            display: block;
+            width: 100%;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--primary-glow);
+        }
+
+        .checkout-btn:active {
+            transform: translateY(0);
+        }
+
+        .trust-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .trust-item svg { color: var(--primary); }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover { color: var(--primary); }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto;
+        }
+
+        .checkout-btn.loading .btn-text { display: none; }
+        .checkout-btn.loading .loading-spinner { display: inline-block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .guarantee {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            .order-card { padding: 24px 20px; }
+            .plan-name { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/lp/instant.html" class="logo">
+            <svg class="logo-icon" width="36" height="36" viewBox="0 0 100 100">
+                <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#059669"/></linearGradient></defs>
+                <rect rx="20" width="100" height="100" fill="url(#g)"/>
+                <text x="50" y="68" text-anchor="middle" fill="white" font-size="48" font-weight="800" font-family="sans-serif">UP</text>
+            </svg>
+            <span class="logo-text">DOZ UP</span>
+        </a>
+        <div class="secure-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Secure Checkout
+        </div>
+    </header>
+
+    <div class="checkout-container">
+        <div class="order-card">
+            <h2>Order Summary</h2>
+            <div class="plan-name" id="planName">Pro Plan</div>
+            <div class="plan-desc" id="planDesc">Unlimited storage, all devices, priority support</div>
+
+            <div class="price-row">
+                <span class="price-label" id="intervalLabel">Billed annually</span>
+                <span class="price-value" id="monthlyPrice">$9.99/month</span>
+            </div>
+            <div class="price-row">
+                <span class="price-label">Total</span>
+                <span class="price-total" id="totalPrice">$119.88/year</span>
+            </div>
+            <div class="savings-badge" id="savingsBadge">You save 33% with annual billing</div>
+
+            <ul class="features-list" id="featuresList">
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Unlimited storage</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Links never expire</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> All devices + Mobile app</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> 30-day money-back guarantee</li>
+            </ul>
+        </div>
+
+        <a href="#" class="checkout-btn" id="checkoutBtn" onclick="proceedToPayment(event)">
+            <span class="btn-text" id="btnText">Proceed to Secure Payment</span>
+            <span class="loading-spinner"></span>
+        </a>
+
+        <div class="trust-row">
+            <span class="trust-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                SSL Encrypted
+            </span>
+            <span class="trust-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Powered by Stripe
+            </span>
+            <span class="trust-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                30-Day Guarantee
+            </span>
+        </div>
+
+        <div class="guarantee">Cancel anytime. No questions asked.</div>
+
+        <a href="/lp/instant.html" class="back-link">&larr; Back to DOZ UP</a>
+    </div>
+
+    <script>
+        // Plan configuration
+        const plans = {
+            'starter_monthly': { name: 'Starter', desc: '5 GB storage, desktop app, email support', monthly: '$4.99', total: '$4.99/month', interval: 'Billed monthly', savings: null, features: ['5 GB storage', 'Links never expire', 'Desktop app included', 'Email support'] },
+            'starter_yearly': { name: 'Starter', desc: '5 GB storage, desktop app, email support', monthly: '$3.33/month', total: '$39.96/year', interval: 'Billed annually', savings: 'You save 33% with annual billing', features: ['5 GB storage', 'Links never expire', 'Desktop app included', 'Email support'] },
+            'pro_monthly': { name: 'Pro', desc: 'Unlimited storage, all devices, priority support', monthly: '$14.99', total: '$14.99/month', interval: 'Billed monthly', savings: null, features: ['Unlimited storage', 'Links never expire', 'All devices + Mobile app', 'Priority support 24/7'] },
+            'pro_yearly': { name: 'Pro', desc: 'Unlimited storage, all devices, priority support', monthly: '$9.99/month', total: '$119.88/year', interval: 'Billed annually', savings: 'You save 33% with annual billing', features: ['Unlimited storage', 'Links never expire', 'All devices + Mobile app', 'Priority support 24/7'] },
+            'team_monthly': { name: 'Team', desc: 'Everything in Pro + team workspace + admin dashboard', monthly: '€39.99/user', total: '€39.99/user/month', interval: 'Billed monthly', savings: null, features: ['Everything in Pro', 'Team workspace', 'Admin dashboard', 'Dedicated support'] },
+            'team_yearly': { name: 'Team', desc: 'Everything in Pro + team workspace + admin dashboard', monthly: '€29.99/user/month', total: '€359.88/user/year', interval: 'Billed annually', savings: 'You save 25% with annual billing', features: ['Everything in Pro', 'Team workspace', 'Admin dashboard', 'Dedicated support'] },
+            'enterprise_monthly': { name: 'Enterprise', desc: 'Everything in Team + SSO/SAML + dedicated support', monthly: '€99.99/user', total: '€99.99/user/month', interval: 'Billed monthly', savings: null, features: ['Everything in Team', 'SSO & SAML', 'Dedicated support', 'Custom integrations'] },
+            'enterprise_yearly': { name: 'Enterprise', desc: 'Everything in Team + SSO/SAML + dedicated support', monthly: '€77.70/user/month', total: '€932.40/user/year', interval: 'Billed annually', savings: 'You save 22% with annual billing', features: ['Everything in Team', 'SSO & SAML', 'Dedicated support', 'Custom integrations'] }
+        };
+
+        // Parse plan from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let planId = urlParams.get('plan') || 'pro_yearly';
+
+        // Normalize plan ID (handle "pro" without billing suffix)
+        if (planId && !planId.includes('_')) {
+            planId = planId + '_yearly';
+        }
+
+        const plan = plans[planId] || plans['pro_yearly'];
+
+        // Update the page
+        document.getElementById('planName').textContent = plan.name + ' Plan';
+        document.getElementById('planDesc').textContent = plan.desc;
+        document.getElementById('monthlyPrice').textContent = plan.monthly;
+        document.getElementById('totalPrice').textContent = plan.total;
+        document.getElementById('intervalLabel').textContent = plan.interval;
+
+        const savingsEl = document.getElementById('savingsBadge');
+        if (plan.savings) {
+            savingsEl.textContent = plan.savings;
+            savingsEl.style.display = 'inline-block';
+        } else {
+            savingsEl.style.display = 'none';
+        }
+
+        // Update features
+        const featuresEl = document.getElementById('featuresList');
+        featuresEl.innerHTML = plan.features.map(f =>
+            `<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> ${f}</li>`
+        ).join('');
+
+        // Update button text with price
+        document.getElementById('btnText').textContent = `Pay ${plan.total} - Secure Checkout`;
+
+        // Track InitiateCheckout
+        gtag('event', 'begin_checkout', {
+            'currency': 'USD',
+            'value': parseFloat(plan.total.replace(/[^0-9.]/g, '')) || 0,
+            'items': [{ 'item_id': planId, 'item_name': plan.name }]
+        });
+
+        if (typeof fbq === 'function') {
+            fbq('track', 'InitiateCheckout', {
+                content_name: 'DOZ UP ' + plan.name,
+                value: parseFloat(plan.total.replace(/[^0-9.]/g, '')) || 0,
+                currency: 'USD'
+            });
+        }
+
+        // Build checkout.php URL (preserving UTM params)
+        function getCheckoutUrl() {
+            // Extract base plan and billing from planId
+            const parts = planId.split('_');
+            const basePlan = parts[0];
+            const billing = parts[1] || 'yearly';
+
+            const params = new URLSearchParams();
+            params.set('plan', basePlan);
+            params.set('billing', billing);
+
+            // Pass through UTM params
+            ['utm_source', 'utm_medium', 'utm_campaign', 'ref'].forEach(p => {
+                const v = urlParams.get(p);
+                if (v) params.set(p, v);
+            });
+
+            return 'https://doz.com.im/meta/checkout.php?' + params.toString();
+        }
+
+        function proceedToPayment(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('checkoutBtn');
+            btn.classList.add('loading');
+
+            // Track conversion
+            gtag('event', 'conversion', {
+                'send_to': 'AW-441083115/Z8e3CJLTk-oaROvJgdIB',
+                'value': parseFloat(plan.total.replace(/[^0-9.]/g, '')) || 0,
+                'currency': 'USD'
+            });
+
+            // Small delay to ensure tracking fires
+            setTimeout(function() {
+                window.location.href = getCheckoutUrl();
+            }, 300);
+        }
+    </script>
+<script src="https://up.doz.com.im/lp/doz-perf.js" defer></script>
+</body>
+</html>

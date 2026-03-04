@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP Reseller Program - Build Your Own Screenshot SaaS Business</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #0a0a0a 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Partner Banner */
+        .partner-banner {
+            background: linear-gradient(90deg, #6c5ce7, #a29bfe, #6c5ce7);
+            background-size: 200% 100%;
+            animation: gradient 3s ease infinite;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero .tagline {
+            font-size: 1.5rem;
+            color: #888;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 40px;
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat .number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #a29bfe;
+        }
+        .hero-stat .label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Revenue Calculator */
+        .calculator-section {
+            background: linear-gradient(135deg, #1a1a2e, #2a2a4e);
+            border-radius: 20px;
+            padding: 50px;
+            margin: 50px 0;
+        }
+        .calculator-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #a29bfe;
+        }
+        .calculator-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .calc-input {
+            text-align: center;
+        }
+        .calc-input label {
+            display: block;
+            margin-bottom: 10px;
+            color: #888;
+        }
+        .calc-input input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: #0a0a0a;
+            color: #fff;
+        }
+        .calc-input input:focus {
+            outline: none;
+            border-color: #a29bfe;
+        }
+        .calc-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            background: rgba(162, 155, 254, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .calc-result {
+            text-align: center;
+        }
+        .calc-result .amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        .calc-result .label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Pricing Cards */
+        .pricing-section {
+            margin: 60px 0;
+        }
+        .pricing-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        .pricing-card {
+            background: linear-gradient(135deg, #1a1a2e, #2a2a4e);
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(162, 155, 254, 0.2);
+        }
+        .pricing-card.featured {
+            border: 3px solid #a29bfe;
+        }
+        .pricing-card.featured::before {
+            content: 'BEST VALUE';
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: #a29bfe;
+            color: #000;
+            padding: 5px 40px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transform: rotate(45deg);
+        }
+        .pricing-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .pricing-card .description {
+            color: #888;
+            margin-bottom: 20px;
+        }
+        .pricing-card .price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #a29bfe;
+            margin-bottom: 5px;
+        }
+        .pricing-card .price-note {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .discount-badge {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+        .features-list {
+            list-style: none;
+            margin: 25px 0;
+        }
+        .features-list li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .features-list li:last-child { border-bottom: none; }
+        .features-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #a29bfe;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .apply-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: #fff;
+        }
+        .apply-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(162, 155, 254, 0.4);
+        }
+
+        /* Benefits Grid */
+        .benefits-section {
+            padding: 60px 0;
+        }
+        .benefits-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .benefit-card {
+            background: rgba(26, 26, 46, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .benefit-card .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .benefit-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        .benefit-card p {
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* Process Steps */
+        .process-section {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 50px 0;
+        }
+        .process-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+        }
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .process-step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+        }
+        .process-step .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        .process-step h4 {
+            margin-bottom: 10px;
+        }
+        .process-step p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Application Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+        }
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #a29bfe;
+            font-size: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #888;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: #0a0a0a;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #a29bfe;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: #888;
+            cursor: pointer;
+        }
+
+        /* FAQ */
+        .faq-section {
+            padding: 60px 0;
+        }
+        .faq-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+        .faq-item {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        .faq-question:hover { background: rgba(162, 155, 254, 0.1); }
+        .faq-answer {
+            display: none;
+            padding: 0 20px 20px;
+            color: #888;
+            line-height: 1.6;
+        }
+        .faq-item.active .faq-answer { display: block; }
+        .faq-item.active .faq-question .toggle { transform: rotate(45deg); }
+        .toggle {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-stats { flex-direction: column; gap: 20px; }
+            .process-steps { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="partner-banner">
+        🚀 Become a DOZ UP Partner - Earn up to 60% on every sale | No minimum commitment
+    </div>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Build Your Own SaaS Business</h1>
+            <p class="tagline">White-label DOZ UP and sell under your own brand. Keep up to 60% of every sale. No development required.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="number">$2.5M+</div>
+                    <div class="label">Partner Revenue (2024)</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="number">127</div>
+                    <div class="label">Active Resellers</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="number">60%</div>
+                    <div class="label">Max Discount</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calculator-section">
+            <h2>💰 Revenue Calculator</h2>
+            <div class="calculator-inputs">
+                <div class="calc-input">
+                    <label>Monthly Customers</label>
+                    <input type="number" id="customers" value="50" min="1" onchange="calculateRevenue()">
+                </div>
+                <div class="calc-input">
+                    <label>Avg Price/Customer ($)</label>
+                    <input type="number" id="price" value="99" min="1" onchange="calculateRevenue()">
+                </div>
+                <div class="calc-input">
+                    <label>Your Discount %</label>
+                    <input type="number" id="discount" value="50" min="40" max="60" onchange="calculateRevenue()">
+                </div>
+            </div>
+            <div class="calc-results">
+                <div class="calc-result">
+                    <div class="amount" id="monthly-revenue">$2,475</div>
+                    <div class="label">Monthly Profit</div>
+                </div>
+                <div class="calc-result">
+                    <div class="amount" id="yearly-revenue">$29,700</div>
+                    <div class="label">Yearly Profit</div>
+                </div>
+                <div class="calc-result">
+                    <div class="amount" id="gross-revenue">$4,950</div>
+                    <div class="label">Gross Monthly Revenue</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-section">
+            <h2>Choose Your Partner Tier</h2>
+            <div class="pricing-grid" id="pricing-grid">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <div class="benefits-section">
+            <h2>Why Partner With Us?</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="icon">🏷️</div>
+                    <h4>Full White-Label</h4>
+                    <p>Your brand, your domain, your pricing. Customers never see DOZ UP.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">💰</div>
+                    <h4>Massive Margins</h4>
+                    <p>Keep 40-60% of every sale. Set your own prices for even higher margins.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🛠️</div>
+                    <h4>Zero Development</h4>
+                    <p>We handle all the tech. You focus on sales and customer relationships.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">📈</div>
+                    <h4>Dedicated Dashboard</h4>
+                    <p>Track customers, revenue, and usage in real-time from your partner portal.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🎯</div>
+                    <h4>Marketing Support</h4>
+                    <p>Get sales materials, email templates, and co-marketing opportunities.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🤝</div>
+                    <h4>Partner Success Team</h4>
+                    <p>Dedicated account manager to help you grow and succeed.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="process-section">
+            <h2>Get Started in 4 Simple Steps</h2>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h4>Apply</h4>
+                    <p>Fill out our partner application form</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h4>Approve</h4>
+                    <p>Get approved within 24 hours</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h4>Setup</h4>
+                    <p>Configure your white-label platform</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h4>Sell</h4>
+                    <p>Start selling and earning immediately</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>What's included in the white-label setup?</span>
+                    <span class="toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    You get a fully branded version of DOZ UP with your logo, colors, domain, and custom branding. Your customers will see your brand everywhere - on the website, in the app, in emails, and in support communications.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>How do I get paid?</span>
+                    <span class="toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    You can either collect payments directly from your customers (and pay us the wholesale price), or we can handle payments and send you your profit share monthly via PayPal, wire transfer, or crypto.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Is there a minimum commitment?</span>
+                    <span class="toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    The initial setup fee covers your first year. After that, there's no minimum commitment - you only pay for the licenses you sell. If you're not selling, you're not paying.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Can I set my own prices?</span>
+                    <span class="toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! You can price your offering however you want. Many partners charge 2-3x our wholesale price, giving them 70-80% margins on every sale.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>What support do you provide?</span>
+                    <span class="toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    We handle all technical support. You can either forward support requests to us (white-labeled) or handle tier 1 support yourself and escalate technical issues. Higher tiers get a dedicated account manager.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Modal -->
+    <div class="modal" id="apply-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3>🚀 Apply to Become a Partner</h3>
+            <form id="apply-form">
+                <input type="hidden" id="selected-tier" name="tierType">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" name="name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Business Email *</label>
+                    <input type="email" name="email" required placeholder="john@agency.com">
+                </div>
+                <div class="form-group">
+                    <label>Company Name *</label>
+                    <input type="text" name="company" required placeholder="Acme Agency">
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" name="website" placeholder="https://youragency.com">
+                </div>
+                <div class="form-group">
+                    <label>Expected Monthly Customers</label>
+                    <select name="expectedCustomers">
+                        <option value="10-50">10-50 customers</option>
+                        <option value="50-100">50-100 customers</option>
+                        <option value="100-500">100-500 customers</option>
+                        <option value="500+">500+ customers</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tell us about your business</label>
+                    <textarea name="description" placeholder="What do you do? Who are your customers?"></textarea>
+                </div>
+                <div id="tier-summary" style="background: rgba(162, 155, 254, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <!-- Tier summary -->
+                </div>
+                <button type="submit" class="apply-btn">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let resellerTiers = {};
+
+        async function loadTiers() {
+            try {
+                const res = await fetch('/api/enterprise/reseller-tiers');
+                const data = await res.json();
+                if (data.success) {
+                    resellerTiers = data.tiers;
+                    renderPricing();
+                }
+            } catch (err) {
+                console.error('Error loading tiers:', err);
+            }
+        }
+
+        function renderPricing() {
+            const grid = document.getElementById('pricing-grid');
+            const tiers = Object.values(resellerTiers);
+
+            grid.innerHTML = tiers.map((tier, i) => `
+                <div class="pricing-card ${i === 1 ? 'featured' : ''}">
+                    <h3>${tier.name}</h3>
+                    <p class="description">${tier.description}</p>
+                    <div class="price">$${(tier.price / 100).toLocaleString()}</div>
+                    <p class="price-note">one-time setup fee</p>
+                    <div class="discount-badge">${tier.discountPercent}% OFF All Licenses</div>
+                    <ul class="features-list">
+                        ${tier.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                    <button class="apply-btn" onclick="applyTier('${tier.id}')">
+                        Apply Now
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function applyTier(tierId) {
+            const tier = resellerTiers[tierId];
+            document.getElementById('selected-tier').value = tierId;
+            document.getElementById('tier-summary').innerHTML = `
+                <strong>${tier.name}</strong><br>
+                <span style="font-size: 1.3rem; color: #a29bfe;">$${(tier.price / 100).toLocaleString()}</span>
+                <span style="color: #888;"> setup + ${tier.discountPercent}% discount</span>
+            `;
+            document.getElementById('apply-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('apply-modal').classList.remove('active');
+        }
+
+        document.getElementById('apply-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                tierType: formData.get('tierType'),
+                customer: {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    company: formData.get('company'),
+                    website: formData.get('website'),
+                    expectedCustomers: formData.get('expectedCustomers'),
+                    description: formData.get('description')
+                }
+            };
+
+            try {
+                const res = await fetch('/api/enterprise/reseller-tiers/purchase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    alert('🎉 Application submitted! We\'ll contact you within 24 hours to complete your setup.');
+                    closeModal();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Submission failed. Please try again.');
+            }
+        });
+
+        function calculateRevenue() {
+            const customers = parseInt(document.getElementById('customers').value) || 0;
+            const price = parseInt(document.getElementById('price').value) || 0;
+            const discount = parseInt(document.getElementById('discount').value) || 50;
+
+            const grossRevenue = customers * price;
+            const cost = grossRevenue * ((100 - discount) / 100);
+            const profit = grossRevenue - cost;
+
+            document.getElementById('monthly-revenue').textContent = '$' + profit.toLocaleString();
+            document.getElementById('yearly-revenue').textContent = '$' + (profit * 12).toLocaleString();
+            document.getElementById('gross-revenue').textContent = '$' + grossRevenue.toLocaleString();
+        }
+
+        function toggleFaq(element) {
+            element.parentElement.classList.toggle('active');
+        }
+
+        calculateRevenue();
+        loadTiers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Viral Traffic Dashboard (Admin Only)</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        /* Login Modal */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+        }
+        .login-box h2 { margin-bottom: 10px; color: #10b981; }
+        .login-box p { color: #64748b; margin-bottom: 20px; }
+        .login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .login-box button:hover { opacity: 0.9; }
+        .login-error { color: #ef4444; margin-top: 10px; display: none; }
+        .hidden { display: none !important; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .header p { color: #64748b; }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #10b981;
+            margin-top: 10px;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .card h3 {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .big-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .big-number.success { background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; }
+        .big-number.warning { background: linear-gradient(135deg, #f59e0b, #d97706); -webkit-background-clip: text; }
+        .big-number.info { background: linear-gradient(135deg, #3b82f6, #2563eb); -webkit-background-clip: text; }
+
+        .sub-stat {
+            color: #94a3b8;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-row:last-child { border-bottom: none; }
+        .stat-label { color: #94a3b8; }
+        .stat-value { font-weight: 600; }
+        .stat-value.green { color: #10b981; }
+        .stat-value.red { color: #ef4444; }
+        .stat-value.blue { color: #3b82f6; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            padding-top: 20px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #10b981, #059669);
+            border-radius: 4px 4px 0 0;
+            min-height: 4px;
+            transition: height 0.3s ease;
+            position: relative;
+        }
+
+        .chart-bar:hover {
+            background: linear-gradient(180deg, #3b82f6, #2563eb);
+        }
+
+        .chart-bar .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .chart-bar:hover .tooltip { opacity: 1; }
+
+        .cycle-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .cycle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .cycle-num {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .cycle-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+        }
+
+        .referrer-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .referrer-name {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
+        }
+
+        .referrer-count {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .category-item {
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .category-name {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .category-stat {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .refresh-note {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+
+        .wide { grid-column: span 2; }
+        @media (max-width: 900px) { .wide { grid-column: span 1; } }
+
+        .activity-feed {
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .activity-item {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .activity-time { color: #64748b; }
+        .activity-success { color: #10b981; }
+        .activity-fail { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <!-- Admin Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>Admin Access Required</h2>
+            <p>Enter admin credentials to view viral dashboard</p>
+            <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
+            <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+            <button onclick="doLogin()">Login</button>
+            <p class="login-error" id="loginError">Invalid credentials</p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (hidden until login) -->
+    <div id="dashboardContent" class="hidden">
+    <div class="header">
+        <h1>Viral Traffic Dashboard</h1>
+        <p>Real-time monitoring of DOZ UP organic traffic engine (Admin Only)</p>
+        <div class="live-indicator">
+            <span class="live-dot"></span>
+            <span>LIVE - Updates every 5 seconds</span>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- Total Submissions -->
+        <div class="card">
+            <h3>Total Submissions</h3>
+            <div class="big-number" id="totalSubmissions">0</div>
+            <div class="sub-stat"><span id="submissionsPerMin">0</span> per minute</div>
+        </div>
+
+        <!-- Success Rate -->
+        <div class="card">
+            <h3>Success Rate</h3>
+            <div class="big-number success" id="successRate">0%</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="successBar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Current Cycle -->
+        <div class="card">
+            <h3>Current Cycle</h3>
+            <div class="big-number info" id="currentCycle">#0</div>
+            <div class="sub-stat">Running for <span id="runningTime">0m</span></div>
+        </div>
+
+        <!-- Traffic Generated -->
+        <div class="card">
+            <h3>Traffic Generated</h3>
+            <div class="big-number warning" id="totalTraffic">0</div>
+            <div class="sub-stat">Visitors from submissions</div>
+        </div>
+
+        <!-- Detailed Stats -->
+        <div class="card">
+            <h3>Submission Stats</h3>
+            <div class="stat-row">
+                <span class="stat-label">Total Cycles</span>
+                <span class="stat-value blue" id="totalCycles">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Successful</span>
+                <span class="stat-value green" id="totalSuccess">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Failed</span>
+                <span class="stat-value red" id="totalFailed">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Last Hour</span>
+                <span class="stat-value" id="lastHour">0</span>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="card">
+            <h3>By Category</h3>
+            <div class="category-grid" id="categories"></div>
+        </div>
+
+        <!-- Hourly Chart -->
+        <div class="card wide">
+            <h3>Submissions - Last 24 Hours</h3>
+            <div class="chart-container" id="hourlyChart"></div>
+        </div>
+
+        <!-- Recent Cycles -->
+        <div class="card">
+            <h3>Recent Cycles</h3>
+            <div class="cycle-list" id="recentCycles"></div>
+        </div>
+
+        <!-- Top Referrers -->
+        <div class="card">
+            <h3>Top Traffic Sources</h3>
+            <div id="topReferrers"></div>
+        </div>
+
+        <!-- Live Activity -->
+        <div class="card wide">
+            <h3>Live Activity Feed</h3>
+            <div class="activity-feed" id="activityFeed">
+                <div class="activity-item">Waiting for data...</div>
+            </div>
+        </div>
+    </div>
+
+    <p class="refresh-note">Dashboard auto-refreshes every 5 seconds | Started: <span id="startedAt">-</span></p>
+    </div><!-- end dashboardContent -->
+
+    <script>
+        // Admin Authentication
+        const ADMIN_TOKEN_KEY = 'doz_viral_admin_token';
+
+        function checkAuth() {
+            const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+            if (token) {
+                // Verify token with server
+                fetch('/api/viral/verify', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                }).then(r => r.json()).then(data => {
+                    if (data.valid) {
+                        showDashboard();
+                    } else {
+                        localStorage.removeItem(ADMIN_TOKEN_KEY);
+                        showLogin();
+                    }
+                }).catch(() => showLogin());
+            } else {
+                showLogin();
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('dashboardContent').classList.remove('hidden');
+            initDashboard();
+        }
+
+        function doLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            fetch('/api/viral/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            }).then(r => r.json()).then(data => {
+                if (data.success && data.token) {
+                    localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+                    showDashboard();
+                } else {
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            }).catch(() => {
+                document.getElementById('loginError').style.display = 'block';
+            });
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') doLogin();
+        });
+
+        // Check auth on load
+        checkAuth();
+        let ws;
+        let activityLog = [];
+
+        function formatNumber(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return n.toString();
+        }
+
+        function updateDashboard(data) {
+            if (!data) return;
+
+            // Overview
+            document.getElementById('totalSubmissions').textContent = formatNumber(data.overview?.totalSubmissions || 0);
+            document.getElementById('successRate').textContent = data.overview?.successRate || '0%';
+            document.getElementById('currentCycle').textContent = '#' + (data.overview?.totalCycles || 0);
+            document.getElementById('totalTraffic').textContent = formatNumber(data.overview?.totalTraffic || 0);
+            document.getElementById('runningTime').textContent = data.overview?.runningFor || '0m';
+            document.getElementById('startedAt').textContent = data.overview?.startedAt?.slice(0, 19).replace('T', ' ') || '-';
+
+            // Stats
+            document.getElementById('totalCycles').textContent = data.overview?.totalCycles || 0;
+            document.getElementById('totalSuccess').textContent = formatNumber(data.overview?.totalSuccess || 0);
+            document.getElementById('totalFailed').textContent = formatNumber(data.overview?.totalFailed || 0);
+            document.getElementById('submissionsPerMin').textContent = data.realtime?.submissionsPerMinute || 0;
+            document.getElementById('lastHour').textContent = formatNumber(data.realtime?.submissionsLastHour || 0);
+
+            // Success bar
+            const rate = parseFloat(data.overview?.successRate) || 0;
+            document.getElementById('successBar').style.width = rate + '%';
+
+            // Categories
+            const catContainer = document.getElementById('categories');
+            if (data.categories) {
+                catContainer.innerHTML = Object.entries(data.categories).map(([name, stats]) => `
+                    <div class="category-item">
+                        <div class="category-name">${name}</div>
+                        <div class="category-stat">${formatNumber(stats.success)}/${formatNumber(stats.hits)}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Hourly chart
+            const chartContainer = document.getElementById('hourlyChart');
+            if (data.hourlyChart && data.hourlyChart.length > 0) {
+                const maxVal = Math.max(...data.hourlyChart.map(h => h.success + h.failed)) || 1;
+                chartContainer.innerHTML = data.hourlyChart.map(h => {
+                    const height = ((h.success + h.failed) / maxVal * 180) || 4;
+                    return `
+                        <div class="chart-bar" style="height: ${height}px">
+                            <div class="tooltip">${h.hour}: ${h.success} success</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Recent cycles
+            const cycleContainer = document.getElementById('recentCycles');
+            if (data.recentCycles) {
+                cycleContainer.innerHTML = data.recentCycles.slice(0, 10).map(c => `
+                    <div class="cycle-item">
+                        <span class="cycle-num">#${c.cycle}</span>
+                        <div class="cycle-stats">
+                            <span style="color: #10b981">✓ ${c.success}</span>
+                            <span style="color: #ef4444">✗ ${c.failed}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Top referrers
+            const refContainer = document.getElementById('topReferrers');
+            if (data.topReferrers && data.topReferrers.length > 0) {
+                refContainer.innerHTML = data.topReferrers.slice(0, 10).map(r => `
+                    <div class="referrer-item">
+                        <span class="referrer-name">${r.source}</span>
+                        <span class="referrer-count">${r.count}</span>
+                    </div>
+                `).join('');
+            } else {
+                refContainer.innerHTML = '<div style="color: #64748b; padding: 10px;">No traffic data yet</div>';
+            }
+        }
+
+        function addActivity(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            activityLog.unshift({ time, message, type });
+            if (activityLog.length > 50) activityLog = activityLog.slice(0, 50);
+
+            const feed = document.getElementById('activityFeed');
+            feed.innerHTML = activityLog.map(a => `
+                <div class="activity-item">
+                    <span class="activity-time">[${a.time}]</span>
+                    <span class="activity-${a.type}">${a.message}</span>
+                </div>
+            `).join('');
+        }
+
+        function connectWebSocket() {
+            const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${location.host}/ws/viral`);
+
+            ws.onopen = () => {
+                addActivity('Connected to viral engine', 'success');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'dashboard') {
+                        updateDashboard(data.data);
+                    } else if (data.type === 'activity') {
+                        addActivity(data.message, data.success ? 'success' : 'fail');
+                    } else if (data.type === 'cycle-complete') {
+                        addActivity(`Cycle #${data.cycle} complete: ${data.success} success`, 'success');
+                    }
+                } catch (e) {}
+            };
+
+            ws.onclose = () => {
+                addActivity('Disconnected - reconnecting...', 'fail');
+                setTimeout(connectWebSocket, 3000);
+            };
+
+            ws.onerror = () => {
+                addActivity('Connection error', 'fail');
+            };
+        }
+
+        // Fetch data via HTTP as fallback
+        async function fetchDashboard() {
+            const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/viral/dashboard', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.status === 401) {
+                    localStorage.removeItem(ADMIN_TOKEN_KEY);
+                    showLogin();
+                    return;
+                }
+                const data = await res.json();
+                updateDashboard(data);
+            } catch (e) {
+                console.error('Fetch error:', e);
+            }
+        }
+
+        // Initialize dashboard after login
+        let dashboardInterval;
+        function initDashboard() {
+            connectWebSocket();
+            fetchDashboard();
+            if (dashboardInterval) clearInterval(dashboardInterval);
+            dashboardInterval = setInterval(fetchDashboard, 5000);
+        }
+    </script>
+</body>
+</html>

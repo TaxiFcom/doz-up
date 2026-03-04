@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - System Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .health-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .health-badge.healthy { background: linear-gradient(135deg, #10b981, #059669); }
+        .health-badge.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .health-badge.critical { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .grid { display: grid; gap: 20px; }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .card h3 {
+            color: #9ca3af;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .card .value {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card .sub {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .gauge-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .gauge {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+        .gauge svg {
+            transform: rotate(-90deg);
+        }
+        .gauge circle {
+            fill: none;
+            stroke-width: 8;
+        }
+        .gauge .bg { stroke: rgba(255,255,255,0.1); }
+        .gauge .progress { stroke-linecap: round; transition: stroke-dashoffset 0.5s; }
+        .gauge .value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+            margin-top: 15px;
+        }
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            height: 100%;
+            gap: 2px;
+        }
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, #7c3aed, #00d4ff);
+            border-radius: 2px 2px 0 0;
+            min-height: 2px;
+            transition: height 0.3s;
+        }
+
+        .platform-list {
+            margin-top: 15px;
+        }
+        .platform-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .platform-item:last-child { border-bottom: none; }
+        .platform-item .name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .platform-item .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .platform-item .count {
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .alert-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.03);
+        }
+        .alert-item.critical { border-left: 3px solid #ef4444; }
+        .alert-item.warning { border-left: 3px solid #f59e0b; }
+        .alert-item.info { border-left: 3px solid #3b82f6; }
+        .alert-item .time {
+            color: #6b7280;
+            font-size: 12px;
+        }
+        .alert-item .message {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .endpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .endpoint-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .endpoint-card .name {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+        .endpoint-card .active {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+        }
+        .endpoint-card .rate {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .refresh-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @media (max-width: 1200px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+            .endpoint-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>System Monitor</h1>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="refresh-indicator">
+                <div class="pulse"></div>
+                <span>Live updating</span>
+            </div>
+            <div id="health-badge" class="health-badge healthy">HEALTHY</div>
+        </div>
+    </div>
+
+    <!-- Top Stats -->
+    <div class="grid grid-4" style="margin-bottom: 20px;">
+        <div class="card">
+            <h3>Active Connections</h3>
+            <div class="value" id="active-connections">0</div>
+            <div class="sub">Peak: <span id="peak-connections">0</span></div>
+        </div>
+        <div class="card">
+            <h3>Messages/min</h3>
+            <div class="value" id="messages-per-min">0</div>
+            <div class="sub">Total: <span id="total-messages">0</span></div>
+        </div>
+        <div class="card">
+            <h3>Error Rate</h3>
+            <div class="value" id="error-rate">0%</div>
+            <div class="sub">Errors: <span id="total-errors">0</span></div>
+        </div>
+        <div class="card">
+            <h3>Uptime</h3>
+            <div class="value" id="uptime">0s</div>
+            <div class="sub">PID: <span id="pid">-</span></div>
+        </div>
+    </div>
+
+    <!-- Resource Gauges & Chart -->
+    <div class="grid grid-2" style="margin-bottom: 20px;">
+        <div class="card">
+            <h3>System Resources</h3>
+            <div class="gauge-container">
+                <div class="gauge">
+                    <svg width="100" height="100">
+                        <circle class="bg" cx="50" cy="50" r="42" />
+                        <circle class="progress" id="cpu-gauge" cx="50" cy="50" r="42"
+                            stroke="#00d4ff" stroke-dasharray="264" stroke-dashoffset="264" />
+                    </svg>
+                    <div class="value"><span id="cpu-value">0</span>%</div>
+                </div>
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">CPU</div>
+                    <div style="color: #6b7280; font-size: 13px;">Process usage</div>
+                </div>
+                <div class="gauge">
+                    <svg width="100" height="100">
+                        <circle class="bg" cx="50" cy="50" r="42" />
+                        <circle class="progress" id="memory-gauge" cx="50" cy="50" r="42"
+                            stroke="#7c3aed" stroke-dasharray="264" stroke-dashoffset="264" />
+                    </svg>
+                    <div class="value"><span id="memory-value">0</span>%</div>
+                </div>
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">Memory</div>
+                    <div style="color: #6b7280; font-size: 13px;">Heap: <span id="heap-used">0</span>MB</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Message Rate (60s)</h3>
+            <div class="chart-container">
+                <div class="chart" id="rate-chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platforms & Endpoints -->
+    <div class="grid grid-3" style="margin-bottom: 20px;">
+        <div class="card">
+            <h3>Connections by Platform</h3>
+            <div class="platform-list" id="platform-list">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+        <div class="card" style="grid-column: span 2;">
+            <h3>WebSocket Endpoints</h3>
+            <div class="endpoint-grid" id="endpoint-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mesh Status & Alerts -->
+    <div class="grid grid-2">
+        <div class="card">
+            <h3>Neural Mesh Status</h3>
+            <div style="margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: 700;" id="mesh-connections">0</div>
+                        <div style="color: #6b7280; font-size: 13px;">Mesh Connections</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: 700;" id="mesh-users">0</div>
+                        <div style="color: #6b7280; font-size: 13px;">Active Users</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: 700;" id="mesh-devices">0</div>
+                        <div style="color: #6b7280; font-size: 13px;">Devices</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 18px; font-weight: 600; color: #10b981;" id="mesh-total-messages">0</div>
+                        <div style="color: #6b7280; font-size: 12px;">Total Messages</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 18px; font-weight: 600; color: #f59e0b;" id="mesh-latency">0ms</div>
+                        <div style="color: #6b7280; font-size: 12px;">Avg Latency</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Active Alerts</h3>
+            <div class="alert-list" id="alert-list">
+                <div style="color: #6b7280; text-align: center; padding: 20px;">No active alerts</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Health Check Dashboard -->
+    <div style="margin-top: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 22px; background: linear-gradient(135deg, #10b981, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI Health Check</h2>
+        <button onclick="runFullHealthCheck()" id="health-check-btn" style="background: linear-gradient(135deg, #10b981, #059669); border: none; color: #fff; padding: 10px 24px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px;">Run Full Check</button>
+    </div>
+
+    <!-- Health Score + Summary -->
+    <div class="grid grid-4" style="margin-bottom: 20px;">
+        <div class="card" style="text-align: center;">
+            <h3>Health Score</h3>
+            <div class="gauge" style="width: 120px; height: 120px; margin: 15px auto 0;">
+                <svg width="120" height="120">
+                    <circle class="bg" cx="60" cy="60" r="50" />
+                    <circle class="progress" id="health-score-gauge" cx="60" cy="60" r="50"
+                        stroke="#10b981" stroke-dasharray="314" stroke-dashoffset="314" />
+                </svg>
+                <div class="value" id="health-score-value" style="font-size: 28px;">--</div>
+            </div>
+            <div class="sub" id="health-overall" style="margin-top: 8px; font-weight: 600;">Checking...</div>
+        </div>
+        <div class="card">
+            <h3>Pages Status</h3>
+            <div class="value" id="pages-passed" style="color: #10b981;">--</div>
+            <div class="sub" id="pages-detail">-- total, -- failed</div>
+            <div class="sub" id="pages-avg-ms" style="color: #00d4ff; margin-top: 4px;">Avg: -- ms</div>
+        </div>
+        <div class="card">
+            <h3>API Endpoints</h3>
+            <div class="value" id="apis-passed" style="color: #10b981;">--</div>
+            <div class="sub" id="apis-detail">-- total, -- failed</div>
+            <div class="sub" id="apis-avg-ms" style="color: #00d4ff; margin-top: 4px;">Avg: -- ms</div>
+        </div>
+        <div class="card">
+            <h3>AI Services</h3>
+            <div class="value" id="ai-status" style="font-size: 24px;">--</div>
+            <div class="sub" id="ai-detail">Issues: -- | Fixes: --</div>
+            <div class="sub" id="check-duration" style="color: #6b7280; margin-top: 4px;">Check: -- ms</div>
+        </div>
+    </div>
+
+    <!-- Page Status Grid + API Status + Auto-Fixes -->
+    <div class="grid grid-3" style="margin-bottom: 20px;">
+        <div class="card" style="grid-column: span 2;">
+            <h3>Page Health Grid</h3>
+            <div id="page-health-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; margin-top: 12px; max-height: 400px; overflow-y: auto;">
+                <div style="color: #6b7280; text-align: center; padding: 30px; grid-column: 1/-1;">Run health check to see page status</div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>API Endpoint Health</h3>
+            <div id="api-health-list" style="margin-top: 12px; max-height: 400px; overflow-y: auto;">
+                <div style="color: #6b7280; text-align: center; padding: 30px;">Run health check to see API status</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Checks + Auto-Fix Log -->
+    <div class="grid grid-2" style="margin-bottom: 20px;">
+        <div class="card">
+            <h3>System Checks</h3>
+            <div id="system-checks-list" style="margin-top: 12px;">
+                <div style="color: #6b7280; text-align: center; padding: 20px;">Run health check</div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Auto-Fix Log</h3>
+            <div id="autofix-log" style="margin-top: 12px; max-height: 300px; overflow-y: auto;">
+                <div style="color: #6b7280; text-align: center; padding: 20px;">No auto-fixes applied</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        const token = localStorage.getItem('adminToken');
+        const chartData = new Array(60).fill(0);
+
+        // Platform colors
+        const platformColors = {
+            desktop: '#00d4ff',
+            widget: '#7c3aed',
+            extension: '#10b981',
+            mobile: '#f59e0b',
+            web: '#3b82f6',
+            admin: '#ef4444',
+            internal: '#6b7280'
+        };
+
+        function formatUptime(seconds) {
+            const d = Math.floor(seconds / 86400);
+            const h = Math.floor((seconds % 86400) / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            if (d > 0) return `${d}d ${h}h`;
+            if (h > 0) return `${h}h ${m}m`;
+            if (m > 0) return `${m}m ${s}s`;
+            return `${s}s`;
+        }
+
+        function updateGauge(id, value) {
+            const gauge = document.getElementById(id);
+            const offset = 264 - (264 * Math.min(value, 100) / 100);
+            gauge.style.strokeDashoffset = offset;
+        }
+
+        function updateChart(value) {
+            chartData.push(value);
+            chartData.shift();
+
+            const max = Math.max(...chartData, 1);
+            const container = document.getElementById('rate-chart');
+            container.innerHTML = chartData.map(v =>
+                `<div class="chart-bar" style="height: ${(v / max) * 100}%"></div>`
+            ).join('');
+        }
+
+        function updatePlatformList(platforms) {
+            const list = document.getElementById('platform-list');
+            list.innerHTML = Object.entries(platforms)
+                .filter(([_, count]) => count > 0 || ['desktop', 'widget', 'web', 'mobile'].includes(_))
+                .map(([name, count]) => `
+                    <div class="platform-item">
+                        <div class="name">
+                            <div class="dot" style="background: ${platformColors[name] || '#6b7280'}"></div>
+                            <span>${name.charAt(0).toUpperCase() + name.slice(1)}</span>
+                        </div>
+                        <div class="count">${count}</div>
+                    </div>
+                `).join('');
+        }
+
+        function updateEndpoints(endpoints) {
+            const grid = document.getElementById('endpoint-grid');
+            grid.innerHTML = Object.entries(endpoints).map(([name, data]) => `
+                <div class="endpoint-card">
+                    <div class="name">/ws/${name}</div>
+                    <div class="active">${data.active}</div>
+                    <div class="rate">${data.msgRate || 0} msg/min</div>
+                </div>
+            `).join('');
+        }
+
+        function updateAlerts(alerts) {
+            const list = document.getElementById('alert-list');
+            if (!alerts || alerts.length === 0) {
+                list.innerHTML = '<div style="color: #6b7280; text-align: center; padding: 20px;">No active alerts</div>';
+                return;
+            }
+            list.innerHTML = alerts.map(a => `
+                <div class="alert-item ${a.severity}">
+                    <div>
+                        <div class="message">${a.message}</div>
+                        <div class="time">${new Date(a.timestamp).toLocaleTimeString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateUI(status, mesh) {
+            // Health badge
+            const badge = document.getElementById('health-badge');
+            badge.className = `health-badge ${status.healthy ? 'healthy' : 'critical'}`;
+            badge.textContent = status.healthy ? 'HEALTHY' : 'CRITICAL';
+
+            // Main stats
+            document.getElementById('active-connections').textContent = status.metrics?.connections?.active || 0;
+            document.getElementById('peak-connections').textContent = status.metrics?.connections?.peak || 0;
+            document.getElementById('messages-per-min').textContent = status.metrics?.messages?.perMinute || 0;
+            document.getElementById('total-messages').textContent = (status.metrics?.messages?.total || 0).toLocaleString();
+            document.getElementById('error-rate').textContent = status.metrics?.errors?.rate || '0%';
+            document.getElementById('total-errors').textContent = status.metrics?.errors?.count || 0;
+            document.getElementById('uptime').textContent = formatUptime(status.uptime || 0);
+            document.getElementById('pid').textContent = status.metrics?.resources?.pid || '-';
+
+            // Resource gauges
+            const cpu = parseInt(status.metrics?.resources?.cpu) || 0;
+            const mem = parseInt(status.metrics?.resources?.memory) || 0;
+            document.getElementById('cpu-value').textContent = cpu;
+            document.getElementById('memory-value').textContent = mem;
+            document.getElementById('heap-used').textContent = status.metrics?.resources?.heapUsed?.replace('MB', '') || 0;
+            updateGauge('cpu-gauge', cpu);
+            updateGauge('memory-gauge', mem);
+
+            // Chart
+            updateChart(status.metrics?.messages?.perMinute || 0);
+
+            // Platforms
+            if (status.metrics?.connections?.byPlatform) {
+                updatePlatformList(status.metrics.connections.byPlatform);
+            }
+
+            // Endpoints
+            if (status.metrics?.endpoints) {
+                updateEndpoints(status.metrics.endpoints);
+            }
+
+            // Alerts
+            updateAlerts(status.alerts);
+
+            // Mesh status
+            if (mesh) {
+                document.getElementById('mesh-connections').textContent = mesh.connections?.total || 0;
+                document.getElementById('mesh-users').textContent = mesh.users || 0;
+                document.getElementById('mesh-devices').textContent = mesh.devices || 0;
+                document.getElementById('mesh-total-messages').textContent = (mesh.messages?.total || 0).toLocaleString();
+                document.getElementById('mesh-latency').textContent = `${mesh.messages?.avgLatency || 0}ms`;
+            }
+        }
+
+        function connect() {
+            if (!token) {
+                window.location.href = '/admin/';
+                return;
+            }
+
+            ws = new WebSocket(`wss://${window.location.host}/ws/monitor?token=${token}`);
+
+            ws.onopen = () => {
+                console.log('[Monitor] Connected');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                switch (data.type) {
+                    case 'init':
+                        updateUI(data.status, data.meshStatus);
+                        break;
+                    case 'metrics':
+                        updateUI({ healthy: true, metrics: data.metrics, uptime: data.metrics?.uptime, alerts: [] }, null);
+                        break;
+                    case 'status':
+                        updateUI(data.status, data.meshStatus);
+                        break;
+                    case 'alert':
+                        // Add alert to list
+                        console.log('[Monitor] Alert:', data.alert);
+                        break;
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('[Monitor] Disconnected, reconnecting...');
+                setTimeout(connect, 3000);
+            };
+
+            ws.onerror = (error) => {
+                console.warn('[Monitor] WebSocket error:', error);
+            };
+        }
+
+        // Initial connection
+        connect();
+
+        // Fallback: poll API if WebSocket fails
+        setInterval(async () => {
+            if (ws && ws.readyState === WebSocket.OPEN) return;
+
+            try {
+                const response = await fetch('/api/monitor/status');
+                const data = await response.json();
+                if (data.success) {
+                    updateUI(data, data.mesh);
+                }
+            } catch (e) {
+                console.warn('[Monitor] API poll failed:', e);
+            }
+        }, 5000);
+
+        // ============ AI HEALTH CHECK DASHBOARD ============
+        let healthCheckRunning = false;
+        let healthHistory = [];
+
+        async function runFullHealthCheck() {
+            if (healthCheckRunning) return;
+            healthCheckRunning = true;
+            const btn = document.getElementById('health-check-btn');
+            btn.textContent = 'Checking...';
+            btn.style.opacity = '0.7';
+
+            try {
+                const response = await fetch('/api/health/full');
+                const data = await response.json();
+                healthHistory.unshift({ time: new Date(), data });
+                if (healthHistory.length > 20) healthHistory.pop();
+                renderHealthDashboard(data);
+            } catch (e) {
+                console.error('[HealthCheck] Error:', e);
+                document.getElementById('health-score-value').textContent = 'ERR';
+                document.getElementById('health-overall').textContent = 'Check failed: ' + e.message;
+                document.getElementById('health-overall').style.color = '#ef4444';
+            } finally {
+                healthCheckRunning = false;
+                btn.textContent = 'Run Full Check';
+                btn.style.opacity = '1';
+            }
+        }
+
+        function renderHealthDashboard(data) {
+            // Health Score Gauge
+            const score = data.score || 0;
+            const scoreGauge = document.getElementById('health-score-gauge');
+            const scoreOffset = 314 - (314 * Math.min(score, 100) / 100);
+            scoreGauge.style.strokeDashoffset = scoreOffset;
+            scoreGauge.style.stroke = score >= 90 ? '#10b981' : score >= 70 ? '#f59e0b' : '#ef4444';
+            document.getElementById('health-score-value').textContent = score;
+
+            const overallEl = document.getElementById('health-overall');
+            overallEl.textContent = (data.overall || 'unknown').toUpperCase();
+            overallEl.style.color = score >= 90 ? '#10b981' : score >= 70 ? '#f59e0b' : '#ef4444';
+
+            // Pages summary
+            const pages = data.checks?.pages || {};
+            document.getElementById('pages-passed').textContent = `${pages.passed || 0}/${pages.total || 0}`;
+            document.getElementById('pages-passed').style.color = (pages.failed || 0) === 0 ? '#10b981' : '#f59e0b';
+            document.getElementById('pages-detail').textContent = `${pages.total || 0} total, ${pages.failed || 0} failed`;
+            document.getElementById('pages-avg-ms').textContent = `Avg: ${pages.avgResponseMs || 0}ms`;
+
+            // APIs summary
+            const apis = data.checks?.apis || {};
+            document.getElementById('apis-passed').textContent = `${apis.passed || 0}/${apis.total || 0}`;
+            document.getElementById('apis-passed').style.color = (apis.failed || 0) === 0 ? '#10b981' : '#f59e0b';
+            document.getElementById('apis-detail').textContent = `${apis.total || 0} total, ${apis.failed || 0} failed`;
+            document.getElementById('apis-avg-ms').textContent = `Avg: ${apis.avgResponseMs || 0}ms`;
+
+            // AI Services
+            const ai = data.checks?.aiServices || {};
+            const aiEl = document.getElementById('ai-status');
+            aiEl.textContent = ai.ok ? 'ACTIVE' : 'DOWN';
+            aiEl.style.color = ai.ok ? '#10b981' : '#ef4444';
+            document.getElementById('ai-detail').textContent = `Issues: ${ai.totalIssues || 0} | Fixes: ${ai.permanentFixes || 0}`;
+            document.getElementById('check-duration').textContent = `Check: ${data.checkDurationMs || 0}ms`;
+
+            // Page Health Grid
+            renderPageGrid(data);
+
+            // API Health List
+            renderApiList(data);
+
+            // System Checks
+            renderSystemChecks(data);
+
+            // Auto-Fix Log
+            renderAutoFixes(data);
+        }
+
+        function renderPageGrid(data) {
+            const grid = document.getElementById('page-health-grid');
+            const pages = data.checks?.pages;
+            if (!pages) { grid.innerHTML = '<div style="color:#6b7280;text-align:center;padding:20px;grid-column:1/-1">No data</div>'; return; }
+
+            // Build page list from passed + failed
+            const allPages = [];
+            // We know the failed ones
+            const failedSet = new Set((pages.failedList || []).map(p => p.page));
+
+            // Reconstruct from the endpoint - we know the page list from the API
+            const knownPages = [
+                '/', '/login.html', '/download.html', '/hub.html', '/cabinet.html',
+                '/my.html', '/gallery.html', '/upload.html', '/studio.html',
+                '/pricing.html', '/status.html', '/help-center.html', '/features.html',
+                '/my-account.html', '/mobile.html', '/collage.html', '/annotate.html',
+                '/frames.html', '/themes.html', '/tools.html', '/demo.html',
+                '/checkout.html', '/pay.html', '/changelog.html',
+                '/admin/dashboard.html', '/admin/analytics.html', '/admin/system-monitor.html',
+                '/admin/control-center.html', '/admin/support-inbox.html', '/admin/admin-panel.html',
+                '/admin/intelligence.html', '/admin/growth-center.html', '/admin/login.html'
+            ];
+
+            grid.innerHTML = knownPages.map(page => {
+                const failed = failedSet.has(page);
+                const failInfo = (pages.failedList || []).find(p => p.page === page);
+                const name = page === '/' ? 'Homepage' : page.replace(/^\//, '').replace('.html', '').replace(/\//g, '/');
+                return `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border-left:3px solid ${failed ? '#ef4444' : '#10b981'};" title="${failed ? (failInfo?.error || 'Failed') : 'OK'}">
+                    <span style="color:${failed ? '#ef4444' : '#10b981'};font-size:16px;">${failed ? '&#x2717;' : '&#x2713;'}</span>
+                    <span style="font-size:13px;color:#e5e7eb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function renderApiList(data) {
+            const list = document.getElementById('api-health-list');
+            const apis = data.checks?.apis;
+            if (!apis) { list.innerHTML = '<div style="color:#6b7280;text-align:center;padding:20px">No data</div>'; return; }
+
+            const failedSet = new Set((apis.failedList || []).map(a => a.endpoint));
+            const knownApis = [
+                '/health', '/api/health', '/api/version', '/api/status',
+                '/api/diagnostics', '/api/ping', '/api/live-stats',
+                '/api/help/categories', '/api/mirror/status',
+                '/api/ai/interceptor/status', '/api/upload-health'
+            ];
+
+            list.innerHTML = knownApis.map(ep => {
+                const failed = failedSet.has(ep);
+                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="color:${failed ? '#ef4444' : '#10b981'};font-size:14px;">${failed ? '&#x2717;' : '&#x2713;'}</span>
+                        <span style="font-size:13px;color:#e5e7eb;">${ep}</span>
+                    </div>
+                    <span style="font-size:12px;padding:2px 8px;border-radius:4px;background:${failed ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'};color:${failed ? '#ef4444' : '#10b981'};">${failed ? 'FAIL' : 'OK'}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function renderSystemChecks(data) {
+            const list = document.getElementById('system-checks-list');
+            const checks = [];
+
+            // Filesystem
+            const fs = data.checks?.filesystem;
+            if (fs) checks.push({ name: 'File System', ok: fs.ok, detail: `${fs.uploadFileCount} files, writable: ${fs.writable}` });
+
+            // Memory
+            const mem = data.checks?.memory;
+            if (mem) checks.push({ name: 'Memory', ok: mem.ok, detail: `Heap: ${mem.heapUsedMB}MB / ${mem.heapTotalMB}MB` });
+
+            // WebSockets
+            const ws = data.checks?.websockets;
+            if (ws) checks.push({ name: 'WebSockets', ok: ws.ok, detail: `Live: ${ws.liveConnections}, Admin: ${ws.adminConnections}` });
+
+            // Upload System
+            const upload = data.checks?.uploadSystem;
+            if (upload) checks.push({ name: 'Upload System', ok: upload.ok, detail: `Limit: ${upload.dailyLimit}/day` });
+
+            // Share System
+            const share = data.checks?.shareSystem;
+            if (share) checks.push({ name: 'Share System', ok: share.ok, detail: `Route: ${share.routeActive ? 'active' : 'down'}` });
+
+            // Service Workers
+            const sw = data.checks?.serviceWorkers;
+            if (sw) checks.push({ name: 'Service Workers', ok: sw.ok, detail: `Main: ${sw.mainSW ? 'yes' : 'no'}, App: ${sw.appSW ? 'yes' : 'no'}` });
+
+            // Downloads
+            const dl = data.checks?.downloads;
+            if (dl) checks.push({ name: 'Downloads', ok: dl.ok, detail: `latest.yml: ${dl.latestYml ? 'exists' : 'missing'}` });
+
+            list.innerHTML = checks.map(c => `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="width:8px;height:8px;border-radius:50%;background:${c.ok ? '#10b981' : '#ef4444'};display:inline-block;"></span>
+                        <span style="font-weight:500;">${c.name}</span>
+                    </div>
+                    <span style="color:#9ca3af;font-size:12px;">${c.detail}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderAutoFixes(data) {
+            const log = document.getElementById('autofix-log');
+            const fixes = data.autoFixes || [];
+
+            if (fixes.length === 0) {
+                log.innerHTML = '<div style="color: #10b981; text-align: center; padding: 20px;">No issues - all systems clean</div>';
+                return;
+            }
+
+            log.innerHTML = fixes.map(fix => `
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:6px;border-radius:8px;background:rgba(0,212,255,0.05);border-left:3px solid #00d4ff;">
+                    <span style="color:#00d4ff;">&#x26A1;</span>
+                    <span style="font-size:13px;">${fix}</span>
+                </div>
+            `).join('');
+        }
+
+        // Auto-run health check on load and every 2 minutes
+        setTimeout(runFullHealthCheck, 2000);
+        setInterval(runFullHealthCheck, 120000);
+    </script>
+</body>
+</html>

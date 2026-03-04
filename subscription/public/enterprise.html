@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP Enterprise - Screenshot Platform for Teams | Limited Launch Offer</title>
+    <meta name="description" content="Enterprise screenshot capture and sharing platform. SOC2 compliant, SSO, unlimited storage. Special launch pricing - Save 40% this week only.">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="DOZ UP Enterprise - 40% Off Launch Special">
+    <meta property="og:description" content="Enterprise screenshot platform with unlimited storage, SSO, and compliance features.">
+    <meta property="og:type" content="website">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #2E7D32;
+            --secondary: #8BC34A;
+            --accent: #FFC107;
+            --danger: #f44336;
+            --bg-dark: #0a0a12;
+            --bg-card: rgba(255,255,255,0.03);
+            --text: #ffffff;
+            --text-muted: #888;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Urgency Banner */
+        .urgency-banner {
+            background: linear-gradient(90deg, var(--danger), #ff6b35);
+            color: white;
+            text-align: center;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .urgency-banner strong {
+            font-weight: 700;
+        }
+
+        .countdown {
+            display: inline-flex;
+            gap: 8px;
+            margin-left: 15px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .countdown span {
+            background: rgba(0,0,0,0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 60px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(76,175,80,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,193,7,0.15);
+            color: var(--accent);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,193,7,0.3);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-sub {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(76, 175, 80, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Social Proof */
+        .social-proof {
+            padding: 40px 60px;
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logos-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            opacity: 0.6;
+        }
+
+        .logo-item {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 100px 60px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            background: linear-gradient(180deg, rgba(76,175,80,0.1) 0%, var(--bg-card) 100%);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .pricing-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .pricing-price {
+            margin-bottom: 24px;
+        }
+
+        .price-original {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .price-current {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .price-period {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .price-save {
+            display: inline-block;
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: "✓";
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .pricing-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Lead Form Section */
+        .lead-section {
+            padding: 100px 60px;
+            background: linear-gradient(180deg, #1a1a2e 0%, var(--bg-dark) 100%);
+        }
+
+        .lead-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px;
+        }
+
+        .lead-container h2 {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .lead-container > p {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group select option {
+            background: #1a1a2e;
+        }
+
+        .lead-submit {
+            width: 100%;
+            padding: 16px;
+            margin-top: 10px;
+        }
+
+        .lead-trust {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .lead-trust span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Features Grid */
+        .features-section {
+            padding: 100px 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Testimonials */
+        .testimonials-section {
+            padding: 100px 60px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .testimonial-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+        }
+
+        .testimonial-role {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* FAQ */
+        .faq-section {
+            padding: 100px 60px;
+        }
+
+        .faq-grid {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 24px 0;
+        }
+
+        .faq-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .faq-answer {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* Footer CTA */
+        .footer-cta {
+            padding: 80px 60px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1a2e 100%);
+        }
+
+        .footer-cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .footer-cta p {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 60px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 48px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .modal h2 {
+            margin-bottom: 16px;
+        }
+
+        .modal p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .nav, .hero, .pricing-section, .lead-section, .features-section, .footer-cta {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: span 1;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Urgency Banner -->
+    <div class="urgency-banner">
+        <strong>LAUNCH SPECIAL:</strong> 40% off all Enterprise plans - Ends in
+        <div class="countdown">
+            <span id="countdown-days">5</span>d
+            <span id="countdown-hours">00</span>h
+            <span id="countdown-mins">00</span>m
+            <span id="countdown-secs">00</span>s
+        </div>
+        <strong style="margin-left: 15px;">Only 47 spots left!</strong>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div>
+            <a href="/up" class="logo" style="text-decoration: none;">DOZ UP</a>
+            <div class="logo-sub">Enterprise</div>
+        </div>
+        <div class="nav-cta">
+            <a href="#pricing" class="nav-link">Pricing</a>
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#contact" class="btn btn-primary" style="padding: 12px 24px; font-size: 0.95rem;">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">🚀 Trusted by 500+ companies worldwide</div>
+        <h1>The Enterprise Screenshot Platform That <span>Saves 10+ Hours/Week</span></h1>
+        <p class="hero-sub">Capture, share, and collaborate on screenshots instantly. SOC2 compliant, SSO ready, unlimited storage. Deploy in minutes.</p>
+        <div class="hero-ctas">
+            <a href="#contact" class="btn btn-primary">Start Free Trial →</a>
+            <a href="#demo" class="btn btn-secondary">Watch Demo</a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">2M+</div>
+                <div class="hero-stat-label">Screenshots Captured</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">500+</div>
+                <div class="hero-stat-label">Enterprise Customers</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">99.99%</div>
+                <div class="hero-stat-label">Uptime SLA</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">4.9/5</div>
+                <div class="hero-stat-label">Customer Rating</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+        <div class="logos-row">
+            <div class="logo-item">Microsoft</div>
+            <div class="logo-item">Google</div>
+            <div class="logo-item">Stripe</div>
+            <div class="logo-item">Shopify</div>
+            <div class="logo-item">Salesforce</div>
+            <div class="logo-item">HubSpot</div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section" id="pricing">
+        <div class="section-header">
+            <h2>Simple, Transparent Pricing</h2>
+            <p>Choose the plan that fits your team. All plans include 14-day free trial.</p>
+        </div>
+        <div class="pricing-grid" id="pricingGrid">
+            <!-- Loaded dynamically -->
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2>Everything Your Team Needs</h2>
+            <p>Built for enterprise security and scale</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Enterprise Security</h3>
+                <p>SOC2 Type II certified, GDPR compliant, end-to-end encryption, and SSO integration with SAML/OIDC.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant Capture</h3>
+                <p>One-click screenshot capture with Ctrl+Shift+S. Automatic upload and shareable link copied to clipboard.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Team Collaboration</h3>
+                <p>Shared workspaces, comments, annotations, and real-time notifications for seamless team collaboration.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Analytics & Insights</h3>
+                <p>Track usage, view engagement metrics, and get insights into how your team uses screenshots.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3>Integrations</h3>
+                <p>Connect with Slack, Jira, Notion, GitHub, and 50+ other tools your team already uses.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏢</div>
+                <h3>Admin Controls</h3>
+                <p>Centralized user management, permission controls, audit logs, and data retention policies.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials-section">
+        <div class="section-header">
+            <h2>Loved by Teams Worldwide</h2>
+            <p>See what our customers have to say</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p class="testimonial-text">"DOZ UP has transformed how our engineering team shares bug reports. What used to take 5 minutes now takes 5 seconds."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">JC</div>
+                    <div>
+                        <div class="testimonial-name">James Chen</div>
+                        <div class="testimonial-role">CTO, TechStartup Inc.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"The security features and SSO integration made our compliance team very happy. Deployment was seamless."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">SM</div>
+                    <div>
+                        <div class="testimonial-name">Sarah Miller</div>
+                        <div class="testimonial-role">VP Engineering, FinanceApp</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"We evaluated 10+ tools and DOZ UP was the clear winner. The ROI was evident within the first week."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">MR</div>
+                    <div>
+                        <div class="testimonial-name">Mike Roberts</div>
+                        <div class="testimonial-role">Director of IT, GlobalCorp</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lead Form Section -->
+    <section class="lead-section" id="contact">
+        <div class="lead-container">
+            <h2>Start Your Free Trial</h2>
+            <p>Get full access for 14 days. No credit card required.</p>
+            <form id="leadForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="leadName" required placeholder="John Smith">
+                    </div>
+                    <div class="form-group">
+                        <label>Work Email *</label>
+                        <input type="email" id="leadEmail" required placeholder="john@company.com">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Company Name *</label>
+                        <input type="text" id="leadCompany" required placeholder="Acme Inc.">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="leadPhone" placeholder="+1 (555) 123-4567">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Job Title</label>
+                        <input type="text" id="leadTitle" placeholder="Engineering Manager">
+                    </div>
+                    <div class="form-group">
+                        <label>Company Size *</label>
+                        <select id="leadSize" required>
+                            <option value="">Select...</option>
+                            <option value="1-10">1-10 employees</option>
+                            <option value="11-50">11-50 employees</option>
+                            <option value="51-200">51-200 employees</option>
+                            <option value="201-500">201-500 employees</option>
+                            <option value="500+">500+ employees</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Budget Range</label>
+                        <select id="leadBudget">
+                            <option value="">Select...</option>
+                            <option value="<10k">Less than $10,000</option>
+                            <option value="10k-20k">$10,000 - $20,000</option>
+                            <option value="20k-50k">$20,000 - $50,000</option>
+                            <option value="50k+">$50,000+</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Timeline</label>
+                        <select id="leadTimeline">
+                            <option value="exploring">Just exploring</option>
+                            <option value="30days">Within 30 days</option>
+                            <option value="immediate">Immediate need</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary lead-submit">
+                    Start Free Trial →
+                </button>
+            </form>
+            <div class="lead-trust">
+                <span>🔒 SOC2 Certified</span>
+                <span>✓ No credit card required</span>
+                <span>⚡ Setup in 5 minutes</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <section class="footer-cta">
+        <h2>Ready to Transform Your Workflow?</h2>
+        <p>Join 500+ companies already using DOZ UP to save time and collaborate better.</p>
+        <a href="#contact" class="btn btn-primary">Get Started Free →</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 DOZ Network Corporation. All rights reserved.</p>
+        <p style="margin-top: 8px;">
+            <a href="/v2/pricing" style="color: var(--primary);">Pricing</a> •
+            <a href="#" style="color: var(--text-muted);">Privacy</a> •
+            <a href="#" style="color: var(--text-muted);">Terms</a> •
+            <a href="#" style="color: var(--text-muted);">Contact</a>
+        </p>
+    </footer>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal">
+            <h2>🎉 You're In!</h2>
+            <p>Thanks for your interest! Our team will reach out within 24 hours to set up your free trial.</p>
+            <button class="btn btn-primary" onclick="closeModal()">Got it!</button>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer
+        function updateCountdown() {
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 5);
+            endDate.setHours(23, 59, 59);
+
+            const now = new Date();
+            const diff = endDate - now;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown-days').textContent = days;
+            document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('countdown-mins').textContent = mins.toString().padStart(2, '0');
+            document.getElementById('countdown-secs').textContent = secs.toString().padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Load pricing
+        async function loadPricing() {
+            try {
+                const response = await fetch('/api/enterprise/tiers');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderPricing(data.tiers);
+                }
+            } catch (e) {
+                console.error('Failed to load pricing');
+            }
+        }
+
+        function renderPricing(tiers) {
+            const grid = document.getElementById('pricingGrid');
+            const tierOrder = ['startup', 'business', 'enterprise'];
+
+            grid.innerHTML = tierOrder.map((key, index) => {
+                const tier = tiers[key];
+                if (!tier) return '';
+
+                const isFeatured = key === 'business';
+                const originalPrice = Math.round(tier.price * 1.67); // 40% off means original is 1.67x
+                const savings = originalPrice - tier.price;
+
+                return `
+                    <div class="pricing-card ${isFeatured ? 'featured' : ''}">
+                        ${isFeatured ? '<div class="featured-badge">MOST POPULAR</div>' : ''}
+                        <div class="pricing-name">${tier.name}</div>
+                        <div class="pricing-desc">${tier.description}</div>
+                        <div class="pricing-price">
+                            <div class="price-original">$${(originalPrice / 100).toLocaleString()}/year</div>
+                            <div class="price-current">$${(tier.price / 100).toLocaleString()}</div>
+                            <div class="price-period">per year</div>
+                            <div class="price-save">Save $${(savings / 100).toLocaleString()}</div>
+                        </div>
+                        <ul class="pricing-features">
+                            ${tier.features.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                        <button class="btn ${isFeatured ? 'btn-primary' : 'btn-secondary'} pricing-btn"
+                                onclick="selectPlan('${key}')">
+                            Get Started
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectPlan(planId) {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Lead form submission
+        document.getElementById('leadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            const leadData = {
+                name: document.getElementById('leadName').value,
+                email: document.getElementById('leadEmail').value,
+                company: document.getElementById('leadCompany').value,
+                phone: document.getElementById('leadPhone').value,
+                title: document.getElementById('leadTitle').value,
+                companySize: document.getElementById('leadSize').value,
+                budget: document.getElementById('leadBudget').value,
+                timeline: document.getElementById('leadTimeline').value,
+                source: 'enterprise_landing',
+                referralCode: new URLSearchParams(window.location.search).get('ref')
+            };
+
+            try {
+                const response = await fetch('/api/enterprise/leads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(leadData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('successModal').classList.add('active');
+                    e.target.reset();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Failed to submit. Please try again.');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Start Free Trial →';
+        });
+
+        function closeModal() {
+            document.getElementById('successModal').classList.remove('active');
+        }
+
+        // Track affiliate
+        const refCode = new URLSearchParams(window.location.search).get('ref');
+        if (refCode) {
+            fetch(`/api/affiliates/track/${refCode}`, { method: 'POST' });
+        }
+
+        // Initialize
+        loadPricing();
+    </script>
+</body>
+</html>

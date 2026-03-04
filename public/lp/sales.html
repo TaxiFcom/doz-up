@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1973180083621280');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1973180083621280&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+<script src="https://doz.com.im/meta/pixel.php" defer></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Screenshot to Link in 1 Second | Get Started</title>
+    <meta name="description" content="The fastest screenshot sharing tool. Capture, paste, share. One click checkout. Try free or go Pro.">
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://js.stripe.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://js.stripe.com">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="DOZ UP - Screenshot to Link in 1 Second">
+    <meta property="og:description" content="The fastest screenshot sharing tool. One click, instant link.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://up.doz.com/lp/sales.html">
+
+    <!-- Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-441083115"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-441083115', { 'allow_enhanced_conversions': true });
+        gtag('event', 'page_view', { 'page_title': 'Sales Landing', 'page_location': window.location.href });
+    </script>
+
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/" defer></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --green: #10b981;
+            --green-dark: #059669;
+            --green-glow: rgba(16, 185, 129, 0.4);
+            --purple: #7c3aed;
+            --purple-dark: #6366f1;
+            --amber: #f59e0b;
+            --bg: #0a0a1a;
+            --card: rgba(255,255,255,0.05);
+            --text: #ffffff;
+            --muted: #94a3b8;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 var(--green-glow); } 50% { box-shadow: 0 0 0 12px rgba(16,185,129,0); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes glow { 0%,100% { box-shadow: 0 0 20px var(--green-glow); } 50% { box-shadow: 0 0 40px var(--green-glow); } }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+        .logo-text {
+            font-size: 1.4rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--green), #34d399);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .header-btn {
+            background: var(--green); color: #fff; padding: 10px 24px; border-radius: 25px;
+            text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: all 0.2s;
+        }
+        .header-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--green-glow); }
+
+        /* ── HERO ── */
+        .hero {
+            text-align: center;
+            padding: 50px 20px 30px;
+            max-width: 700px;
+            margin: 0 auto;
+            animation: fadeUp 0.6s ease;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.3);
+            color: var(--green);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--green), #34d399);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--muted);
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto; margin-right: auto;
+        }
+
+        /* ── 3-STEP DEMO (compact) ── */
+        .steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .step {
+            text-align: center;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 16px;
+            width: 140px;
+            transition: all 0.2s;
+        }
+        .step:hover { border-color: var(--green); transform: translateY(-3px); }
+        .step-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.1rem; font-weight: 700; color: #fff;
+        }
+        .step-label { font-size: 0.85rem; color: var(--muted); }
+        .step-arrow { color: rgba(255,255,255,0.25); font-size: 1.2rem; }
+
+        /* ── PRICING (2 cards only) ── */
+        .pricing {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .pricing-header h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+        .pricing-header p { color: var(--muted); font-size: 0.95rem; }
+
+        /* Billing toggle */
+        .billing-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            margin: 20px 0 28px;
+        }
+        .bill-label { font-size: 0.95rem; color: var(--muted); cursor: pointer; padding: 6px 12px; border-radius: 16px; transition: all 0.2s; }
+        .bill-label.active { color: #fff; font-weight: 600; }
+        .bill-toggle {
+            position: relative; width: 52px; height: 28px;
+            background: rgba(255,255,255,0.1); border-radius: 14px; cursor: pointer; transition: background 0.3s;
+        }
+        .bill-toggle.yearly { background: var(--green); }
+        .bill-knob {
+            position: absolute; top: 3px; left: 3px; width: 22px; height: 22px;
+            background: #fff; border-radius: 50%; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .bill-toggle.yearly .bill-knob { transform: translateX(24px); }
+        .save-tag {
+            background: var(--amber); color: #000; font-size: 0.7rem; font-weight: 700;
+            padding: 3px 8px; border-radius: 10px; margin-left: 4px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .plan {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 24px;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .plan:hover { border-color: rgba(255,255,255,0.2); }
+        .plan.recommended {
+            border-color: var(--green);
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), transparent);
+        }
+        .plan-badge {
+            position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+            background: var(--green); padding: 5px 18px; border-radius: 16px;
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .plan-name { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+        .plan-price { font-size: 2.6rem; font-weight: 800; color: var(--green); margin-bottom: 2px; }
+        .plan-price span { font-size: 0.95rem; color: var(--muted); font-weight: 400; }
+        .plan-price .old { text-decoration: line-through; color: var(--muted); font-size: 1.1rem; margin-right: 8px; opacity: 0.6; }
+        .plan-yearly {
+            font-size: 0.85rem; font-weight: 600; color: var(--green);
+            background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
+            padding: 6px 12px; border-radius: 8px; margin: 8px 0 16px; display: inline-block;
+        }
+        .plan-features { list-style: none; margin-bottom: 24px; }
+        .plan-features li {
+            display: flex; align-items: center; gap: 8px;
+            padding: 7px 0; font-size: 0.9rem; color: rgba(255,255,255,0.85);
+        }
+        .plan-features li svg { color: var(--green); flex-shrink: 0; }
+
+        .plan-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 16px; border-radius: 12px;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            border: none; text-decoration: none; transition: all 0.2s;
+            position: relative; overflow: hidden;
+        }
+        .plan-btn.primary {
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: #fff; box-shadow: 0 4px 20px var(--green-glow);
+            animation: pulse 2.5s 3; will-change: transform;
+        }
+        .plan-btn.primary::before {
+            content: '';
+            position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            /* shimmer removed for performance */
+        }
+        .plan-btn.primary:hover {
+            transform: translateY(-3px); box-shadow: 0 10px 35px var(--green-glow);
+        }
+        .plan-btn.secondary {
+            background: transparent; border: 2px solid var(--border); color: var(--text);
+        }
+        .plan-btn.secondary:hover { border-color: var(--green); background: rgba(16,185,129,0.08); transform: translateY(-2px); }
+
+        .plan-guarantee {
+            text-align: center; margin-top: 10px; font-size: 0.78rem; color: var(--muted);
+            display: flex; align-items: center; justify-content: center; gap: 4px;
+        }
+        .plan-guarantee svg { width: 14px; height: 14px; color: var(--green); }
+
+        /* Express checkout inside plan card */
+        .express-checkout { margin-bottom: 12px; }
+        .express-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; text-align: center; margin-bottom: 6px; }
+        .express-divider {
+            display: flex; align-items: center; gap: 10px; margin: 10px 0; color: var(--muted); font-size: 0.75rem;
+        }
+        .express-divider::before, .express-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        #pr-btn-starter, #pr-btn-pro { min-height: 44px; }
+
+        /* ── TESTIMONIALS (compact) ── */
+        .testimonials {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 30px 20px 40px;
+        }
+        .testimonials h3 {
+            text-align: center; font-size: 1.1rem; color: var(--muted); font-weight: 400; margin-bottom: 24px;
+        }
+        .testimonial-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .testimonial {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+        }
+        .testimonial-stars { color: var(--amber); font-size: 0.85rem; margin-bottom: 10px; }
+        .testimonial-text { font-size: 0.85rem; color: var(--muted); font-style: italic; margin-bottom: 12px; line-height: 1.5; }
+        .testimonial-author { font-size: 0.8rem; font-weight: 600; }
+        .testimonial-role { font-size: 0.72rem; color: var(--muted); }
+
+        /* ── FINAL CTA ── */
+        .final-cta {
+            text-align: center;
+            padding: 50px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .final-cta h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; }
+        .final-cta p { color: var(--muted); margin-bottom: 24px; }
+        .final-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: #fff; padding: 18px 48px; border-radius: 50px;
+            font-size: 1.15rem; font-weight: 800; text-decoration: none;
+            transition: all 0.3s; box-shadow: 0 6px 30px var(--green-glow);
+            animation: pulse 2s 3; will-change: transform; position: relative; overflow: hidden;
+        }
+        .final-btn::before {
+            content: '';
+            position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            /* shimmer removed for performance */
+        }
+        .final-btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 14px 50px var(--green-glow); }
+        .final-sub { margin-top: 14px; font-size: 0.85rem; color: var(--muted); }
+
+        /* ── STICKY BAR ── */
+        .sticky-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(10,10,26,0.98), rgba(10,10,26,0.92), transparent);
+            padding: 20px 20px 16px;
+            display: none; z-index: 100;
+            animation: fadeUp 0.4s ease;
+        }
+        .sticky-bar.show { display: block; }
+        .sticky-inner {
+            max-width: 600px; margin: 0 auto;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            border-radius: 50px; padding: 14px 28px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 -4px 30px var(--green-glow);
+            animation: glow 2s 3;
+        }
+        .sticky-text { font-weight: 700; font-size: 0.95rem; }
+        .sticky-btn {
+            background: #fff; color: var(--green-dark); padding: 10px 24px;
+            border-radius: 25px; font-weight: 800; font-size: 0.9rem;
+            text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .sticky-btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(255,255,255,0.3); }
+
+        /* ── FOOTER ── */
+        .footer {
+            text-align: center; padding: 30px 20px; color: var(--muted); font-size: 0.8rem;
+        }
+        .footer a { color: var(--green); text-decoration: none; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .testimonial-row { grid-template-columns: 1fr; }
+            .steps { gap: 10px; }
+            .step { width: 110px; padding: 14px 10px; }
+            .step-arrow { display: none; }
+            .sticky-inner { flex-direction: column; gap: 10px; text-align: center; border-radius: 20px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <a href="/up" class="logo">
+            <span class="logo-text">DOZ UP</span>
+        </a>
+        <a href="#pricing" class="header-btn">Get Started</a>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" data-section="hero">
+        <div class="hero-badge">Used by 50,000+ developers</div>
+        <h1>Screenshot to link<br>in <em>1 second</em></h1>
+        <p>Capture your screen, paste, get a shareable URL. No signup. No friction.</p>
+
+        <!-- 3-Step Demo (compact) -->
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">1</div>
+                <div class="step-label">Capture</div>
+            </div>
+            <span class="step-arrow">&rarr;</span>
+            <div class="step">
+                <div class="step-icon">2</div>
+                <div class="step-label">Paste</div>
+            </div>
+            <span class="step-arrow">&rarr;</span>
+            <div class="step">
+                <div class="step-icon">3</div>
+                <div class="step-label">Share link</div>
+            </div>
+        </div>
+
+        <a href="#pricing" class="final-btn" style="font-size:1rem; padding:14px 36px;">
+            Get Started Free &rarr;
+        </a>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing" data-section="pricing">
+        <div class="pricing-header">
+            <h2>Choose your plan</h2>
+            <p>Start free. Upgrade when you need more.</p>
+        </div>
+
+        <!-- Billing toggle -->
+        <div class="billing-row">
+            <span class="bill-label" data-b="monthly" onclick="setBilling('monthly')">Monthly</span>
+            <div class="bill-toggle yearly" id="billToggle" onclick="toggleBilling()">
+                <div class="bill-knob"></div>
+            </div>
+            <span class="bill-label active" data-b="yearly" onclick="setBilling('yearly')">Yearly <span class="save-tag">Save 33%</span></span>
+        </div>
+
+        <div class="pricing-grid">
+
+            <!-- Starter -->
+            <div class="plan" data-plan="starter" data-mp="4.99" data-yp="3.33" data-yt="39.96">
+                <div class="plan-name">Starter</div>
+                <div class="plan-price">
+                    <span class="old" style="display:none">$4.99</span>$<span class="price-val">3.33</span><span>/mo</span>
+                </div>
+                <div class="plan-yearly">Billed $39.96/year</div>
+                <ul class="plan-features">
+                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> 5 GB storage</li>
+                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Links never expire</li>
+                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Desktop app</li>
+                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Email support</li>
+                </ul>
+
+                <!-- Express Checkout -->
+                <div class="express-checkout" id="express-starter">
+                    <div class="express-label">Express checkout</div>
+                    <div id="pr-btn-starter"></div>
+                    <div class="express-divider"><span>or</span></div>
+                </div>
+
+                <button class="plan-btn secondary" onclick="goCheckout('starter')">Get Starter &rarr;</button>
+                <div class="plan-guarantee">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    30-day money-back guarantee
+                </div>
+            </div>
+
+            <!-- Pro (recommended) -->
+            <div class="plan recommended" data-plan="pro" data-mp="14.99" data-yp="9.99" data-yt="119.88">
+                <div class="plan-badge">Most Popular</div>
+                <div class="plan-name">Pro</div>
+                <div class="plan-price">
+                    <span class="old" style="display:none">$14.99</span>$<span class="price-val">9.99</span><span>/mo</span>
+                </div>
+                <div class="plan-yearly">Billed $119.88/year</div>
+                <ul class="plan-features">
+                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Unlimited storage</li>
+                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Links never expire</li>
+                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> All devices + mobile</li>
+                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Priority support 24/7</li>
+                </ul>
+
+                <!-- Express Checkout -->
+                <div class="express-checkout" id="express-pro">
+                    <div class="express-label">Express checkout</div>
+                    <div id="pr-btn-pro"></div>
+                    <div class="express-divider"><span>or</span></div>
+                </div>
+
+                <button class="plan-btn primary" data-cta="pricing-pro" onclick="goCheckout('pro')">Get Pro &rarr;</button>
+                <div class="plan-guarantee">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    30-day money-back guarantee
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials (compact) -->
+    <section class="testimonials" data-section="testimonials">
+        <h3>Trusted by developers worldwide</h3>
+        <div class="testimonial-row">
+            <div class="testimonial">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="testimonial-text">"DOZ UP changed how I share code snippets with my team. Lightning fast."</div>
+                <div class="testimonial-author">Michael R.</div>
+                <div class="testimonial-role">Senior Developer</div>
+            </div>
+            <div class="testimonial">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="testimonial-text">"Finally a screenshot tool that just works. Paste, share, done. Worth every penny."</div>
+                <div class="testimonial-author">Sarah K.</div>
+                <div class="testimonial-role">UX Designer</div>
+            </div>
+            <div class="testimonial">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="testimonial-text">"We switched our entire team to DOZ UP. Bug reports are so much easier now."</div>
+                <div class="testimonial-author">James L.</div>
+                <div class="testimonial-role">Engineering Lead</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta" data-section="final-cta">
+        <h2>Ready to share faster?</h2>
+        <p>Join 50,000+ developers who save hours every week.</p>
+        <a href="#pricing" class="final-btn">
+            Get Started Now &rarr;
+        </a>
+        <div class="final-sub">No credit card required for free plan. Cancel anytime.</div>
+    </section>
+
+    <!-- Sticky Bar -->
+    <div class="sticky-bar" id="stickyBar">
+        <div class="sticky-inner">
+            <span class="sticky-text">Get Pro - $9.99/mo</span>
+            <a href="#pricing" class="sticky-btn" data-cta="sticky-cta" data-sticky-cta>Choose Plan &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        &copy; 2026 DOZ UP. All rights reserved. &nbsp;|&nbsp; <a href="/privacy.html">Privacy</a> &nbsp;|&nbsp; <a href="/terms.html">Terms</a>
+    </div>
+
+    <script>
+    // ── BILLING TOGGLE ──
+    var currentBilling = 'yearly';
+
+    function toggleBilling() {
+        setBilling(currentBilling === 'yearly' ? 'monthly' : 'yearly');
+    }
+
+    function setBilling(b) {
+        currentBilling = b;
+        var toggle = document.getElementById('billToggle');
+        var labels = document.querySelectorAll('.bill-label');
+
+        if (b === 'yearly') {
+            toggle.classList.add('yearly');
+        } else {
+            toggle.classList.remove('yearly');
+        }
+
+        labels.forEach(function(l) {
+            l.classList.toggle('active', l.getAttribute('data-b') === b);
+        });
+
+        // Update prices
+        document.querySelectorAll('.plan').forEach(function(card) {
+            var mp = card.getAttribute('data-mp');
+            var yp = card.getAttribute('data-yp');
+            var yt = card.getAttribute('data-yt');
+            if (!mp) return;
+
+            var priceEl = card.querySelector('.price-val');
+            var oldEl = card.querySelector('.old');
+            var yearlyEl = card.querySelector('.plan-yearly');
+
+            if (b === 'yearly') {
+                priceEl.textContent = yp;
+                if (oldEl) oldEl.style.display = 'inline';
+                if (yearlyEl) yearlyEl.style.display = 'inline-block';
+            } else {
+                priceEl.textContent = mp;
+                if (oldEl) oldEl.style.display = 'none';
+                if (yearlyEl) yearlyEl.style.display = 'none';
+            }
+        });
+    }
+
+    // ── CHECKOUT ──
+    function goCheckout(plan) {
+        var url = 'https://up.doz.com/checkout.html?plan=pro_yearly';
+
+        // Preserve UTM
+        var params = new URLSearchParams(window.location.search);
+        ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function(p) {
+            if (params.get(p)) url += '&' + p + '=' + encodeURIComponent(params.get(p));
+        });
+
+        // Track conversion
+        if (typeof gtag === 'function') {
+            gtag('event', 'conversion', {
+                'send_to': 'AW-441083115/checkout_pro',
+                'value': 119.88,
+                'currency': 'USD'
+            });
+        }
+
+        // Meta Pixel
+        if (typeof fbq === 'function') {
+            fbq('track', 'InitiateCheckout', {
+                content_name: 'DOZ UP Pro Yearly',
+                content_category: 'subscription',
+                value: 119.88,
+                currency: 'USD'
+            });
+        }
+
+        window.location.href = url;
+    }
+
+    // ── STRIPE EXPRESS CHECKOUT (Apple Pay / Google Pay) ──
+    (function() {
+        try {
+            var stripe = Stripe('pk_live_51RDVjFP0KhSawGXR5d3RxfhY7cLxxxxxxxxxxxx'); // Replace with your actual key
+
+            function mountExpressButton(plan, elementId, amount) {
+                var paymentRequest = stripe.paymentRequest({
+                    country: 'US', currency: 'usd',
+                    total: { label: 'DOZ UP ' + plan.charAt(0).toUpperCase() + plan.slice(1), amount: amount },
+                    requestPayerName: true, requestPayerEmail: true
+                });
+
+                var elements = stripe.elements();
+                var prButton = elements.create('paymentRequestButton', { paymentRequest: paymentRequest });
+
+                paymentRequest.canMakePayment().then(function(result) {
+                    if (result) {
+                        prButton.mount('#' + elementId);
+                    } else {
+                        var container = document.getElementById('express-' + plan);
+                        if (container) container.style.display = 'none';
+                    }
+                });
+
+                paymentRequest.on('paymentmethod', function(ev) {
+                    goCheckout(plan);
+                    ev.complete('success');
+                });
+            }
+
+            mountExpressButton('starter', 'pr-btn-starter', currentBilling === 'yearly' ? 3996 : 499);
+            mountExpressButton('pro', 'pr-btn-pro', currentBilling === 'yearly' ? 11988 : 1499);
+        } catch(e) {
+            // Hide express checkout if Stripe fails
+            document.querySelectorAll('.express-checkout').forEach(function(el) { el.style.display = 'none'; });
+        }
+    })();
+
+    // ── STICKY BAR (show after scrolling past pricing) ──
+    var pricingSection = document.getElementById('pricing');
+    window.addEventListener('scroll', function() {
+        var bar = document.getElementById('stickyBar');
+        if (!pricingSection || !bar) return;
+        var rect = pricingSection.getBoundingClientRect();
+        if (rect.bottom < 0) {
+            bar.classList.add('show');
+        } else {
+            bar.classList.remove('show');
+        }
+    }, { passive: true });
+
+    // ── PLATFORM AUTO-DETECT (for download link in header) ──
+    (function() {
+        var ua = navigator.userAgent.toLowerCase();
+        var platform = 'windows';
+        if (ua.includes('mac')) platform = 'mac';
+        else if (ua.includes('android')) platform = 'android';
+        else if (ua.includes('linux')) platform = 'linux';
+        document.documentElement.setAttribute('data-platform', platform);
+    })();
+
+    // Init billing
+    setBilling('yearly');
+    </script>
+<!-- AI Analytics: visitor pattern learning & auto-optimization -->
+<div data-social-proof></div>
+<div data-urgency hidden></div>
+<script src="/lp/doz-analytics.js" defer></script>
+<script src="https://up.doz.com.im/lp/doz-perf.js" defer></script>
+</body>
+</html>

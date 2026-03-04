@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP API Documentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #4a90d9, #00d4aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .version {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 40px;
+            position: sticky;
+            top: 0;
+            background: #0f0f1a;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+        }
+        .nav a {
+            color: #4a90d9;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(74, 144, 217, 0.1);
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .nav a:hover {
+            background: rgba(74, 144, 217, 0.2);
+        }
+        .section {
+            margin-bottom: 60px;
+        }
+        .section h2 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section h2::before {
+            content: '#';
+            color: #4a90d9;
+        }
+        .endpoint {
+            background: #1a1a2e;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(74, 144, 217, 0.05);
+            border-bottom: 1px solid #333;
+        }
+        .method {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .method.get { background: #2e7d32; color: white; }
+        .method.post { background: #1565c0; color: white; }
+        .method.put { background: #f57c00; color: white; }
+        .method.delete { background: #c62828; color: white; }
+        .path {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #00d4aa;
+        }
+        .auth-badge {
+            margin-left: auto;
+            padding: 4px 10px;
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        .endpoint-body {
+            padding: 20px;
+        }
+        .description {
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+        .params h4, .response h4 {
+            color: #888;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .param-table th,
+        .param-table td {
+            text-align: left;
+            padding: 10px 15px;
+            border-bottom: 1px solid #333;
+        }
+        .param-table th {
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .param-table code {
+            background: #0f0f1a;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #00d4aa;
+        }
+        .type {
+            color: #f39c12;
+            font-size: 0.85rem;
+        }
+        .required {
+            color: #e74c3c;
+            font-size: 0.75rem;
+        }
+        pre {
+            background: #0a0a14;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+        }
+        .json-key { color: #00d4aa; }
+        .json-string { color: #e9c46a; }
+        .json-number { color: #f4a261; }
+        .json-boolean { color: #e76f51; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a90d9;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/v2/admin" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Admin Panel
+        </a>
+
+        <header>
+            <h1>DOZ UP API</h1>
+            <p class="version">Version 2.0.0 | Base URL: https://up.doz.com.im</p>
+        </header>
+
+        <nav class="nav">
+            <a href="#authentication">Authentication</a>
+            <a href="#admin">Admin</a>
+            <a href="#leads">Leads</a>
+            <a href="#deals">Deals</a>
+            <a href="#proposals">Proposals</a>
+            <a href="#demos">Demos</a>
+            <a href="#affiliates">Affiliates</a>
+            <a href="#analytics">Analytics</a>
+            <a href="#notifications">Notifications</a>
+            <a href="#webhooks">Webhooks</a>
+            <a href="#backups">Backups</a>
+            <a href="#exports">Exports</a>
+        </nav>
+
+        <!-- Authentication Section -->
+        <section id="authentication" class="section">
+            <h2>Authentication</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/admin/auth/login</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Authenticate an admin user and receive a JWT token.</p>
+                    <div class="params">
+                        <h4>Request Body</h4>
+                        <table class="param-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td><code>username</code></td>
+                                <td class="type">string</td>
+                                <td>Admin username <span class="required">required</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>password</code></td>
+                                <td class="type">string</td>
+                                <td>Admin password <span class="required">required</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="response">
+                        <h4>Response</h4>
+                        <pre>{
+  <span class="json-key">"success"</span>: <span class="json-boolean">true</span>,
+  <span class="json-key">"admin"</span>: { <span class="json-key">"id"</span>: <span class="json-string">"..."</span>, <span class="json-key">"username"</span>: <span class="json-string">"admin"</span>, ... },
+  <span class="json-key">"token"</span>: <span class="json-string">"eyJhbGciOiJIUzI1NiIs..."</span>,
+  <span class="json-key">"expiresAt"</span>: <span class="json-string">"2026-01-23T16:00:00.000Z"</span>
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/auth/me</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get current authenticated admin user details.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leads Section -->
+        <section id="leads" class="section">
+            <h2>Leads</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/enterprise/leads</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Create a new lead from the website form.</p>
+                    <div class="params">
+                        <h4>Request Body</h4>
+                        <table class="param-table">
+                            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            <tr><td><code>company</code></td><td class="type">string</td><td>Company name <span class="required">required</span></td></tr>
+                            <tr><td><code>name</code></td><td class="type">string</td><td>Contact name <span class="required">required</span></td></tr>
+                            <tr><td><code>email</code></td><td class="type">string</td><td>Contact email <span class="required">required</span></td></tr>
+                            <tr><td><code>phone</code></td><td class="type">string</td><td>Phone number</td></tr>
+                            <tr><td><code>title</code></td><td class="type">string</td><td>Job title</td></tr>
+                            <tr><td><code>industry</code></td><td class="type">string</td><td>Industry sector</td></tr>
+                            <tr><td><code>size</code></td><td class="type">string</td><td>Company size (1-10, 11-50, 51-200, etc.)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/enterprise/leads</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get all leads with optional filters.</p>
+                    <div class="params">
+                        <h4>Query Parameters</h4>
+                        <table class="param-table">
+                            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            <tr><td><code>status</code></td><td class="type">string</td><td>Filter by status (new, contacted, qualified, etc.)</td></tr>
+                            <tr><td><code>priority</code></td><td class="type">string</td><td>Filter by priority (hot, warm, cold)</td></tr>
+                            <tr><td><code>tier</code></td><td class="type">string</td><td>Filter by recommended tier</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="path">/api/enterprise/leads/:id</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Update a lead's information.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deals Section -->
+        <section id="deals" class="section">
+            <h2>Deals</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/enterprise/deals</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Create a new deal from a lead.</p>
+                    <div class="params">
+                        <h4>Request Body</h4>
+                        <table class="param-table">
+                            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            <tr><td><code>leadId</code></td><td class="type">string</td><td>ID of the lead <span class="required">required</span></td></tr>
+                            <tr><td><code>tier</code></td><td class="type">string</td><td>Pricing tier (startup, growth, enterprise, etc.)</td></tr>
+                            <tr><td><code>seats</code></td><td class="type">number</td><td>Number of seats</td></tr>
+                            <tr><td><code>discount</code></td><td class="type">number</td><td>Discount percentage (0-100)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/enterprise/deals</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get all deals with optional status filter.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="path">/api/enterprise/deals/:id</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Update a deal. Set status to 'won' or 'lost' to close the deal.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Proposals Section -->
+        <section id="proposals" class="section">
+            <h2>Proposals</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/proposals</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Create a new proposal for a lead or deal.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/proposals</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get all proposals.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/proposals/:id/send</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Mark a proposal as sent.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/proposals/:id/accept</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Accept a proposal (client endpoint).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demos Section -->
+        <section id="demos" class="section">
+            <h2>Demo Scheduling</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/scheduling/slots</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get available demo time slots.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/scheduling/demos</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Book a demo session.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/scheduling/demos</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get all scheduled demos.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/scheduling/upcoming</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get upcoming demos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="section">
+            <h2>Analytics</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/analytics/overview</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get comprehensive dashboard metrics including revenue, leads, deals, and conversion rates.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/analytics/mrr</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get MRR/ARR metrics and growth rates.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/analytics/funnel</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get sales funnel data.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/analytics/revenue-trend</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get revenue trend over time.</p>
+                    <div class="params">
+                        <h4>Query Parameters</h4>
+                        <table class="param-table">
+                            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            <tr><td><code>days</code></td><td class="type">number</td><td>Number of days to include (default: 30)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notifications Section -->
+        <section id="notifications" class="section">
+            <h2>Notifications</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/notifications</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get notifications for the authenticated admin.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/admin/notifications/:id/read</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Mark a notification as read.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/admin/notifications/read-all</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Mark all notifications as read.</p>
+                </div>
+            </div>
+
+            <p style="margin-top: 20px; color: #888;">
+                <strong>WebSocket:</strong> Connect to <code>wss://up.doz.com.im/ws/admin?token=YOUR_TOKEN</code> for real-time notifications.
+            </p>
+        </section>
+
+        <!-- Webhooks Section -->
+        <section id="webhooks" class="section">
+            <h2>Webhooks</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/webhooks</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get all configured webhooks.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/admin/webhooks</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Create a new webhook.</p>
+                    <div class="params">
+                        <h4>Request Body</h4>
+                        <table class="param-table">
+                            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            <tr><td><code>name</code></td><td class="type">string</td><td>Webhook name <span class="required">required</span></td></tr>
+                            <tr><td><code>url</code></td><td class="type">string</td><td>Webhook URL <span class="required">required</span></td></tr>
+                            <tr><td><code>events</code></td><td class="type">array</td><td>Events to subscribe to <span class="required">required</span></td></tr>
+                        </table>
+                    </div>
+                    <div class="response">
+                        <h4>Available Events</h4>
+                        <pre>lead.created, lead.updated, lead.qualified
+deal.created, deal.updated, deal.won, deal.lost
+proposal.created, proposal.sent, proposal.accepted
+demo.scheduled, demo.completed
+payment.received, payment.failed</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Backups Section -->
+        <section id="backups" class="section">
+            <h2>Backups</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/backups</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">List all available backups.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/admin/backups</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Create a manual backup.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/backups/stats</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Get backup statistics and next scheduled backup time.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exports Section -->
+        <section id="exports" class="section">
+            <h2>Data Export</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/admin/export/:type</span>
+                    <span class="auth-badge">Auth Required</span>
+                </div>
+                <div class="endpoint-body">
+                    <p class="description">Export data in CSV or JSON format.</p>
+                    <div class="params">
+                        <h4>Path Parameters</h4>
+                        <table class="param-table">
+                            <tr><th>Parameter</th><th>Description</th></tr>
+                            <tr><td><code>type</code></td><td>leads, deals, proposals, affiliates, demos, activities, transactions</td></tr>
+                        </table>
+                        <h4>Query Parameters</h4>
+                        <table class="param-table">
+                            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            <tr><td><code>format</code></td><td class="type">string</td><td>csv or json (default: csv)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #333; color: #666; text-align: center;">
+            <p>DOZ UP API v2.0.0 | &copy; 2026 DOZ UP</p>
+        </footer>
+    </div>
+</body>
+</html>

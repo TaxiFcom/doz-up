@@ -1,0 +1,21 @@
+{
+  "name": "dozup-subscription",
+  "version": "1.0.0",
+  "description": "DOZ UP Subscription Website with Admin Panel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "stripe": "^14.25.0"
+  },
+  "keywords": [
+    "screenshot",
+    "subscription",
+    "saas"
+  ],
+  "author": "DOZ UP",
+  "license": "MIT"
+}

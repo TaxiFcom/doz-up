@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Link Your Desktop App</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .setup-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 420px;
+            width: 90%;
+        }
+        .setup-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .setup-header .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .setup-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .setup-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            border-color: rgba(99,102,241,0.5);
+        }
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.35);
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(99,102,241,0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .toggle-mode {
+            text-align: center;
+            margin-top: 18px;
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+        .toggle-mode a {
+            color: #8b5cf6;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .toggle-mode a:hover {
+            text-decoration: underline;
+        }
+        .error-msg {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            color: #f87171;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .success-view {
+            text-align: center;
+            display: none;
+        }
+        .success-view .checkmark {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        .success-view h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+            color: #10b981;
+        }
+        .success-view p {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .device-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 16px;
+        }
+        .device-badge svg {
+            width: 14px;
+            height: 14px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-card">
+        <!-- Login/Register Form -->
+        <div id="formView">
+            <div class="setup-header">
+                <div class="icon">&#128640;</div>
+                <h1 id="formTitle">Link Your Desktop App</h1>
+                <p id="formSubtitle">Sign in to connect your DOZ UP desktop app to your account. Your screenshots will sync automatically.</p>
+            </div>
+
+            <div class="error-msg" id="errorMsg"></div>
+
+            <div class="form-group">
+                <input type="email" id="emailInput" placeholder="Email address" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <input type="password" id="passwordInput" placeholder="Password" autocomplete="current-password">
+            </div>
+
+            <button class="btn-primary" id="submitBtn" onclick="handleSubmit()">
+                Sign In
+            </button>
+
+            <div class="toggle-mode">
+                <span id="toggleText">Don't have an account?</span>
+                <a id="toggleLink" onclick="toggleMode()">Create one</a>
+            </div>
+
+            <div style="text-align:center;">
+                <div class="device-badge" id="deviceBadge" style="display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    <span id="deviceLabel">Desktop device detected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success View -->
+        <div class="success-view" id="successView">
+            <div class="checkmark">&#9989;</div>
+            <h2>Desktop App Linked!</h2>
+            <p id="successEmail">Your desktop app is now connected to your account.</p>
+            <p style="margin-top:12px;color:rgba(255,255,255,0.4);font-size:13px;">You can close this page and return to your desktop app.</p>
+        </div>
+    </div>
+
+    <script>
+        // Read URL params
+        const params = new URLSearchParams(window.location.search);
+        const desktopDeviceId = params.get('deviceId');
+        const isDesktop = params.get('desktop') === 'true';
+        let isSignupMode = false;
+
+        // Show device badge if from desktop
+        if (isDesktop && desktopDeviceId) {
+            document.getElementById('deviceBadge').style.display = 'inline-flex';
+            document.getElementById('deviceLabel').textContent = 'Desktop: ' + desktopDeviceId.substring(0, 12) + '...';
+        }
+
+        function toggleMode() {
+            isSignupMode = !isSignupMode;
+            document.getElementById('formTitle').textContent = isSignupMode ? 'Create Account' : 'Link Your Desktop App';
+            document.getElementById('submitBtn').textContent = isSignupMode ? 'Create Account' : 'Sign In';
+            document.getElementById('toggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
+            document.getElementById('toggleLink').textContent = isSignupMode ? 'Sign in' : 'Create one';
+            hideError();
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        async function handleSubmit() {
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            const btn = document.getElementById('submitBtn');
+
+            hideError();
+
+            if (!email || !password) {
+                showError('Please enter email and password.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = isSignupMode ? 'Creating...' : 'Signing in...';
+
+            try {
+                const endpoint = isSignupMode ? '/api/auth/register' : '/api/auth/login';
+                const body = { email, password, name: email.split('@')[0] };
+
+                // Include desktop device ID as browserDeviceId so it gets linked during login
+                if (desktopDeviceId) {
+                    body.browserDeviceId = desktopDeviceId;
+                }
+
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    const userId = data.userId || data.id;
+
+                    // Also explicitly link the desktop device if we have it
+                    if (desktopDeviceId && userId) {
+                        await fetch('/api/account/link-device', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId, browserDeviceId: desktopDeviceId })
+                        }).catch(() => {});
+                    }
+
+                    // Also store session in browser localStorage for browser persistence
+                    try {
+                        localStorage.setItem('dozup_session_token', data.sessionToken || data.token || '');
+                        localStorage.setItem('dozup_user_id', userId);
+                        localStorage.setItem('doz_userId', userId);
+                        localStorage.setItem('doz_email', data.email || email);
+                        localStorage.setItem('doz_user_session', JSON.stringify({
+                            id: userId,
+                            name: data.name || email.split('@')[0],
+                            email: data.email || email
+                        }));
+                    } catch (e) { /* localStorage may not be available */ }
+
+                    // Show success
+                    document.getElementById('formView').style.display = 'none';
+                    document.getElementById('successView').style.display = 'block';
+                    document.getElementById('successEmail').textContent =
+                        'Your desktop app is now connected to ' + (data.email || email) + '.';
+                } else if (data.requiresConfirmation || data.requiresAdditionalAuth) {
+                    showError('Your account requires additional verification. Please sign in at doz.com first, then try again.');
+                } else {
+                    showError(data.error || 'Login failed. Please check your credentials.');
+                }
+            } catch (err) {
+                showError('Connection error. Please check your internet and try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = isSignupMode ? 'Create Account' : 'Sign In';
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSubmit();
+        });
+        document.getElementById('emailInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('passwordInput').focus();
+        });
+    </script>
+</body>
+</html>

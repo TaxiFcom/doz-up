@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOZ AI - Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+/* === OVERRIDE CF Worker injected styles === */
+html body {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace !important;
+  background: #0a0a0f !important;
+  color: #e2e8f0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  min-height: 100vh !important;
+  height: 100% !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+/* Kill any injected header/nav/hero/sidebar/container elements */
+body > header, body > nav, body > .hero, body > .container,
+#doz-support-widget, .doz-support-widget, [id*="support-widget"],
+body > aside, body > .sidebar { display: none !important; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg-card: #111118;
+  --bg-input: #16161f;
+  --bg-hover: #1a1a25;
+  --border: #1e1e2e;
+  --border-active: #6366f1;
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --accent: #a855f7;
+  --green: #10b981;
+  --green-dim: #065f46;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --cyan: #06b6d4;
+  --text: #e2e8f0;
+  --text-muted: #64748b;
+  --text-dim: #475569;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --font-ui: 'Inter', -apple-system, sans-serif;
+  --radius: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+
+/* === HEADER BAR === */
+.doz-header {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #111118 !important;
+  border-bottom: 1px solid #1e1e2e;
+  flex-shrink: 0;
+  gap: 12px;
+  min-height: 48px;
+  z-index: 50;
+  position: relative;
+}
+.doz-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.doz-logo {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-light);
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.doz-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+.doz-logo .ver { color: var(--text-dim); font-weight: 400; font-size: 10px; }
+.doz-model-select {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border);
+  color: var(--text) !important;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.doz-model-select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(99,102,241,0.15); }
+
+.doz-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
+}
+.doz-stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+}
+.doz-stat .val { color: var(--text); font-weight: 600; }
+.doz-stat .label { font-size: 10px; opacity: 0.7; }
+
+/* XP Bar */
+.doz-xp-wrap {
+  width: 90px;
+  height: 6px;
+  background: #1a1a25;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.doz-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px rgba(99,102,241,0.3);
+}
+
+.doz-level {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-family: var(--font-ui);
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.25);
+}
+
+.doz-streak {
+  color: var(--yellow);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* === TOOLBAR === */
+.doz-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 6px 20px;
+  background: #0d0d14 !important;
+  border-bottom: 1px solid #1e1e2e;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 36px;
+}
+.doz-toolbar-btn {
+  background: transparent !important;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.doz-toolbar-btn:hover { border-color: var(--primary); color: var(--text); background: rgba(99,102,241,0.08) !important; }
+.doz-toolbar-btn.active { background: var(--primary) !important; color: #fff; border-color: var(--primary); }
+.doz-toolbar-spacer { flex: 1; }
+.doz-toolbar-info { font-size: 10px; color: var(--text-dim); }
+
+/* === CHAT AREA === */
+.doz-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  scroll-behavior: smooth;
+  background: #0a0a0f !important;
+}
+.doz-chat::-webkit-scrollbar { width: 6px; }
+.doz-chat::-webkit-scrollbar-track { background: transparent; }
+.doz-chat::-webkit-scrollbar-thumb { background: #1e1e2e; border-radius: 3px; }
+.doz-chat::-webkit-scrollbar-thumb:hover { background: #2a2a3e; }
+
+/* Messages */
+.doz-msg { margin-bottom: 20px; animation: doz-msgIn 0.25s ease; }
+@keyframes doz-msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.doz-msg-user {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.doz-msg-user .prompt-char {
+  color: var(--green);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.6;
+  flex-shrink: 0;
+  user-select: none;
+}
+.doz-msg-user .content {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.doz-msg-ai {
+  padding-left: 2px;
+  margin-top: 4px;
+}
+.doz-msg-ai-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--primary-light);
+  font-weight: 600;
+}
+.doz-msg-ai-label .dot {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(99,102,241,0.4);
+}
+.doz-msg-ai .content {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.doz-msg-ai .content p { margin-bottom: 10px; }
+.doz-msg-ai .content p:last-child { margin-bottom: 0; }
+.doz-msg-ai .content strong { color: #fff; font-weight: 600; }
+.doz-msg-ai .content em { color: var(--text-muted); font-style: italic; }
+.doz-msg-ai .content code:not([class*="language-"]) {
+  background: #16161f;
+  color: var(--cyan);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.doz-msg-ai .content ul, .doz-msg-ai .content ol {
+  margin: 10px 0;
+  padding-left: 22px;
+}
+.doz-msg-ai .content li { margin-bottom: 5px; }
+.doz-msg-ai .content a { color: var(--primary-light); text-decoration: underline; }
+.doz-msg-ai .content blockquote {
+  border-left: 3px solid var(--primary);
+  padding-left: 14px;
+  color: var(--text-muted);
+  margin: 10px 0;
+}
+
+/* Code blocks */
+.doz-code-block {
+  position: relative;
+  margin: 14px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid #1e1e2e;
+  background: #0d1117 !important;
+}
+.doz-code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: #161b22 !important;
+  font-size: 11px;
+  color: var(--text-muted);
+  border-bottom: 1px solid #1e1e2e;
+}
+.doz-code-copy {
+  background: transparent !important;
+  border: 1px solid #2d2d3e;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.doz-code-copy:hover { color: var(--text); border-color: var(--text-muted); }
+.doz-code-copy.copied { color: var(--green); border-color: var(--green); }
+.doz-code-block pre {
+  margin: 0 !important;
+  padding: 14px !important;
+  overflow-x: auto;
+  background: #0d1117 !important;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.doz-code-block pre code { background: none !important; padding: 0 !important; font-size: 12px; }
+
+/* Thinking indicator */
+.doz-thinking {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.doz-thinking-dots { display: flex; gap: 4px; }
+.doz-thinking-dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: doz-pulse 1.2s infinite;
+}
+.doz-thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.doz-thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes doz-pulse {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.7); }
+  40% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Welcome */
+.doz-welcome {
+  text-align: center;
+  padding: 80px 24px 40px;
+  color: var(--text-dim);
+}
+.doz-welcome h2 {
+  font-size: 28px;
+  color: var(--text);
+  margin-bottom: 8px;
+  font-family: var(--font-ui);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--text), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.doz-welcome p { font-size: 13px; margin-bottom: 4px; color: var(--text-muted); }
+.doz-welcome .tag { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+.doz-shortcuts {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.doz-shortcut {
+  background: #111118 !important;
+  border: 1px solid #1e1e2e;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-mono);
+}
+.doz-shortcut:hover {
+  border-color: var(--primary);
+  color: var(--text);
+  background: rgba(99,102,241,0.06) !important;
+  transform: translateY(-1px);
+}
+
+/* === INPUT AREA === */
+.doz-input {
+  flex-shrink: 0;
+  padding: 14px 20px;
+  background: #111118 !important;
+  border-top: 1px solid #1e1e2e;
+}
+.doz-input-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  background: #16161f !important;
+  border: 1px solid #1e1e2e;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.doz-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+.doz-input-wrap .prompt-icon {
+  color: var(--green);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.5;
+  flex-shrink: 0;
+  user-select: none;
+  padding-top: 2px;
+}
+.doz-textarea {
+  flex: 1;
+  background: none !important;
+  border: none !important;
+  color: var(--text) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: none;
+  outline: none !important;
+  min-height: 21px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.doz-textarea::placeholder { color: var(--text-dim); }
+.doz-send {
+  background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+  border: none !important;
+  color: #fff !important;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+}
+.doz-send:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(99,102,241,0.4); }
+.doz-send:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+.doz-send svg { width: 16px; height: 16px; }
+.doz-input-hint {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* Achievement toast */
+.doz-toast {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  background: #111118 !important;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-size: 12px;
+  color: var(--text);
+  z-index: 9999;
+  animation: doz-toastIn 0.3s ease, doz-toastOut 0.3s ease 2.7s forwards;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.25);
+  font-family: var(--font-ui);
+}
+.doz-toast .title { font-weight: 700; color: var(--yellow); margin-bottom: 3px; }
+@keyframes doz-toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+@keyframes doz-toastOut { to { opacity: 0; transform: translateX(40px); } }
+
+/* Error */
+.doz-error {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--red);
+  margin: 10px 0;
+}
+.doz-error .retry-btn {
+  background: transparent !important;
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: all 0.15s;
+}
+.doz-error .retry-btn:hover { background: rgba(239, 68, 68, 0.1) !important; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .doz-header { padding: 8px 12px; gap: 8px; }
+  .doz-header-right { gap: 8px; }
+  .doz-stat .label { display: none; }
+  .doz-xp-wrap { width: 50px; }
+  .doz-chat { padding: 14px 12px; }
+  .doz-toolbar { padding: 4px 12px; }
+  .doz-welcome h2 { font-size: 22px; }
+  .doz-welcome { padding: 50px 16px 30px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doz-header">
+  <div class="doz-header-left">
+    <div class="doz-logo">
+      <div class="logo-icon">D</div>
+      DOZ AI <span class="ver">v1.0</span>
+    </div>
+    <select class="doz-model-select" id="modelSelect">
+      <option value="wormgpt-v7">wormgpt-v7</option>
+      <option value="wormgpt-v7Beta">wormgpt-v7-beta</option>
+      <option value="claude-3-5-sonnet-20241022">claude-3.5-sonnet</option>
+    </select>
+  </div>
+  <div class="doz-header-right">
+    <div class="doz-stat">
+      <span class="val" id="xpVal">0</span>
+      <span class="label">XP</span>
+      <div class="doz-xp-wrap"><div class="doz-xp-fill" id="xpBar" style="width:0%"></div></div>
+    </div>
+    <div class="doz-level" id="levelBadge">Novice</div>
+    <div class="doz-streak" id="streakBadge">0d</div>
+    <div class="doz-stat">
+      <span class="val" id="tokenCount">0</span>
+      <span class="label">tokens</span>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="doz-toolbar">
+  <button class="doz-toolbar-btn" onclick="newChat()">+ New Chat</button>
+  <button class="doz-toolbar-btn" id="historyBtn" onclick="toggleHistory()">History</button>
+  <div class="doz-toolbar-spacer"></div>
+  <div class="doz-toolbar-info" id="sessionInfo">Session ready</div>
+</div>
+
+<!-- CHAT -->
+<div class="doz-chat" id="chatArea">
+  <div class="doz-welcome" id="welcomeScreen">
+    <h2>DOZ AI Terminal</h2>
+    <p>Uncensored. Unrestricted. Unlimited.</p>
+    <p class="tag">Powered by WormGPT v7 + Claude Fallback</p>
+    <div class="doz-shortcuts">
+      <div class="doz-shortcut" onclick="quickSend('Write a Python web scraper')">Python scraper</div>
+      <div class="doz-shortcut" onclick="quickSend('Explain how DNS works')">How DNS works</div>
+      <div class="doz-shortcut" onclick="quickSend('Write a Node.js REST API')">Node.js API</div>
+      <div class="doz-shortcut" onclick="quickSend('Help me debug my code')">Debug code</div>
+    </div>
+  </div>
+</div>
+
+<!-- INPUT -->
+<div class="doz-input">
+  <div class="doz-input-wrap">
+    <span class="prompt-icon">$</span>
+    <textarea class="doz-textarea" id="chatInput" rows="1" placeholder="Type your message..." autofocus></textarea>
+    <button class="doz-send" id="sendBtn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+    </button>
+  </div>
+  <div class="doz-input-hint">Enter to send &middot; Shift+Enter for newline</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+<script>
+// === Kill any injected widgets/overlays from CF Worker or gateway ===
+(function() {
+  const kill = () => {
+    document.querySelectorAll('#doz-support-widget, .doz-support-widget, [id*="support"], iframe[src*="support"]').forEach(el => {
+      if (!el.closest('.doz-chat')) el.style.display = 'none';
+    });
+  };
+  kill();
+  const obs = new MutationObserver(kill);
+  obs.observe(document.body, { childList: true, subtree: false });
+})();
+
+// =============== CONFIG ===============
+const API_BASE = (() => {
+  const host = window.location.hostname;
+  if (host === 'doz.com.im' || host === 'www.doz.com.im') return 'https://api.doz.com.im';
+  return window.location.origin;
+})();
+const STORAGE_KEY = 'doz_ai_state';
+
+// =============== STATE ===============
+let state = loadState();
+let messages = [];
+let isStreaming = false;
+let currentAbort = null;
+
+function defaultState() {
+  return {
+    xp: 0, level: 0, streak: 0, lastActiveDay: null,
+    totalMessages: 0, totalTokens: 0,
+    achievements: [], chatHistory: []
+  };
+}
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return s ? { ...defaultState(), ...s } : defaultState();
+  } catch { return defaultState(); }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// =============== LEVELS ===============
+const LEVELS = [
+  { name: 'Novice', xp: 0 },
+  { name: 'Script Kiddie', xp: 100 },
+  { name: 'Coder', xp: 300 },
+  { name: 'Hacker', xp: 700 },
+  { name: 'Engineer', xp: 1500 },
+  { name: 'Architect', xp: 3000 },
+  { name: 'Elite', xp: 6000 },
+  { name: 'Legendary', xp: 12000 },
+  { name: 'Mythic', xp: 25000 },
+];
+
+function getLevel(xp) {
+  let lv = 0;
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (xp >= LEVELS[i].xp) { lv = i; break; }
+  }
+  return lv;
+}
+
+function updateUI() {
+  const lv = getLevel(state.xp);
+  const nextLv = LEVELS[lv + 1];
+  const prevXp = LEVELS[lv].xp;
+  const progress = nextLv ? ((state.xp - prevXp) / (nextLv.xp - prevXp)) * 100 : 100;
+
+  document.getElementById('xpVal').textContent = state.xp.toLocaleString();
+  document.getElementById('xpBar').style.width = progress + '%';
+  document.getElementById('levelBadge').textContent = LEVELS[lv].name;
+  document.getElementById('tokenCount').textContent = state.totalTokens.toLocaleString();
+
+  // Streak
+  const today = new Date().toISOString().split('T')[0];
+  if (state.lastActiveDay !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    if (state.lastActiveDay === yesterday) {
+      state.streak++;
+    } else if (state.lastActiveDay !== today) {
+      state.streak = 1;
+    }
+    state.lastActiveDay = today;
+    saveState();
+  }
+  document.getElementById('streakBadge').textContent = state.streak + 'd';
+
+  if (lv > state.level) {
+    state.level = lv;
+    showAchievement('Level Up!', 'You reached ' + LEVELS[lv].name);
+    saveState();
+  }
+}
+
+function addXP(amount, reason) {
+  const oldLevel = getLevel(state.xp);
+  state.xp += amount;
+  state.totalMessages++;
+  const newLevel = getLevel(state.xp);
+  if (newLevel > oldLevel) state.level = newLevel;
+  saveState();
+  updateUI();
+}
+
+// =============== ACHIEVEMENTS ===============
+function checkAchievements() {
+  const checks = [
+    { id: 'first_msg', name: 'First Contact', desc: 'Send your first message', cond: () => state.totalMessages >= 1 },
+    { id: 'ten_msgs', name: 'Getting Started', desc: 'Send 10 messages', cond: () => state.totalMessages >= 10 },
+    { id: 'hundred_msgs', name: 'Power User', desc: 'Send 100 messages', cond: () => state.totalMessages >= 100 },
+    { id: 'streak_3', name: 'Consistent', desc: '3-day streak', cond: () => state.streak >= 3 },
+    { id: 'streak_7', name: 'Dedicated', desc: '7-day streak', cond: () => state.streak >= 7 },
+    { id: 'xp_1000', name: 'Grinder', desc: 'Earn 1000 XP', cond: () => state.xp >= 1000 },
+    { id: 'tokens_10k', name: 'Token Master', desc: 'Use 10,000 tokens', cond: () => state.totalTokens >= 10000 },
+  ];
+
+  for (const a of checks) {
+    if (!state.achievements.includes(a.id) && a.cond()) {
+      state.achievements.push(a.id);
+      showAchievement(a.name, a.desc);
+      addXP(25, 'achievement');
+      saveState();
+    }
+  }
+}
+
+function showAchievement(title, desc) {
+  const el = document.createElement('div');
+  el.className = 'doz-toast';
+  el.innerHTML = '<div class="title">&#x1f3c6; ' + title + '</div><div>' + desc + '</div>';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+// =============== MARKDOWN ===============
+marked.setOptions({ breaks: true, gfm: true });
+
+const dozRenderer = new marked.Renderer();
+dozRenderer.code = function(text, lang) {
+  let code, language;
+  if (typeof text === 'object') { code = text.text || ''; language = text.lang || lang || ''; }
+  else { code = text; language = lang || ''; }
+  const highlighted = language && Prism.languages[language]
+    ? Prism.highlight(code, Prism.languages[language], language)
+    : escapeHtml(code);
+  return '<div class="doz-code-block"><div class="doz-code-header"><span>' + (language || 'code') +
+    '</span><button class="doz-code-copy" onclick="copyCode(this)">Copy</button></div><pre><code class="language-' +
+    language + '">' + highlighted + '</code></pre></div>';
+};
+marked.use({ renderer: dozRenderer });
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function renderMarkdown(text) { return marked.parse(text); }
+
+// =============== COPY CODE ===============
+function copyCode(btn) {
+  const code = btn.closest('.doz-code-block').querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// =============== CHAT ===============
+const chatArea = document.getElementById('chatArea');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+
+function quickSend(text) { chatInput.value = text; sendMessage(); }
+
+function newChat() {
+  if (messages.length > 0) {
+    state.chatHistory.unshift({
+      id: Date.now(),
+      preview: messages[0]?.content?.substring(0, 50) || 'Chat',
+      messages: [...messages],
+      date: new Date().toISOString()
+    });
+    if (state.chatHistory.length > 20) state.chatHistory.pop();
+    saveState();
+  }
+  messages = [];
+  chatArea.innerHTML = '';
+  chatArea.appendChild(createWelcome());
+  chatInput.focus();
+  updateSessionInfo();
+}
+
+function createWelcome() {
+  const el = document.createElement('div');
+  el.className = 'doz-welcome';
+  el.id = 'welcomeScreen';
+  el.innerHTML = '<h2>DOZ AI Terminal</h2><p>Uncensored. Unrestricted. Unlimited.</p>' +
+    '<p class="tag">Powered by WormGPT v7 + Claude Fallback</p>' +
+    '<div class="doz-shortcuts">' +
+    '<div class="doz-shortcut" onclick="quickSend(\'Write a Python web scraper\')">Python scraper</div>' +
+    '<div class="doz-shortcut" onclick="quickSend(\'Explain how DNS works\')">How DNS works</div>' +
+    '<div class="doz-shortcut" onclick="quickSend(\'Write a Node.js REST API\')">Node.js API</div>' +
+    '<div class="doz-shortcut" onclick="quickSend(\'Help me debug my code\')">Debug code</div></div>';
+  return el;
+}
+
+function toggleHistory() {
+  const existing = document.getElementById('historyPanel');
+  if (existing) { existing.remove(); return; }
+
+  const panel = document.createElement('div');
+  panel.id = 'historyPanel';
+  panel.style.cssText = 'position:fixed;top:84px;left:0;right:0;bottom:0;background:#0a0a0f;z-index:200;padding:24px;overflow-y:auto;';
+
+  let html = '<div style="max-width:600px;margin:0 auto;"><h3 style="color:var(--text);margin-bottom:16px;font-family:var(--font-ui);font-size:18px;">Chat History</h3>';
+  if (!state.chatHistory.length) {
+    html += '<p style="color:var(--text-dim);">No saved chats yet.</p>';
+  }
+  for (const chat of state.chatHistory) {
+    const d = new Date(chat.date).toLocaleDateString();
+    html += '<div style="background:#111118;border:1px solid #1e1e2e;border-radius:8px;padding:12px 16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#6366f1\'" onmouseout="this.style.borderColor=\'#1e1e2e\'" onclick="loadChat(' + chat.id + ')">' +
+      '<div style="font-size:13px;color:var(--text);">' + escapeHtml(chat.preview) + '...</div>' +
+      '<div style="font-size:10px;color:var(--text-dim);margin-top:4px;">' + d + ' &middot; ' + chat.messages.length + ' messages</div></div>';
+  }
+  html += '<button style="margin-top:16px;background:#16161f;border:1px solid #1e1e2e;color:var(--text-muted);padding:8px 18px;border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:12px;" onclick="document.getElementById(\'historyPanel\').remove()">Close</button></div>';
+  panel.innerHTML = html;
+  document.body.appendChild(panel);
+}
+
+function loadChat(id) {
+  const chat = state.chatHistory.find(c => c.id === id);
+  if (!chat) return;
+  document.getElementById('historyPanel')?.remove();
+  messages = [...chat.messages];
+  chatArea.innerHTML = '';
+  for (const msg of messages) {
+    if (msg.role === 'user') appendUserMsg(msg.content);
+    else if (msg.role === 'assistant') appendAIMsg(msg.content);
+  }
+  updateSessionInfo();
+}
+
+function appendUserMsg(text) {
+  const welcome = document.getElementById('welcomeScreen');
+  if (welcome) welcome.remove();
+  const el = document.createElement('div');
+  el.className = 'doz-msg doz-msg-user';
+  el.innerHTML = '<span class="prompt-char">&gt;</span><div class="content">' + escapeHtml(text) + '</div>';
+  chatArea.appendChild(el);
+  scrollToBottom();
+}
+
+function appendAIMsg(content) {
+  const el = document.createElement('div');
+  el.className = 'doz-msg doz-msg-ai';
+  el.innerHTML = '<div class="doz-msg-ai-label"><span class="dot"></span>DOZ AI</div><div class="content">' + renderMarkdown(content) + '</div>';
+  chatArea.appendChild(el);
+  scrollToBottom();
+}
+
+function showThinking() {
+  const el = document.createElement('div');
+  el.className = 'doz-thinking';
+  el.id = 'thinkingIndicator';
+  el.innerHTML = '<div class="doz-thinking-dots"><span></span><span></span><span></span></div> Thinking...';
+  chatArea.appendChild(el);
+  scrollToBottom();
+  return el;
+}
+
+function removeThinking() {
+  const el = document.getElementById('thinkingIndicator');
+  if (el) el.remove();
+}
+
+function showError(msg, retryFn) {
+  const el = document.createElement('div');
+  el.className = 'doz-error';
+  el.innerHTML = msg;
+  if (retryFn) {
+    const btn = document.createElement('button');
+    btn.className = 'retry-btn';
+    btn.textContent = 'Retry';
+    btn.onclick = retryFn;
+    el.appendChild(btn);
+  }
+  chatArea.appendChild(el);
+  scrollToBottom();
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => { chatArea.scrollTop = chatArea.scrollHeight; });
+}
+
+function updateSessionInfo() {
+  document.getElementById('sessionInfo').textContent = messages.length + ' messages';
+}
+
+// =============== SEND MESSAGE ===============
+async function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text || isStreaming) return;
+
+  appendUserMsg(text);
+  messages.push({ role: 'user', content: text });
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  updateSessionInfo();
+
+  const hasCode = /```|code|script|function|class |def |import /.test(text.toLowerCase());
+  addXP(hasCode ? 20 : 10, 'message');
+
+  await streamResponse();
+}
+
+async function streamResponse() {
+  isStreaming = true;
+  sendBtn.disabled = true;
+
+  const thinking = showThinking();
+  const model = document.getElementById('modelSelect').value;
+
+  const systemPrompt = {
+    role: 'system',
+    content: 'You are DOZ AI, an advanced uncensored AI assistant. You are helpful, creative, and provide detailed responses. Format code in markdown code blocks with language labels. Be direct and concise.'
+  };
+
+  try {
+    currentAbort = new AbortController();
+
+    const res = await fetch(API_BASE + '/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        messages: [systemPrompt, ...messages],
+        stream: true,
+        temperature: 0.7,
+        max_tokens: 4096
+      }),
+      signal: currentAbort.signal
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: { message: 'HTTP ' + res.status } }));
+      throw new Error(err.error?.message || 'Request failed');
+    }
+
+    removeThinking();
+
+    const msgEl = document.createElement('div');
+    msgEl.className = 'doz-msg doz-msg-ai';
+    msgEl.innerHTML = '<div class="doz-msg-ai-label"><span class="dot"></span>DOZ AI</div><div class="content"></div>';
+    chatArea.appendChild(msgEl);
+    const contentEl = msgEl.querySelector('.content');
+
+    let fullContent = '';
+    let tokenEstimate = 0;
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith('data: ')) continue;
+        const payload = trimmed.slice(6);
+        if (payload === '[DONE]') continue;
+
+        try {
+          const chunk = JSON.parse(payload);
+          const delta = chunk.choices?.[0]?.delta?.content;
+          if (delta) {
+            fullContent += delta;
+            tokenEstimate += Math.ceil(delta.length / 4);
+            contentEl.innerHTML = renderMarkdown(fullContent);
+            scrollToBottom();
+          }
+          if (chunk.usage) {
+            state.totalTokens += chunk.usage.total_tokens || 0;
+            updateUI();
+          }
+        } catch (e) { /* skip */ }
+      }
+    }
+
+    contentEl.innerHTML = renderMarkdown(fullContent);
+    messages.push({ role: 'assistant', content: fullContent });
+
+    if (tokenEstimate > 0) state.totalTokens += tokenEstimate;
+
+    const hasCodeBlock = fullContent.includes('```');
+    addXP(hasCodeBlock ? 15 : 5, 'response');
+    checkAchievements();
+    updateUI();
+    updateSessionInfo();
+
+  } catch (err) {
+    removeThinking();
+    if (err.name !== 'AbortError') {
+      showError('Error: ' + err.message, () => {
+        chatArea.lastElementChild?.remove();
+        streamResponse();
+      });
+    }
+  } finally {
+    isStreaming = false;
+    sendBtn.disabled = false;
+    currentAbort = null;
+  }
+}
+
+// =============== INPUT HANDLING ===============
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 150) + 'px';
+});
+
+// =============== INIT ===============
+updateUI();
+</script>
+</body>
+</html>

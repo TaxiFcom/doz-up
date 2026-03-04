@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Real-Time Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0a0a12;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #10b981;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        /* Main Layout */
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Left Panel - Main Content */
+        .content-panel {
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        /* Right Panel - Real-time Feed */
+        .realtime-panel {
+            background: #12121f;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-weight: 600;
+        }
+
+        /* Active Users Big Number */
+        .active-users-hero {
+            background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,47,247,0.15));
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .active-users-number {
+            font-size: 5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .active-users-label {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 10px;
+        }
+
+        .active-users-sub {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .active-sub-item {
+            text-align: center;
+        }
+
+        .active-sub-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .active-sub-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+        }
+
+        .stat-change {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 8px;
+        }
+
+        .stat-change.up { background: rgba(16,185,129,0.2); color: #10b981; }
+        .stat-change.down { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .chart-card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chart-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Active Pages Table */
+        .pages-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pages-table th {
+            text-align: left;
+            padding: 12px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .pages-table td {
+            padding: 12px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .pages-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .page-bar {
+            height: 6px;
+            background: rgba(0,212,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .page-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* Countries/Cities List */
+        .location-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .location-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .location-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .location-flag {
+            font-size: 1.2rem;
+        }
+
+        .location-count {
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        /* Real-time Event Feed */
+        .event-feed {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .event-item {
+            display: flex;
+            gap: 12px;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .event-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .event-icon.pageview { background: rgba(0,212,255,0.2); }
+        .event-icon.upload { background: rgba(16,185,129,0.2); }
+        .event-icon.download { background: rgba(123,47,247,0.2); }
+        .event-icon.event { background: rgba(249,115,22,0.2); }
+
+        .event-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .event-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event-meta {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 3px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .event-time {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            white-space: nowrap;
+        }
+
+        /* Device/Browser Pills */
+        .pills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .pill-icon {
+            font-size: 1rem;
+        }
+
+        .pill-value {
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        /* Traffic Source Bars */
+        .source-bar-container {
+            margin-bottom: 12px;
+        }
+
+        .source-bar-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .source-bar-name {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .source-bar-value {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .source-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .source-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .source-bar-fill.direct { background: #00d4ff; }
+        .source-bar-fill.organic { background: #10b981; }
+        .source-bar-fill.social { background: #7b2ff7; }
+        .source-bar-fill.referral { background: #f97316; }
+        .source-bar-fill.paid { background: #ef4444; }
+        .source-bar-fill.email { background: #eab308; }
+
+        /* Hourly Chart */
+        .hourly-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 120px;
+            gap: 3px;
+        }
+
+        .hourly-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #00d4ff 0%, rgba(0,212,255,0.3) 100%);
+            border-radius: 3px 3px 0 0;
+            transition: height 0.3s ease;
+            min-height: 4px;
+        }
+
+        .hourly-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* World Map Placeholder */
+        .world-map {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: mapPulse 2s infinite;
+        }
+
+        @keyframes mapPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main { grid-template-columns: 1fr; }
+            .realtime-panel { display: none; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+        /* Connection Status */
+        .connection-status {
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.3);
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .connection-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .connection-dot.disconnected {
+            background: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="/up" class="logo" style="text-decoration: none;">DOZ UP</a>
+            <div class="header-title">Real-Time Analytics</div>
+        </div>
+        <div class="live-indicator">
+            <span class="live-dot"></span>
+            LIVE
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="main">
+        <!-- Left Panel - Main Content -->
+        <div class="content-panel">
+            <!-- Active Users Hero -->
+            <div class="active-users-hero">
+                <div class="active-users-number" id="activeUsers">0</div>
+                <div class="active-users-label">Active Users Right Now</div>
+                <div class="active-users-sub">
+                    <div class="active-sub-item">
+                        <div class="active-sub-value" id="viewsPerMinute">0</div>
+                        <div class="active-sub-label">Views/min</div>
+                    </div>
+                    <div class="active-sub-item">
+                        <div class="active-sub-value" id="uniqueToday">0</div>
+                        <div class="active-sub-label">Unique Today</div>
+                    </div>
+                    <div class="active-sub-item">
+                        <div class="active-sub-value" id="pageViewsToday">0</div>
+                        <div class="active-sub-label">Page Views</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="sessionsToday">0</div>
+                    <div class="stat-label">Sessions Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="bounceRate">0%</div>
+                    <div class="stat-label">Bounce Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgDuration">0s</div>
+                    <div class="stat-label">Avg. Duration</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="uploadsToday">0</div>
+                    <div class="stat-label">Uploads Today</div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-grid">
+                <!-- Hourly Views -->
+                <div class="chart-card">
+                    <div class="chart-title">Pageviews (Last 24 Hours)</div>
+                    <div class="hourly-chart" id="hourlyChart"></div>
+                    <div class="hourly-labels">
+                        <span>12am</span>
+                        <span>6am</span>
+                        <span>12pm</span>
+                        <span>6pm</span>
+                        <span>Now</span>
+                    </div>
+                </div>
+
+                <!-- Traffic Sources -->
+                <div class="chart-card">
+                    <div class="chart-title">Traffic Sources</div>
+                    <div id="sourcesChart"></div>
+                </div>
+            </div>
+
+            <!-- Second Row -->
+            <div class="charts-grid">
+                <!-- Active Pages -->
+                <div class="chart-card">
+                    <div class="chart-title">Active Pages (Right Now)</div>
+                    <table class="pages-table">
+                        <thead>
+                            <tr>
+                                <th>Page</th>
+                                <th style="text-align: right;">Active Users</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activePagesTable">
+                            <tr><td colspan="2" style="color: rgba(255,255,255,0.4); text-align: center;">No active pages</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Top Countries -->
+                <div class="chart-card">
+                    <div class="chart-title">Top Countries</div>
+                    <div class="location-list" id="countriesList">
+                        <div style="color: rgba(255,255,255,0.4); text-align: center; padding: 20px;">No data yet</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Third Row -->
+            <div class="charts-grid">
+                <!-- Devices -->
+                <div class="chart-card">
+                    <div class="chart-title">Devices</div>
+                    <div class="pills-container" id="devicesPills">
+                        <div class="pill">
+                            <span class="pill-icon">🖥️</span>
+                            <span>Desktop</span>
+                            <span class="pill-value">0</span>
+                        </div>
+                        <div class="pill">
+                            <span class="pill-icon">📱</span>
+                            <span>Mobile</span>
+                            <span class="pill-value">0</span>
+                        </div>
+                        <div class="pill">
+                            <span class="pill-icon">📟</span>
+                            <span>Tablet</span>
+                            <span class="pill-value">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Browsers -->
+                <div class="chart-card">
+                    <div class="chart-title">Browsers</div>
+                    <div class="pills-container" id="browsersPills"></div>
+                </div>
+            </div>
+
+            <!-- Active Sessions Table -->
+            <div class="chart-card" style="margin-top: 20px;">
+                <div class="chart-title">Active Sessions</div>
+                <table class="pages-table">
+                    <thead>
+                        <tr>
+                            <th>Session</th>
+                            <th>Page</th>
+                            <th>Country</th>
+                            <th>Device</th>
+                            <th>Source</th>
+                            <th style="text-align: right;">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessionsTable">
+                        <tr><td colspan="6" style="color: rgba(255,255,255,0.4); text-align: center;">No active sessions</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right Panel - Real-time Feed -->
+        <div class="realtime-panel">
+            <div class="panel-header">Live Activity Feed</div>
+            <div class="event-feed" id="eventFeed">
+                <div style="padding: 30px; text-align: center; color: rgba(255,255,255,0.4);">
+                    Waiting for events...
+                </div>
+            </div>
+            <div class="connection-status">
+                <span class="connection-dot" id="connectionDot"></span>
+                <span id="connectionText">Connecting...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let ws;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 10;
+        let analyticsData = null;
+
+        function connect() {
+            // Skip WebSocket if no admin token (use polling instead)
+            const token = localStorage.getItem('admin_token');
+            if (!token) {
+                console.log('No admin token - using polling mode');
+                pollAnalytics();
+                return;
+            }
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${window.location.host}/ws/analytics?token=${token}`);
+
+            ws.onopen = () => {
+                console.log('Connected to analytics server');
+                reconnectAttempts = 0;
+                document.getElementById('connectionDot').classList.remove('disconnected');
+                document.getElementById('connectionText').textContent = 'Connected - Real-time updates active';
+            };
+
+            ws.onclose = () => {
+                console.log('Disconnected from analytics server');
+                document.getElementById('connectionDot').classList.add('disconnected');
+                document.getElementById('connectionText').textContent = 'Disconnected - Reconnecting...';
+
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    setTimeout(connect, 2000 * reconnectAttempts);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.warn('WebSocket error - reconnecting...', error);
+            };
+
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+
+                if (message.type === 'init') {
+                    analyticsData = message.data;
+                    updateDashboard(analyticsData);
+                } else if (message.type === 'pageview' || message.type === 'event') {
+                    addEventToFeed(message.data);
+                    if (message.realtime) {
+                        updateRealtimeStats(message.realtime);
+                    }
+                }
+            };
+        }
+
+        function updateDashboard(data) {
+            // Active users
+            document.getElementById('activeUsers').textContent = data.realtime.activeUsers;
+            document.getElementById('viewsPerMinute').textContent = data.realtime.viewsPerMinute;
+            document.getElementById('uniqueToday').textContent = data.today.uniqueVisitors.toLocaleString();
+            document.getElementById('pageViewsToday').textContent = data.today.pageViews.toLocaleString();
+
+            // Stats
+            document.getElementById('sessionsToday').textContent = data.today.sessions.toLocaleString();
+            document.getElementById('bounceRate').textContent = data.today.bounceRate + '%';
+            document.getElementById('avgDuration').textContent = formatDuration(data.realtime.avgSessionDuration);
+            document.getElementById('uploadsToday').textContent = data.today.uploads;
+
+            // Hourly chart
+            updateHourlyChart(data.today.hourlyViews);
+
+            // Traffic sources
+            updateSourcesChart(data.today.sources);
+
+            // Active pages
+            updateActivePages(data.realtime.topActivePages);
+
+            // Countries
+            updateCountries(data.topCountries);
+
+            // Devices
+            updateDevices(data.today.devices);
+
+            // Browsers
+            updateBrowsers(data.browsers);
+
+            // Active sessions
+            updateSessions(data.activeSessions);
+
+            // Events
+            if (data.recentEvents && data.recentEvents.length > 0) {
+                const feed = document.getElementById('eventFeed');
+                feed.innerHTML = '';
+                data.recentEvents.slice(0, 30).forEach(event => {
+                    addEventToFeed(event, false);
+                });
+            }
+        }
+
+        function updateRealtimeStats(realtime) {
+            document.getElementById('activeUsers').textContent = realtime.activeUsers;
+            document.getElementById('viewsPerMinute').textContent = realtime.viewsPerMinute;
+            document.getElementById('pageViewsToday').textContent = realtime.pageViewsToday.toLocaleString();
+            document.getElementById('sessionsToday').textContent = realtime.sessionsToday.toLocaleString();
+            document.getElementById('uploadsToday').textContent = realtime.uploadsToday;
+            document.getElementById('bounceRate').textContent = realtime.bounceRate + '%';
+            document.getElementById('avgDuration').textContent = formatDuration(realtime.avgSessionDuration);
+            updateActivePages(realtime.topActivePages);
+        }
+
+        function updateHourlyChart(hourlyViews) {
+            const container = document.getElementById('hourlyChart');
+            const maxViews = Math.max(...hourlyViews, 1);
+
+            container.innerHTML = hourlyViews.map((views, i) => {
+                const height = (views / maxViews) * 100;
+                const currentHour = new Date().getHours();
+                const isCurrentHour = i === currentHour;
+                return `<div class="hourly-bar" style="height: ${Math.max(height, 4)}%; opacity: ${isCurrentHour ? 1 : 0.6};" title="${i}:00 - ${views} views"></div>`;
+            }).join('');
+        }
+
+        function updateSourcesChart(sources) {
+            const container = document.getElementById('sourcesChart');
+            const total = Object.values(sources).reduce((a, b) => a + b, 0) || 1;
+
+            const sourceNames = {
+                direct: 'Direct',
+                organic: 'Organic Search',
+                social: 'Social Media',
+                referral: 'Referral',
+                paid: 'Paid Ads',
+                email: 'Email'
+            };
+
+            container.innerHTML = Object.entries(sources)
+                .sort((a, b) => b[1] - a[1])
+                .map(([source, count]) => {
+                    const percent = ((count / total) * 100).toFixed(1);
+                    return `
+                        <div class="source-bar-container">
+                            <div class="source-bar-header">
+                                <span class="source-bar-name">${sourceNames[source] || source}</span>
+                                <span class="source-bar-value">${count} (${percent}%)</span>
+                            </div>
+                            <div class="source-bar">
+                                <div class="source-bar-fill ${source}" style="width: ${percent}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        function updateActivePages(pages) {
+            const table = document.getElementById('activePagesTable');
+
+            if (!pages || pages.length === 0) {
+                table.innerHTML = '<tr><td colspan="2" style="color: rgba(255,255,255,0.4); text-align: center;">No active pages</td></tr>';
+                return;
+            }
+
+            const maxUsers = Math.max(...pages.map(p => p.users), 1);
+
+            table.innerHTML = pages.map(page => {
+                const percent = (page.users / maxUsers) * 100;
+                return `
+                    <tr>
+                        <td>
+                            ${page.page}
+                            <div class="page-bar">
+                                <div class="page-bar-fill" style="width: ${percent}%;"></div>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 600; color: #00d4ff;">${page.users}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateCountries(countries) {
+            const container = document.getElementById('countriesList');
+
+            if (!countries || countries.length === 0) {
+                container.innerHTML = '<div style="color: rgba(255,255,255,0.4); text-align: center; padding: 20px;">No data yet</div>';
+                return;
+            }
+
+            const countryFlags = {
+                'United States': '🇺🇸',
+                'United Kingdom': '🇬🇧',
+                'Germany': '🇩🇪',
+                'France': '🇫🇷',
+                'Canada': '🇨🇦',
+                'Australia': '🇦🇺',
+                'Japan': '🇯🇵',
+                'Brazil': '🇧🇷',
+                'India': '🇮🇳',
+                'Netherlands': '🇳🇱',
+                'Spain': '🇪🇸',
+                'Italy': '🇮🇹',
+                'Russia': '🇷🇺',
+                'China': '🇨🇳',
+                'South Korea': '🇰🇷'
+            };
+
+            container.innerHTML = countries.map(c => `
+                <div class="location-item">
+                    <div class="location-name">
+                        <span class="location-flag">${countryFlags[c.country] || '🌍'}</span>
+                        <span>${c.country}</span>
+                    </div>
+                    <span class="location-count">${c.visits}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateDevices(devices) {
+            const container = document.getElementById('devicesPills');
+            const icons = { desktop: '🖥️', mobile: '📱', tablet: '📟' };
+
+            container.innerHTML = Object.entries(devices).map(([device, count]) => `
+                <div class="pill">
+                    <span class="pill-icon">${icons[device] || '📱'}</span>
+                    <span>${device.charAt(0).toUpperCase() + device.slice(1)}</span>
+                    <span class="pill-value">${count}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateBrowsers(browsers) {
+            const container = document.getElementById('browsersPills');
+            const icons = {
+                'Chrome': '🌐',
+                'Firefox': '🦊',
+                'Safari': '🧭',
+                'Edge': '🔷',
+                'Opera': '🔴',
+                'Other': '📱'
+            };
+
+            if (!browsers || browsers.length === 0) {
+                container.innerHTML = '<div style="color: rgba(255,255,255,0.4);">No browser data</div>';
+                return;
+            }
+
+            container.innerHTML = browsers.slice(0, 5).map(b => `
+                <div class="pill">
+                    <span class="pill-icon">${icons[b.browser] || '🌐'}</span>
+                    <span>${b.browser}</span>
+                    <span class="pill-value">${b.count}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateSessions(sessions) {
+            const table = document.getElementById('sessionsTable');
+
+            if (!sessions || sessions.length === 0) {
+                table.innerHTML = '<tr><td colspan="6" style="color: rgba(255,255,255,0.4); text-align: center;">No active sessions</td></tr>';
+                return;
+            }
+
+            table.innerHTML = sessions.slice(0, 10).map(s => `
+                <tr>
+                    <td style="font-family: monospace; font-size: 0.75rem;">${s.id}...</td>
+                    <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis;">${s.currentPage || '/'}</td>
+                    <td>${s.country || 'Unknown'}</td>
+                    <td>${s.device || 'Unknown'}</td>
+                    <td style="text-transform: capitalize;">${s.source || 'direct'}</td>
+                    <td style="text-align: right;">${formatDuration(s.duration)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function addEventToFeed(event, animate = true) {
+            const feed = document.getElementById('eventFeed');
+
+            // Remove placeholder if exists
+            if (feed.querySelector('div[style*="text-align: center"]')) {
+                feed.innerHTML = '';
+            }
+
+            const icons = {
+                'pageview': '👁️',
+                'upload': '📤',
+                'download': '📥',
+                'event': '⚡'
+            };
+
+            const eventType = event.type || event.name || 'event';
+            const icon = icons[eventType] || '📌';
+
+            const eventEl = document.createElement('div');
+            eventEl.className = 'event-item';
+            if (!animate) eventEl.style.animation = 'none';
+
+            let title = '';
+            let meta = '';
+
+            if (eventType === 'pageview') {
+                title = event.page || '/';
+                meta = `${event.country || 'Unknown'} • ${event.device || 'Desktop'} • ${event.browser || 'Browser'}`;
+            } else if (eventType === 'upload') {
+                title = 'Screenshot uploaded';
+                meta = `${event.data?.filename || 'file'}`;
+            } else if (eventType === 'download') {
+                title = 'App downloaded';
+                meta = event.data?.platform || 'Unknown platform';
+            } else {
+                title = event.name || 'Event';
+                meta = JSON.stringify(event.data || {}).substring(0, 50);
+            }
+
+            eventEl.innerHTML = `
+                <div class="event-icon ${eventType}">${icon}</div>
+                <div class="event-content">
+                    <div class="event-title">${title}</div>
+                    <div class="event-meta">${meta}</div>
+                </div>
+                <div class="event-time">${formatEventTime(event.time)}</div>
+            `;
+
+            feed.insertBefore(eventEl, feed.firstChild);
+
+            // Keep only last 50 events
+            while (feed.children.length > 50) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds || seconds < 0) return '0s';
+            if (seconds < 60) return Math.round(seconds) + 's';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ' + (Math.round(seconds % 60)) + 's';
+            return Math.floor(seconds / 3600) + 'h ' + Math.floor((seconds % 3600) / 60) + 'm';
+        }
+
+        function formatEventTime(time) {
+            if (!time) return 'now';
+            const date = new Date(time);
+            const now = new Date();
+            const diff = (now - date) / 1000;
+
+            if (diff < 5) return 'now';
+            if (diff < 60) return Math.floor(diff) + 's ago';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+            return date.toLocaleTimeString();
+        }
+
+        // Fallback: Poll for updates if WebSocket fails
+        async function pollAnalytics() {
+            try {
+                const response = await fetch('/api/analytics');
+                const data = await response.json();
+                if (data.success) {
+                    updateDashboard(data);
+                }
+            } catch (error) {
+                console.error('Error polling analytics:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            connect();
+
+            // Fallback polling every 10 seconds
+            setInterval(() => {
+                if (!ws || ws.readyState !== WebSocket.OPEN) {
+                    pollAnalytics();
+                }
+            }, 10000);
+
+            // Refresh unique today counter every minute
+            setInterval(() => {
+                if (analyticsData) {
+                    document.getElementById('uniqueToday').textContent = analyticsData.today?.uniqueVisitors?.toLocaleString() || '0';
+                }
+            }, 60000);
+        });
+    </script>
+</body>
+</html>

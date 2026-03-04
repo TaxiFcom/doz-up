@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP Tutorials - Learn How to Use Screenshot & Image Sharing</title>
+    <meta name="description" content="Complete tutorials and guides for DOZ UP. Learn screenshot capture, image upload, studio editing, gallery management, and more.">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="stylesheet" href="/css/i18n.css">
+    <link rel="stylesheet" href="/css/onboarding.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(10, 10, 26, 0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            height: 32px;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .header-nav a:hover {
+            color: #fff;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff !important;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%);
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Tutorial Grid */
+        .tutorials-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title svg {
+            width: 28px;
+            height: 28px;
+            color: #10b981;
+        }
+
+        .tutorials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .tutorial-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .tutorial-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .tutorial-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tutorial-icon svg {
+            width: 28px;
+            height: 28px;
+            color: #10b981;
+        }
+
+        .tutorial-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .tutorial-card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .tutorial-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+        }
+
+        .tutorial-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+        }
+
+        .tutorial-meta svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .difficulty-beginner { color: #10b981 !important; }
+        .difficulty-intermediate { color: #f59e0b !important; }
+        .difficulty-advanced { color: #ef4444 !important; }
+
+        /* Quick Start Section */
+        .quick-start {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .quick-start h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .quick-start p {
+            color: #94a3b8;
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .quick-start-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+
+        .quick-start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .quick-start-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Video Section */
+        .video-section {
+            margin-bottom: 50px;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .video-placeholder {
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .play-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .play-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .play-icon svg {
+            width: 32px;
+            height: 32px;
+            color: #fff;
+            margin-left: 4px;
+        }
+
+        .video-placeholder p {
+            color: #94a3b8;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(10, 10, 26, 0.95);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #10b981;
+        }
+
+        .footer p {
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        /* Language Selector in Header */
+        .language-selector-compact {
+            margin-left: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-nav {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .tutorials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-start {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <img src="/logo.png" alt="DOZ UP">
+                <span>DOZ UP</span>
+            </a>
+            <nav class="header-nav">
+                <a href="/" data-i18n="nav.home">Home</a>
+                <a href="/help-center.html" data-i18n="nav.help">Help</a>
+                <a href="/download.html" class="btn-download" data-i18n="nav.download">Download</a>
+                <div class="language-selector language-selector-compact" id="langSelector"></div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 data-i18n="tutorial.hub.title">Learn DOZ UP</h1>
+        <p data-i18n="tutorial.hub.subtitle">Complete guides and tutorials to help you master screenshot capture, editing, and sharing</p>
+    </section>
+
+    <!-- Main Content -->
+    <main class="tutorials-section">
+        <!-- Quick Start -->
+        <div class="quick-start">
+            <h2 data-i18n="tutorial.quickstart.title">New to DOZ UP?</h2>
+            <p data-i18n="tutorial.quickstart.desc">Start with our getting started guide to learn the basics in just a few minutes</p>
+            <a href="/tutorials/getting-started.html" class="quick-start-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span data-i18n="tutorial.quickstart.btn">Start Learning</span>
+            </a>
+        </div>
+
+        <!-- Video Overview -->
+        <div class="video-section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                    <line x1="7" y1="2" x2="7" y2="22"></line>
+                    <line x1="17" y1="2" x2="17" y2="22"></line>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <line x1="2" y1="7" x2="7" y2="7"></line>
+                    <line x1="2" y1="17" x2="7" y2="17"></line>
+                    <line x1="17" y1="17" x2="22" y2="17"></line>
+                    <line x1="17" y1="7" x2="22" y2="7"></line>
+                </svg>
+                <span data-i18n="tutorial.video.title">Video Overview</span>
+            </h2>
+            <div class="video-card">
+                <div class="video-placeholder">
+                    <div class="play-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </div>
+                    <p data-i18n="tutorial.video.placeholder">Watch: Complete DOZ UP Overview (2 min)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Getting Started -->
+        <h2 class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+            </svg>
+            <span data-i18n="tutorial.section.basics">Getting Started</span>
+        </h2>
+        <div class="tutorials-grid">
+            <a href="/tutorials/getting-started.html" class="tutorial-card">
+                <div class="tutorial-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <h3 data-i18n="tutorial.started.title">Getting Started Guide</h3>
+                <p data-i18n="tutorial.started.desc">Learn the basics of DOZ UP - from installation to your first screenshot in minutes</p>
+                <div class="tutorial-meta">
+                    <span class="difficulty-beginner">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span data-i18n="difficulty.beginner">Beginner</span>
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        5 min
+                    </span>
+                </div>
+            </a>
+
+            <a href="/tutorials/screenshot-capture.html" class="tutorial-card">
+                <div class="tutorial-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </div>
+                <h3 data-i18n="tutorial.capture.title">Screenshot Capture</h3>
+                <p data-i18n="tutorial.capture.desc">Master all capture methods - hotkeys, region selection, full screen, and window capture</p>
+                <div class="tutorial-meta">
+                    <span class="difficulty-beginner">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span data-i18n="difficulty.beginner">Beginner</span>
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        4 min
+                    </span>
+                </div>
+            </a>
+
+            <a href="/tutorials/upload-share.html" class="tutorial-card">
+                <div class="tutorial-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                        <polyline points="16 6 12 2 8 6"></polyline>
+                        <line x1="12" y1="2" x2="12" y2="15"></line>
+                    </svg>
+                </div>
+                <h3 data-i18n="tutorial.upload.title">Upload & Share</h3>
+                <p data-i18n="tutorial.upload.desc">Learn how to upload images and share them instantly with auto-generated links</p>
+                <div class="tutorial-meta">
+                    <span class="difficulty-beginner">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span data-i18n="difficulty.beginner">Beginner</span>
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        3 min
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Advanced Tutorials -->
+        <h2 class="section-title" style="margin-top: 50px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span data-i18n="tutorial.section.advanced">Advanced Features</span>
+        </h2>
+        <div class="tutorials-grid">
+            <a href="/tutorials/studio-editing.html" class="tutorial-card">
+                <div class="tutorial-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </div>
+                <h3 data-i18n="tutorial.studio.title">Studio Editing</h3>
+                <p data-i18n="tutorial.studio.desc">Annotate, crop, add arrows, text, blur sensitive areas, and apply effects</p>
+                <div class="tutorial-meta">
+                    <span class="difficulty-intermediate">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span data-i18n="difficulty.intermediate">Intermediate</span>
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        8 min
+                    </span>
+                </div>
+            </a>
+
+            <a href="/tutorials/gallery-management.html" class="tutorial-card">
+                <div class="tutorial-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </div>
+                <h3 data-i18n="tutorial.gallery.title">Gallery Management</h3>
+                <p data-i18n="tutorial.gallery.desc">Organize, search, filter, and manage all your uploaded images efficiently</p>
+                <div class="tutorial-meta">
+                    <span class="difficulty-beginner">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span data-i18n="difficulty.beginner">Beginner</span>
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        5 min
+                    </span>
+                </div>
+            </a>
+
+            <a href="/tutorials/team-collaboration.html" class="tutorial-card">
+                <div class="tutorial-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <h3 data-i18n="tutorial.team.title">Team Collaboration</h3>
+                <p data-i18n="tutorial.team.desc">Set up team workspaces, shared galleries, and collaborate with your team</p>
+                <div class="tutorial-meta">
+                    <span class="difficulty-intermediate">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span data-i18n="difficulty.intermediate">Intermediate</span>
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        6 min
+                    </span>
+                </div>
+            </a>
+
+            <a href="/tutorials/keyboard-shortcuts.html" class="tutorial-card">
+                <div class="tutorial-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                        <path d="M6 8h.001"></path>
+                        <path d="M10 8h.001"></path>
+                        <path d="M14 8h.001"></path>
+                        <path d="M18 8h.001"></path>
+                        <path d="M8 12h.001"></path>
+                        <path d="M12 12h.001"></path>
+                        <path d="M16 12h.001"></path>
+                        <line x1="6" y1="16" x2="18" y2="16"></line>
+                    </svg>
+                </div>
+                <h3 data-i18n="tutorial.shortcuts.title">Keyboard Shortcuts</h3>
+                <p data-i18n="tutorial.shortcuts.desc">Complete reference of all keyboard shortcuts to boost your productivity</p>
+                <div class="tutorial-meta">
+                    <span class="difficulty-beginner">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span data-i18n="difficulty.beginner">Beginner</span>
+                    </span>
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        3 min
+                    </span>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/" data-i18n="nav.home">Home</a>
+            <a href="/help-center.html" data-i18n="nav.help">Help Center</a>
+            <a href="/download.html" data-i18n="nav.download">Download</a>
+            <a href="/gallery.html" data-i18n="nav.gallery">Gallery</a>
+        </div>
+        <p>&copy; 2025 DOZ UP. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/onboarding.js"></script>
+</body>
+</html>

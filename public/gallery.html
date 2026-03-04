@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>Gallery - DOZ UP | View Your Screenshots and Uploads</title>
+    <meta name="description" content="Browse and manage your screenshots, images, and uploads in the DOZ UP gallery. Organize, share, and download your files with ease.">
+    <meta name="keywords" content="screenshot gallery, image gallery, file gallery, DOZ UP gallery, cloud gallery, photo gallery">
+    <link rel="canonical" href="https://doz.com/gallery.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://doz.com/gallery.html">
+    <meta property="og:site_name" content="DOZ UP">
+    <meta property="og:title" content="Gallery - DOZ UP">
+    <meta property="og:description" content="Browse and manage your screenshots and uploads.">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Gallery - DOZ UP">
+    <meta name="twitter:description" content="Browse and manage your screenshots and uploads.">
+
+    <meta name="theme-color" content="#0a0a1a">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="apple-touch-icon" href="/app/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Time-Based Theme Styles -->
+    <link rel="stylesheet" href="/css/time-theme.css">
+    <!-- Internationalization (i18n) Styles -->
+    <link rel="stylesheet" href="/css/i18n.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo h1 {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            background: rgba(255,255,255,0.05);
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: #fff;
+        }
+
+        .nav-tab.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            width: 200px;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: #64748b;
+        }
+
+        .search-box svg {
+            color: #64748b;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 5px;
+            background: rgba(255,255,255,0.05);
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .upload-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        /* MAIN CONTENT */
+        .gallery-main {
+            padding: 30px 40px;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-item .label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        /* FILTER BAR */
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tag:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .filter-tag.active {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .sort-select {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* GALLERY GRID */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-grid.list {
+            grid-template-columns: 1fr;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .gallery-item .image-container {
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(transparent 40%, rgba(0,0,0,0.8));
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay-actions {
+            display: flex;
+            gap: 10px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .overlay-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s;
+        }
+
+        .overlay-action:hover {
+            background: rgba(16, 185, 129, 0.8);
+        }
+
+        .item-info {
+            padding: 15px;
+        }
+
+        .item-info h3 {
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-date {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .item-size {
+            font-size: 0.75rem;
+            color: #64748b;
+            background: rgba(255,255,255,0.05);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        /* CHECKBOX */
+        .select-checkbox {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid rgba(255,255,255,0.5);
+            background: rgba(0,0,0,0.3);
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-item:hover .select-checkbox,
+        .gallery-item.selected .select-checkbox {
+            opacity: 1;
+        }
+
+        .gallery-item.selected .select-checkbox {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        /* LIST VIEW */
+        .gallery-grid.list .gallery-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .gallery-grid.list .image-container {
+            width: 200px;
+            aspect-ratio: 16/10;
+            flex-shrink: 0;
+        }
+
+        .gallery-grid.list .item-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gallery-grid.list .item-meta {
+            gap: 20px;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            color: #3b82f6;
+            margin-bottom: 25px;
+        }
+
+        .empty-state h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 25px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* LIGHTBOX */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 80vh;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .lightbox-nav.prev { left: 20px; }
+        .lightbox-nav.next { right: 20px; }
+
+        .lightbox-info {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 15px 25px;
+            border-radius: 12px;
+            display: flex;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .lightbox-info button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .lightbox-info button.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        .lightbox-info button.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .lightbox-info button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* BULK ACTIONS */
+        .bulk-actions {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #1a1a3e, #0f0f2a);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 16px;
+            display: none;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .bulk-actions.active {
+            display: flex;
+        }
+
+        .bulk-count {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .bulk-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .bulk-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .bulk-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+        }
+
+        /* LOADING */
+        .loading-spinner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+            .header-left, .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+            .search-box input { width: 100%; }
+            .nav-tabs { display: none; }
+            .gallery-main { padding: 20px; }
+            .stats-bar { flex-wrap: wrap; justify-content: center; }
+            .filter-bar { flex-direction: column; gap: 15px; }
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="gallery-header">
+        <div class="header-left">
+            <a href="/up" class="logo">
+                <h1>DOZ UP</h1>
+            </a>
+            <div class="nav-tabs">
+                <button class="nav-tab active">All Files</button>
+                <button class="nav-tab">Screenshots</button>
+                <button class="nav-tab">Selfies</button>
+                <button class="nav-tab">Edited</button>
+                <button class="nav-tab">Shared</button>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="search-box">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+                <input type="text" placeholder="Search files..." id="searchInput" oninput="filterImages()">
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="setView('grid')" id="gridViewBtn">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </button>
+                <button class="view-btn" onclick="setView('list')" id="listViewBtn">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+                </button>
+            </div>
+            <button class="upload-btn" onclick="openStudio()">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                New Capture
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="gallery-main">
+        <!-- STATS BAR -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="value" id="totalImages">0</div>
+                <div class="label">Total Images</div>
+            </div>
+            <div class="stat-item">
+                <div class="value" id="totalStorage">0 MB</div>
+                <div class="label">Storage Used</div>
+            </div>
+            <div class="stat-item">
+                <div class="value" id="totalShares">0</div>
+                <div class="label">Times Shared</div>
+            </div>
+            <div class="stat-item">
+                <div class="value" id="totalViews">0</div>
+                <div class="label">Total Views</div>
+            </div>
+        </div>
+
+        <!-- FILTER BAR -->
+        <div class="filter-bar">
+            <div class="filter-tags">
+                <button class="filter-tag active" onclick="filterByTag('all', this)">All</button>
+                <button class="filter-tag" onclick="filterByTag('today', this)">Today</button>
+                <button class="filter-tag" onclick="filterByTag('week', this)">This Week</button>
+                <button class="filter-tag" onclick="filterByTag('month', this)">This Month</button>
+                <button class="filter-tag" onclick="filterByTag('favorites', this)">Favorites</button>
+            </div>
+            <select class="sort-select" onchange="sortImages(this.value)">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="largest">Largest First</option>
+                <option value="name">By Name</option>
+            </select>
+        </div>
+
+        <!-- GALLERY GRID -->
+        <div class="gallery-grid" id="galleryGrid">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+            <h2>No images yet</h2>
+            <p>Start capturing screenshots or selfies to build your gallery</p>
+            <button class="upload-btn" onclick="openStudio()">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                Open Studio
+            </button>
+        </div>
+    </main>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav prev" onclick="navLightbox(-1)">&lt;</button>
+        <div class="lightbox-content">
+            <img src="" alt="" id="lightboxImage">
+        </div>
+        <button class="lightbox-nav next" onclick="navLightbox(1)">&gt;</button>
+        <div class="lightbox-info">
+            <button class="secondary" onclick="downloadCurrentImage()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                Download
+            </button>
+            <button class="secondary" onclick="copyCurrentLink()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/></svg>
+                Copy Link
+            </button>
+            <button class="primary" onclick="editCurrentImage()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                Edit in Studio
+            </button>
+        </div>
+    </div>
+
+    <!-- BULK ACTIONS -->
+    <div class="bulk-actions" id="bulkActions">
+        <span class="bulk-count"><span id="selectedCount">0</span> selected</span>
+        <button class="bulk-btn" onclick="bulkDownload()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            Download
+        </button>
+        <button class="bulk-btn" onclick="bulkShare()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/></svg>
+            Share
+        </button>
+        <button class="bulk-btn danger" onclick="bulkDelete()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+            Delete
+        </button>
+        <button class="bulk-btn" onclick="clearSelection()">Cancel</button>
+    </div>
+
+    <script>
+        // ============ STATE ============
+        let images = [];
+        let filteredImages = [];
+        let selectedImages = new Set();
+        let currentLightboxIndex = 0;
+        let viewMode = 'grid';
+
+        // ============ DEVICE ID ============
+        function generateFingerprint() {
+            const nav = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height, navigator.platform].join('|');
+            let hash = 0;
+            for (let i = 0; i < nav.length; i++) { hash = ((hash << 5) - hash) + nav.charCodeAt(i); hash = hash & hash; }
+            return 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+        }
+
+        const DEVICE_ID = generateFingerprint();
+
+        // ============ LOAD IMAGES ============
+        async function loadImages() {
+            try {
+                const res = await fetch(`/api/gallery?device=${DEVICE_ID}`);
+                const data = await res.json();
+
+                if (data.success && data.images) {
+                    images = data.images;
+                    filteredImages = [...images];
+                    renderGallery();
+                    updateStats(data.stats);
+                } else {
+                    showEmptyState();
+                }
+            } catch (e) {
+                console.error('Failed to load gallery:', e);
+                // Show demo data
+                showDemoData();
+            }
+        }
+
+        function showDemoData() {
+            // Demo images for display
+            images = [
+                { id: '1', filename: 'screenshot-2024-01-22.png', url: 'https://picsum.photos/800/500?random=1', size: 245000, createdAt: new Date().toISOString(), views: 12, shares: 3 },
+                { id: '2', filename: 'selfie-studio.png', url: 'https://picsum.photos/800/500?random=2', size: 180000, createdAt: new Date(Date.now() - 86400000).toISOString(), views: 8, shares: 1 },
+                { id: '3', filename: 'edited-photo.png', url: 'https://picsum.photos/800/500?random=3', size: 320000, createdAt: new Date(Date.now() - 172800000).toISOString(), views: 25, shares: 7 },
+                { id: '4', filename: 'capture-01.png', url: 'https://picsum.photos/800/500?random=4', size: 150000, createdAt: new Date(Date.now() - 259200000).toISOString(), views: 5, shares: 0 },
+                { id: '5', filename: 'screenshot-work.png', url: 'https://picsum.photos/800/500?random=5', size: 420000, createdAt: new Date(Date.now() - 345600000).toISOString(), views: 30, shares: 10 },
+                { id: '6', filename: 'beauty-selfie.png', url: 'https://picsum.photos/800/500?random=6', size: 280000, createdAt: new Date(Date.now() - 432000000).toISOString(), views: 45, shares: 15 },
+            ];
+            filteredImages = [...images];
+            renderGallery();
+            updateStats({
+                total: images.length,
+                storage: '1.5',
+                shares: 36,
+                views: 125
+            });
+        }
+
+        function showEmptyState() {
+            document.getElementById('galleryGrid').innerHTML = '';
+            document.getElementById('emptyState').style.display = 'block';
+        }
+
+        // ============ RENDER ============
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+
+            if (filteredImages.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            document.getElementById('emptyState').style.display = 'none';
+
+            grid.innerHTML = filteredImages.map((img, index) => `
+                <div class="gallery-item ${selectedImages.has(img.id) ? 'selected' : ''}" data-id="${img.id}" onclick="handleItemClick(event, '${img.id}', ${index})">
+                    <div class="select-checkbox" onclick="toggleSelect(event, '${img.id}')">
+                        ${selectedImages.has(img.id) ? '<svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>' : ''}
+                    </div>
+                    <div class="image-container">
+                        <img src="${img.url}?raw=1" alt="${img.filename}" loading="lazy">
+                        <div class="overlay">
+                            <div class="overlay-actions">
+                                <button class="overlay-action" onclick="downloadImage(event, '${img.url}', '${img.filename}')" title="Download">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                </button>
+                                <button class="overlay-action" onclick="shareImage(event, '${img.url}')" title="Share">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/></svg>
+                                </button>
+                                <button class="overlay-action" onclick="editImage(event, '${img.url}')" title="Edit">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-info">
+                        <h3>${img.filename}</h3>
+                        <div class="item-meta">
+                            <span class="item-date">${formatDate(img.createdAt)}</span>
+                            <span class="item-size">${formatSize(img.size)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats(stats) {
+            document.getElementById('totalImages').textContent = stats.total || 0;
+            document.getElementById('totalStorage').textContent = (stats.storage || '0') + ' MB';
+            document.getElementById('totalShares').textContent = stats.shares || 0;
+            document.getElementById('totalViews').textContent = stats.views || 0;
+        }
+
+        // ============ INTERACTIONS ============
+        function handleItemClick(event, id, index) {
+            if (event.target.closest('.select-checkbox') || event.target.closest('.overlay-action')) {
+                return;
+            }
+            openLightbox(index);
+        }
+
+        function toggleSelect(event, id) {
+            event.stopPropagation();
+
+            if (selectedImages.has(id)) {
+                selectedImages.delete(id);
+            } else {
+                selectedImages.add(id);
+            }
+
+            document.querySelector(`[data-id="${id}"]`).classList.toggle('selected', selectedImages.has(id));
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const count = selectedImages.size;
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('bulkActions').classList.toggle('active', count > 0);
+        }
+
+        function clearSelection() {
+            selectedImages.clear();
+            document.querySelectorAll('.gallery-item.selected').forEach(el => el.classList.remove('selected'));
+            updateBulkActions();
+        }
+
+        // ============ VIEW ============
+        function setView(mode) {
+            viewMode = mode;
+            document.getElementById('gridViewBtn').classList.toggle('active', mode === 'grid');
+            document.getElementById('listViewBtn').classList.toggle('active', mode === 'list');
+            document.getElementById('galleryGrid').classList.toggle('list', mode === 'list');
+        }
+
+        // ============ FILTER & SORT ============
+        function filterImages() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            filteredImages = images.filter(img => img.filename.toLowerCase().includes(query));
+            renderGallery();
+        }
+
+        function filterByTag(tag, element) {
+            document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+            switch (tag) {
+                case 'all':
+                    filteredImages = [...images];
+                    break;
+                case 'today':
+                    filteredImages = images.filter(img => new Date(img.createdAt) >= today);
+                    break;
+                case 'week':
+                    filteredImages = images.filter(img => new Date(img.createdAt) >= weekAgo);
+                    break;
+                case 'month':
+                    filteredImages = images.filter(img => new Date(img.createdAt) >= monthAgo);
+                    break;
+                case 'favorites':
+                    filteredImages = images.filter(img => img.favorite);
+                    break;
+            }
+            renderGallery();
+        }
+
+        function sortImages(by) {
+            switch (by) {
+                case 'newest':
+                    filteredImages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    break;
+                case 'oldest':
+                    filteredImages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                    break;
+                case 'largest':
+                    filteredImages.sort((a, b) => b.size - a.size);
+                    break;
+                case 'name':
+                    filteredImages.sort((a, b) => a.filename.localeCompare(b.filename));
+                    break;
+            }
+            renderGallery();
+        }
+
+        // ============ LIGHTBOX ============
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            const img = filteredImages[index];
+            document.getElementById('lightboxImage').src = img.url;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function navLightbox(direction) {
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = filteredImages.length - 1;
+            if (currentLightboxIndex >= filteredImages.length) currentLightboxIndex = 0;
+
+            document.getElementById('lightboxImage').src = filteredImages[currentLightboxIndex].url;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('lightbox').classList.contains('active')) return;
+
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navLightbox(-1);
+            if (e.key === 'ArrowRight') navLightbox(1);
+        });
+
+        // ============ ACTIONS ============
+        function downloadImage(event, url, filename) {
+            event.stopPropagation();
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+        }
+
+        function shareImage(event, url) {
+            event.stopPropagation();
+            navigator.clipboard.writeText(url);
+            alert('Link copied to clipboard!');
+        }
+
+        function editImage(event, url) {
+            event.stopPropagation();
+            window.location.href = `/studio.html?edit=${encodeURIComponent(url)}`;
+        }
+
+        function downloadCurrentImage() {
+            const img = filteredImages[currentLightboxIndex];
+            downloadImage({ stopPropagation: () => {} }, img.url, img.filename);
+        }
+
+        function copyCurrentLink() {
+            const img = filteredImages[currentLightboxIndex];
+            navigator.clipboard.writeText(img.url);
+            alert('Link copied!');
+        }
+
+        function editCurrentImage() {
+            const img = filteredImages[currentLightboxIndex];
+            window.location.href = `/studio.html?edit=${encodeURIComponent(img.url)}`;
+        }
+
+        // ============ BULK ACTIONS ============
+        function bulkDownload() {
+            selectedImages.forEach(id => {
+                const img = images.find(i => i.id === id);
+                if (img) downloadImage({ stopPropagation: () => {} }, img.url, img.filename);
+            });
+        }
+
+        function bulkShare() {
+            const urls = Array.from(selectedImages).map(id => {
+                const img = images.find(i => i.id === id);
+                return img ? img.url : '';
+            }).filter(Boolean).join('\n');
+
+            navigator.clipboard.writeText(urls);
+            alert(`${selectedImages.size} links copied to clipboard!`);
+        }
+
+        function bulkDelete() {
+            if (!confirm(`Delete ${selectedImages.size} images? This cannot be undone.`)) return;
+
+            // Delete from server
+            selectedImages.forEach(id => {
+                fetch(`/api/gallery/${id}`, { method: 'DELETE' });
+            });
+
+            // Remove from local state
+            images = images.filter(img => !selectedImages.has(img.id));
+            filteredImages = filteredImages.filter(img => !selectedImages.has(img.id));
+            clearSelection();
+            renderGallery();
+        }
+
+        // ============ UTILS ============
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)} min ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)} days ago`;
+
+            return date.toLocaleDateString();
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function openStudio() {
+            window.location.href = '/studio.html';
+        }
+
+        // ============ INIT ============
+        loadImages();
+    </script>
+
+    <!-- DOZ UP Analytics & Traffic Tracking -->
+    <script src="/js/analytics.js" defer></script>
+    <script src="/track.js" async></script>
+    <script src="/track-advanced.js" async></script>
+
+</body>
+</html>

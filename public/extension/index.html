@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP Chrome Extension - Install</title>
+    <meta name="theme-color" content="#0a0a1a">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            text-align: center;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .logo svg { width: 50px; height: 50px; }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+        .version {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+        }
+        .steps {
+            text-align: left;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .steps h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #10b981;
+        }
+        .step {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .step:last-child { margin-bottom: 0; }
+        .step-num {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .step-content p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(16, 185, 129, 0.4);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .feature {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .feature h4 {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .feature p {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+        kbd {
+            background: #1a1a2e;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #10b981;
+        }
+        .back-link {
+            margin-top: 30px;
+        }
+        .back-link a {
+            color: #64748b;
+            text-decoration: none;
+        }
+        .back-link a:hover {
+            color: #10b981;
+        }
+        @media (max-width: 600px) {
+            .features { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/up" class="logo" style="text-decoration: none;">
+            <svg viewBox="0 0 24 24" fill="white">
+                <rect x="3" y="3" width="18" height="18" rx="3" stroke="white" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="12" r="4" fill="white"/>
+            </svg>
+        </a>
+        <h1>DOZ UP Chrome Extension</h1>
+        <p class="subtitle">Capture screenshots instantly from any webpage</p>
+        <div class="version">Version 2.6.8</div>
+        <a href="/up/changelog" style="color: #64748b; font-size: 0.85rem; text-decoration: none;">View Release Notes &rarr;</a>
+
+        <div class="steps">
+            <h2>Installation Steps</h2>
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h3>Download Extension</h3>
+                    <p>Click the button below to download the extension files</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h3>Open Chrome Extensions</h3>
+                    <p>Go to <kbd>chrome://extensions</kbd> in your browser</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h3>Enable Developer Mode</h3>
+                    <p>Toggle "Developer mode" in the top right corner</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h3>Load Extension</h3>
+                    <p>Click "Load unpacked" and select the extracted folder</p>
+                </div>
+            </div>
+        </div>
+
+        <a href="/extension/doz-up-extension.zip" class="btn" id="downloadBtn">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Download Extension
+        </a>
+
+        <div class="features">
+            <div class="feature">
+                <h4>Quick Capture</h4>
+                <p><kbd>Ctrl+Shift+S</kbd></p>
+            </div>
+            <div class="feature">
+                <h4>Selection Mode</h4>
+                <p><kbd>Ctrl+Shift+A</kbd></p>
+            </div>
+            <div class="feature">
+                <h4>Instant Link</h4>
+                <p>Auto-copied</p>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/download.html">&larr; Back to Downloads</a>
+        </div>
+    </div>
+
+    <script>
+        // Check if extension zip exists, if not show coming soon
+        fetch('/extension/doz-up-extension.zip', { method: 'HEAD' })
+            .then(res => {
+                if (!res.ok) {
+                    document.getElementById('downloadBtn').innerHTML = `
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        Coming Soon to Chrome Web Store
+                    `;
+                    document.getElementById('downloadBtn').href = '#';
+                    document.getElementById('downloadBtn').style.background = '#374151';
+                }
+            })
+            .catch(() => {});
+    </script>
+</body>
+</html>

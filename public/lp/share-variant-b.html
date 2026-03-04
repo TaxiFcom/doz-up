@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Shared Image - DOZ</title>
+    <meta property="og:title" content="Check out this image on DOZ">
+    <meta property="og:description" content="Shared via DOZ - The fastest way to share screenshots and images">
+    <meta property="og:image" content="{{IMAGE_RAW_URL}}">
+    <meta property="og:url" content="{{IMAGE_URL}}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{IMAGE_RAW_URL}}">
+    <link rel="icon" href="https://up.doz.com/favicon.ico">
+
+    <!-- Google tag (gtag.js) - Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-441083115"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-441083115');
+        gtag('event', 'ab_test_variant', {
+            'event_category': 'AB_Test',
+            'event_label': 'share_page_v1_b',
+            'ab_variant': 'b',
+            'non_interaction': true
+        });
+    </script>
+
+    <!-- Meta Pixel for conversion tracking -->
+    <script>
+        window.META_PIXEL_ID = '';
+    </script>
+    <script src="/js/meta-pixel.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.DOZPixel && window.META_PIXEL_ID) {
+                DOZPixel.trackViewContent('Share View B', 'SharePage', 0, 'USD');
+                DOZPixel.trackCustomEvent('SharePageView', {
+                    share_id: '{{FILENAME}}',
+                    referrer: 'direct',
+                    content_type: 'image',
+                    variant: 'b'
+                });
+            }
+        });
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Header: logo + single CTA ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0 20px;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #7c3aed, #10b981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .header-cta {
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            border: none;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: rgba(255,255,255,0.2);
+            touch-action: manipulation;
+        }
+        .header-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+        }
+
+        /* ── Image viewer ── */
+        .image-container {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .image-container img {
+            width: 100%;
+            display: block;
+            cursor: zoom-in;
+            transition: transform 0.3s;
+        }
+        .image-container:hover img { transform: scale(1.02); }
+        .image-info {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+        .image-actions { display: flex; gap: 10px; }
+        .image-action-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            -webkit-tap-highlight-color: rgba(255,255,255,0.2);
+            touch-action: manipulation;
+        }
+        .image-action-btn:hover { background: rgba(124, 58, 237, 0.5); }
+
+        /* ── "How was this shared?" teaser ── */
+        .teaser {
+            text-align: center;
+            padding: 8px 16px;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+        }
+        .teaser svg { vertical-align: middle; margin-right: 4px; }
+
+        /* ── Single focused CTA section ── */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(16, 185, 129, 0.2));
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 30px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 30% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .cta-content { position: relative; z-index: 1; }
+        .cta-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .cta-subtitle {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 6px 25px rgba(124, 58, 237, 0.4);
+            -webkit-tap-highlight-color: rgba(255,255,255,0.2);
+            touch-action: manipulation;
+        }
+        .cta-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 40px rgba(124, 58, 237, 0.5);
+        }
+        .cta-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+        .cta-features {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .cta-feature {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+        .cta-feature svg { width: 16px; height: 16px; color: #10b981; }
+
+        /* ── Minimal share row (inline, not a full section) ── */
+        .share-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .share-row-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+        }
+        .share-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #fff;
+            -webkit-tap-highlight-color: rgba(255,255,255,0.2);
+            touch-action: manipulation;
+        }
+        .share-icon-btn:hover { transform: scale(1.15); }
+        .share-icon-btn svg { width: 18px; height: 18px; }
+        .share-icon-btn.whatsapp { background: #25D366; }
+        .share-icon-btn.telegram { background: #0088cc; }
+        .share-icon-btn.twitter { background: #1DA1F2; }
+        .share-icon-btn.copy { background: #7c3aed; }
+        .share-icon-btn.download-btn { background: #10b981; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+        }
+        .footer a { color: #7c3aed; text-decoration: none; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .toast svg { width: 20px; height: 20px; }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            cursor: zoom-out;
+            padding: 20px;
+        }
+        .lightbox.show { display: flex; }
+        .lightbox img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: rgba(255,255,255,0.2);
+            touch-action: manipulation;
+        }
+        .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+        @media (max-width: 600px) {
+            .cta-features { flex-direction: column; gap: 10px; }
+            .cta-btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header: logo + single CTA (no "Get DOZ Free" competing with below) -->
+        <div class="header">
+            <a href="https://up.doz.com?ref=logo_b" class="logo">DOZ</a>
+            <a href="https://up.doz.com/download?ref=share_header_b" class="header-cta" onclick="trackCTA('header')">
+                Download Free
+            </a>
+        </div>
+
+        <!-- Image viewer (identical to variant A) -->
+        <div class="image-container">
+            <img src="{{IMAGE_RAW_URL}}" alt="Shared Image" onclick="openLightbox()" id="mainImage">
+            <div class="image-info">
+                <span>Shared via DOZ</span>
+                <div class="image-actions">
+                    <button class="image-action-btn" onclick="openLightbox()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+                        View
+                    </button>
+                    <span>{{FILE_SIZE}}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teaser: speaks to the VIEWER -->
+        <div class="teaser">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            This screenshot was shared instantly with DOZ
+        </div>
+
+        <!-- Single focused CTA section (replaces invite + pro upsell + share section) -->
+        <div class="cta-section">
+            <div class="cta-content">
+                <div class="cta-title">Share screenshots this fast</div>
+                <div class="cta-subtitle">Capture your screen and get a link in under 1 second.<br>No account needed. Free forever.</div>
+                <a href="https://up.doz.com/download?ref=share_cta_b" class="cta-btn" onclick="trackCTA('main')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Get DOZ Free
+                </a>
+                <div class="cta-features">
+                    <div class="cta-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        1-second capture
+                    </div>
+                    <div class="cta-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Instant link
+                    </div>
+                    <div class="cta-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        No signup
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Minimal inline share row (not a full section) -->
+        <div class="share-row">
+            <span class="share-row-label">Share:</span>
+            <a href="https://wa.me/?text=Check%20this%20out!%20{{IMAGE_URL_ENCODED}}%3Fref%3Dwa_b" target="_blank" class="share-icon-btn whatsapp" onclick="trackShare('whatsapp')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+            <a href="https://t.me/share/url?url={{IMAGE_URL_ENCODED}}%3Fref%3Dtg_b&text=Check%20this%20out!" target="_blank" class="share-icon-btn telegram" onclick="trackShare('telegram')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            </a>
+            <a href="https://twitter.com/intent/tweet?text=Check%20this%20out!&url={{IMAGE_URL_ENCODED}}%3Fref%3Dtw_b" target="_blank" class="share-icon-btn twitter" onclick="trackShare('twitter')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <button onclick="copyLink(this)" class="share-icon-btn copy" id="copyBtn" title="Copy link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+            <button onclick="downloadImage()" class="share-icon-btn download-btn" title="Download">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+        </div>
+
+        <div class="footer">
+            Powered by <a href="https://up.doz.com">DOZ</a> - Share screenshots instantly
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="toastText">Link copied!</span>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img src="{{IMAGE_RAW_URL}}" alt="Full size image">
+    </div>
+
+    <script>
+        var imageUrl = '{{IMAGE_URL}}';
+        var rawImageUrl = '{{IMAGE_RAW_URL}}';
+        var filename = '{{FILENAME}}';
+
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            document.getElementById('toastText').textContent = message;
+            toast.classList.add('show');
+            setTimeout(function() { toast.classList.remove('show'); }, 2500);
+        }
+
+        function copyLink(btn) {
+            navigator.clipboard.writeText(imageUrl + '?ref=copy_b').then(function() {
+                showToast('Link copied to clipboard!');
+                trackShare('copy');
+            }).catch(function() {
+                var textarea = document.createElement('textarea');
+                textarea.value = imageUrl + '?ref=copy_b';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Link copied!');
+            });
+        }
+
+        function downloadImage() {
+            showToast('Starting download...');
+            trackShare('download');
+            fetch(rawImageUrl)
+                .then(function(r) { return r.blob(); })
+                .then(function(blob) {
+                    var url = window.URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename || 'doz-image.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    showToast('Download complete!');
+                })
+                .catch(function() { window.open(rawImageUrl, '_blank'); });
+        }
+
+        function openLightbox() {
+            document.getElementById('lightbox').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function trackShare(method) {
+            try {
+                fetch('/api/track-share', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename: filename, method: method, variant: 'b' })
+                }).catch(function(){});
+            } catch(e) {}
+        }
+
+        function trackCTA(position) {
+            // Track download CTA click with variant info
+            if (typeof gtag === 'function') {
+                gtag('event', 'conversion', {
+                    'send_to': 'AW-441083115/share_download_b',
+                    'event_category': 'CTA_Click',
+                    'event_label': 'share_page_b_' + position,
+                    'value': 1.0,
+                    'currency': 'USD'
+                });
+            }
+            try {
+                fetch('/api/track-share', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename: filename, method: 'cta_' + position, variant: 'b' })
+                }).catch(function(){});
+            } catch(e) {}
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                copyLink(document.getElementById('copyBtn'));
+            }
+        });
+
+        // Preload image
+        var preloadImg = new Image();
+        preloadImg.src = rawImageUrl;
+    </script>
+    <script src="https://up.doz.com.im/lp/doz-perf.js" defer></script>
+</body>
+</html>

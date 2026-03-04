@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe to DOZ UP</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="preconnect" href="https://js.stripe.com">
+    <script src="https://js.stripe.com/v3/" async></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .payment-container {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .order-summary {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .order-summary h3 {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .order-item .label { color: #94a3b8; }
+        .order-item .value { font-weight: 600; }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 15px;
+        }
+
+        .order-total .label { font-weight: 600; }
+        .order-total .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        /* Express Checkout */
+        .express-checkout-section { margin-bottom: 20px; }
+
+        .express-label {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        #stripe-express-checkout { min-height: 48px; }
+
+        .express-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        .express-divider::before,
+        .express-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus { border-color: #10b981; }
+        .form-group input::placeholder { color: #64748b; }
+
+        #payment-element {
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 14px 16px;
+            min-height: 120px;
+        }
+
+        /* Coupon Section */
+        .coupon-section {
+            margin: 20px 0 0;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .coupon-row { display: flex; gap: 8px; }
+
+        .coupon-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .coupon-input:focus { border-color: #10b981; }
+        .coupon-input::placeholder { color: #64748b; text-transform: none; }
+
+        .coupon-btn {
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .coupon-btn:hover { background: rgba(255,255,255,0.15); border-color: #10b981; }
+
+        .coupon-message { margin-top: 8px; font-size: 0.85rem; display: none; }
+        .coupon-message.success { display: block; color: #10b981; }
+        .coupon-message.error { display: block; color: #ef4444; }
+
+        .coupon-applied {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-top: 8px;
+        }
+
+        .coupon-applied-text { font-size: 0.85rem; color: #10b981; font-weight: 600; }
+
+        .coupon-remove {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: underline;
+        }
+
+        .coupon-remove:hover { color: #ef4444; }
+
+        .pay-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .pay-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pay-button .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .pay-button.loading .spinner { display: block; }
+        .pay-button.loading .text { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .secure-badge svg { width: 16px; height: 16px; }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show { display: block; }
+
+        .success-message {
+            text-align: center;
+            display: none;
+        }
+
+        .success-message.show { display: block; }
+
+        .success-message svg {
+            width: 80px;
+            height: 80px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .success-message p {
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+
+        .download-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            padding: 15px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .download-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .payment-form { display: block; }
+        .payment-form.hidden { display: none; }
+
+        .device-id {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #4a5568;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <a href="/up" class="logo" style="text-decoration: none;">
+            <h1>DOZ UP</h1>
+        </a>
+
+        <div class="payment-form" id="paymentForm">
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div class="order-item">
+                    <span class="label" id="planNameLabel">DOZ UP Pro</span>
+                    <span class="value" id="planPriceLabel">$3.33/mo</span>
+                </div>
+                <div class="order-item">
+                    <span class="label">Per device license</span>
+                    <span class="value" id="deviceIdShort">-</span>
+                </div>
+                <div class="order-total">
+                    <span class="label">Total</span>
+                    <span class="value" id="totalLabel">$3.33</span>
+                </div>
+            </div>
+
+            <!-- Coupon Code -->
+            <div class="coupon-section">
+                <div class="coupon-row" id="couponRow">
+                    <input type="text" class="coupon-input" id="couponInput" placeholder="Have a coupon code?" maxlength="20">
+                    <button type="button" class="coupon-btn" onclick="applyCoupon()">Apply</button>
+                </div>
+                <div class="coupon-message" id="couponMessage"></div>
+                <div class="coupon-applied" id="couponApplied" style="display:none;">
+                    <span class="coupon-applied-text" id="couponAppliedText"></span>
+                    <button type="button" class="coupon-remove" onclick="removeCoupon()">Remove</button>
+                </div>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Express Checkout (Link, Apple Pay, Google Pay) -->
+            <div class="express-checkout-section" id="expressCheckoutSection">
+                <div class="express-label">Express Checkout</div>
+                <div id="stripe-express-checkout"><div style="text-align:center;padding:12px;color:#94a3b8;font-size:0.8rem;">Loading express checkout...</div></div>
+                <div class="express-divider" id="expressDivider">or pay with card</div>
+            </div>
+
+            <form id="payment-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <div id="link-authentication-element"></div>
+                    <input type="email" id="email" placeholder="your@email.com" required style="display:none;">
+                </div>
+
+                <div class="form-group">
+                    <label>Payment method</label>
+                    <div id="payment-element">
+                        <div style="display:flex;align-items:center;justify-content:center;padding:20px;color:#64748b;">
+                            <div class="spinner" style="display:block;width:20px;height:20px;border:2px solid rgba(255,255,255,0.1);border-top-color:#10b981;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="pay-button" id="payButton">
+                    <span class="spinner"></span>
+                    <span class="text" id="payBtnText">Pay Now</span>
+                </button>
+            </form>
+
+            <div class="secure-badge">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/></svg>
+                Secured by Stripe
+            </div>
+
+            <div class="device-id">Device: <span id="deviceDisplay">-</span></div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <h2>Payment Successful!</h2>
+            <p>Your DOZ UP Pro subscription is now active.<br>Redirecting to your dashboard...</p>
+            <a href="/cabinet.html" class="download-link">Go to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Get URL params
+        const params = new URLSearchParams(window.location.search);
+        const subscriptionId = params.get('sub');
+        const deviceId = params.get('device');
+        const emailParam = params.get('email');
+        const planParam = params.get('plan') || 'starter_yearly';
+
+        // Plan configurations
+        const PLANS = {
+            starter_monthly: { name: 'Starter', price: 4.99, interval: 'month' },
+            starter_yearly: { name: 'Starter (Annual)', price: 39.96, interval: 'year', monthly: 3.33 },
+            pro_monthly: { name: 'Pro', price: 14.99, interval: 'month' },
+            pro_yearly: { name: 'Pro (Annual)', price: 119.88, interval: 'year', monthly: 9.99 }
+        };
+
+        const selectedPlan = PLANS[planParam] || PLANS.starter_yearly;
+
+        // Display values
+        if (emailParam) document.getElementById('email').value = emailParam;
+        document.getElementById('deviceIdShort').textContent = deviceId ? deviceId.substring(0, 12) + '...' : '-';
+        document.getElementById('deviceDisplay').textContent = deviceId || '-';
+        document.getElementById('planNameLabel').textContent = 'DOZ UP ' + selectedPlan.name;
+        document.getElementById('planPriceLabel').textContent = '$' + (selectedPlan.monthly || selectedPlan.price).toFixed(2) + '/mo';
+        document.getElementById('totalLabel').textContent = '$' + selectedPlan.price.toFixed(2);
+
+        // Stripe initialization
+        let stripe = null;
+        let elements = null;
+        let paymentElement = null;
+        let expressCheckoutElement = null;
+        let clientSecret = null;
+
+        function waitForStripe() {
+            return new Promise((resolve) => {
+                if (window.Stripe) return resolve();
+                const check = setInterval(() => {
+                    if (window.Stripe) { clearInterval(check); resolve(); }
+                }, 50);
+            });
+        }
+
+        (async function init() {
+            await waitForStripe();
+
+            try {
+                // Get Stripe config
+                const configRes = await fetch('/api/stripe/config');
+                const config = await configRes.json();
+
+                if (!config.publishableKey) {
+                    showError('Payment system unavailable.');
+                    return;
+                }
+
+                stripe = Stripe(config.publishableKey);
+
+                // Create inline checkout session
+                const checkoutEmail = emailParam || 'checkout@temp.com';
+                const sessionRes = await fetch('/api/stripe/create-inline-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        planId: planParam,
+                        email: checkoutEmail,
+                        customerName: '',
+                        quantity: 1
+                    })
+                });
+
+                const session = await sessionRes.json();
+
+                if (!session.success || !session.clientSecret) {
+                    showError('Could not initialize payment. Please refresh.');
+                    return;
+                }
+
+                clientSecret = session.clientSecret;
+
+                // Initialize Stripe Elements with appearance
+                elements = stripe.elements({
+                    clientSecret: clientSecret,
+                    appearance: {
+                        theme: 'night',
+                        variables: {
+                            colorPrimary: '#10b981',
+                            colorBackground: 'rgba(0,0,0,0.3)',
+                            colorText: '#ffffff',
+                            colorDanger: '#ef4444',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+                            borderRadius: '12px'
+                        }
+                    }
+                });
+
+                // Mount Link Authentication Element
+                const userEmail = emailParam || '';
+                const linkAuthEl = elements.create('linkAuthentication', {
+                    defaultValues: { email: userEmail }
+                });
+                document.getElementById('link-authentication-element').innerHTML = '';
+                linkAuthEl.mount('#link-authentication-element');
+                linkAuthEl.on('change', (event) => {
+                    if (event.value && event.value.email) {
+                        document.getElementById('email').value = event.value.email;
+                    }
+                });
+
+                // Mount Payment Element - Link shown first, wallets in Express Checkout
+                paymentElement = elements.create('payment', {
+                    layout: { type: 'tabs', defaultCollapsed: false },
+                    paymentMethodOrder: ['link', 'card'],
+                    wallets: { applePay: 'never', googlePay: 'never' },
+                    defaultValues: { billingDetails: { email: userEmail } }
+                });
+                document.getElementById('payment-element').innerHTML = '';
+                paymentElement.mount('#payment-element');
+
+                // Mount Express Checkout Element (Link, Apple Pay, Google Pay)
+                try {
+                    expressCheckoutElement = elements.create('expressCheckout', {
+                        layout: { maxColumns: 3, maxRows: 1 }
+                    });
+
+                    expressCheckoutElement.on('confirm', async (event) => {
+                        const { error } = await stripe.confirmPayment({
+                            elements,
+                            clientSecret: clientSecret,
+                            confirmParams: {
+                                return_url: window.location.origin + '/payment/success.html?plan=' + planParam
+                            },
+                            redirect: 'if_required'
+                        });
+
+                        if (error) {
+                            showError(error.message);
+                        } else {
+                            showSuccess();
+                        }
+                    });
+
+                    expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => {
+                        console.log('[Pay] Express checkout ready:', JSON.stringify(availablePaymentMethods));
+                        if (!availablePaymentMethods) {
+                            document.getElementById('expressCheckoutSection').style.display = 'none';
+                        }
+                    });
+
+                    expressCheckoutElement.mount('#stripe-express-checkout');
+                } catch (e) {
+                    console.log('[Pay] Express checkout error:', e.message);
+                    document.getElementById('expressCheckoutSection').style.display = 'none';
+                }
+
+                // Update button text
+                document.getElementById('payBtnText').textContent = 'Pay $' + selectedPlan.price.toFixed(2);
+
+            } catch (error) {
+                console.error('Init error:', error);
+                showError('Failed to initialize payment. Please refresh.');
+            }
+        })();
+
+        // Form submission
+        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const payButton = document.getElementById('payButton');
+            const email = document.getElementById('email').value.trim();
+
+            if (!email || !email.includes('@')) {
+                showError('Please enter a valid email address.');
+                return;
+            }
+
+            if (!elements) {
+                showError('Payment is still loading. Please wait.');
+                return;
+            }
+
+            payButton.classList.add('loading');
+            payButton.disabled = true;
+            hideError();
+
+            try {
+                const { error } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: window.location.origin + '/payment/success.html?plan=' + planParam,
+                        receipt_email: email
+                    }
+                });
+
+                if (error) {
+                    showError(error.message);
+                }
+                // If no error and no redirect, payment succeeded inline
+            } catch (error) {
+                showError('Payment failed. Please try again.');
+            } finally {
+                payButton.classList.remove('loading');
+                payButton.disabled = false;
+            }
+        });
+
+        // ============ COUPON SYSTEM ============
+        let appliedCouponCode = null;
+
+        async function applyCoupon() {
+            const input = document.getElementById('couponInput');
+            const message = document.getElementById('couponMessage');
+            const code = input.value.trim().toUpperCase();
+
+            if (!code) {
+                message.textContent = 'Please enter a coupon code.';
+                message.className = 'coupon-message error';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/stripe/validate-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, planId: planParam })
+                });
+                const result = await res.json();
+
+                if (!result.valid) {
+                    message.textContent = result.error || 'Invalid coupon code.';
+                    message.className = 'coupon-message error';
+                    return;
+                }
+
+                appliedCouponCode = code;
+                message.className = 'coupon-message';
+                message.style.display = 'none';
+
+                document.getElementById('couponRow').style.display = 'none';
+                document.getElementById('couponApplied').style.display = 'flex';
+                document.getElementById('couponAppliedText').textContent = `${code} - ${result.description}`;
+
+                // Update prices
+                const discountedPrice = (result.discountedAmount / 100).toFixed(2);
+                document.getElementById('totalLabel').textContent = '$' + discountedPrice;
+                document.getElementById('planPriceLabel').textContent = '$' + discountedPrice;
+                document.getElementById('payBtnText').textContent = 'Pay $' + discountedPrice;
+
+                // Re-create PaymentIntent with coupon
+                await recreatePaymentWithCoupon(code);
+
+            } catch (err) {
+                message.textContent = 'Failed to validate coupon.';
+                message.className = 'coupon-message error';
+            }
+        }
+
+        async function removeCoupon() {
+            appliedCouponCode = null;
+            document.getElementById('couponRow').style.display = 'flex';
+            document.getElementById('couponApplied').style.display = 'none';
+            document.getElementById('couponInput').value = '';
+            document.getElementById('couponMessage').style.display = 'none';
+
+            // Restore prices
+            document.getElementById('totalLabel').textContent = '$' + selectedPlan.price.toFixed(2);
+            document.getElementById('planPriceLabel').textContent = '$' + (selectedPlan.monthly || selectedPlan.price).toFixed(2) + '/mo';
+            document.getElementById('payBtnText').textContent = 'Pay $' + selectedPlan.price.toFixed(2);
+
+            await recreatePaymentWithCoupon(null);
+        }
+
+        async function recreatePaymentWithCoupon(couponCode) {
+            try {
+                const checkoutEmail = document.getElementById('email').value || emailParam || 'checkout@temp.com';
+                const body = { planId: planParam, email: checkoutEmail, customerName: '' };
+                if (couponCode) body.couponCode = couponCode;
+
+                const sessionRes = await fetch('/api/stripe/create-inline-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const session = await sessionRes.json();
+                if (!session.success || !session.clientSecret) return;
+
+                clientSecret = session.clientSecret;
+
+                elements = stripe.elements({
+                    clientSecret,
+                    appearance: {
+                        theme: 'night',
+                        variables: {
+                            colorPrimary: '#10b981',
+                            colorBackground: 'rgba(0,0,0,0.3)',
+                            colorText: '#ffffff',
+                            colorDanger: '#ef4444',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+                            borderRadius: '12px'
+                        }
+                    }
+                });
+
+                // Remount Link Authentication Element
+                const currentEmail = document.getElementById('email').value || emailParam || '';
+                document.getElementById('link-authentication-element').innerHTML = '';
+                const newLinkAuth = elements.create('linkAuthentication', {
+                    defaultValues: { email: currentEmail }
+                });
+                newLinkAuth.mount('#link-authentication-element');
+                newLinkAuth.on('change', (event) => {
+                    if (event.value && event.value.email) document.getElementById('email').value = event.value.email;
+                });
+
+                document.getElementById('payment-element').innerHTML = '';
+                paymentElement = elements.create('payment', {
+                    layout: { type: 'tabs', defaultCollapsed: false },
+                    paymentMethodOrder: ['link', 'card'],
+                    wallets: { applePay: 'never', googlePay: 'never' },
+                    defaultValues: { billingDetails: { email: currentEmail } }
+                });
+                paymentElement.mount('#payment-element');
+
+                try {
+                    document.getElementById('stripe-express-checkout').innerHTML = '';
+                    document.getElementById('expressCheckoutSection').style.display = '';
+                    expressCheckoutElement = elements.create('expressCheckout', {
+                        layout: { maxColumns: 3, maxRows: 1 }
+                    });
+                    expressCheckoutElement.on('confirm', async (event) => {
+                        const { error } = await stripe.confirmPayment({
+                            elements, clientSecret,
+                            confirmParams: { return_url: window.location.origin + '/payment/success.html?plan=' + planParam },
+                            redirect: 'if_required'
+                        });
+                        if (error) showError(error.message);
+                        else showSuccess();
+                    });
+                    expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => {
+                        if (!availablePaymentMethods) {
+                            document.getElementById('expressCheckoutSection').style.display = 'none';
+                        }
+                    });
+                    expressCheckoutElement.mount('#stripe-express-checkout');
+                } catch (e) {
+                    console.log('[Pay] Express checkout remount:', e.message);
+                }
+            } catch (err) {
+                console.error('[Pay] Coupon recreation failed:', err);
+            }
+        }
+
+        document.getElementById('couponInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); applyCoupon(); }
+        });
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = message;
+            el.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        function showSuccess() {
+            document.getElementById('paymentForm').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('show');
+
+            // Store in localStorage
+            if (deviceId) {
+                localStorage.setItem('doz_demo_' + deviceId, JSON.stringify({
+                    startTime: Date.now(),
+                    deviceId: deviceId,
+                    paid: true,
+                    paidAt: new Date().toISOString()
+                }));
+            }
+
+            // Auto-redirect
+            setTimeout(() => {
+                window.location.href = '/cabinet.html?welcome=1';
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>

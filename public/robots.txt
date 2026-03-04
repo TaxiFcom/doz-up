@@ -1,0 +1,334 @@
+# ============================================
+# DOZ UP - robots.txt
+# https://doz.com
+# Screenshot & Cloud Sharing Tool for Developers
+# ============================================
+
+# Default rules for all crawlers
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /landing.html
+Allow: /download.html
+Allow: /upload.html
+Allow: /gallery.html
+Allow: /studio.html
+Allow: /tools.html
+Allow: /collage.html
+Allow: /frames.html
+Allow: /themes.html
+Allow: /demo.html
+Allow: /hub.html
+Allow: /security.html
+Allow: /login.html
+Allow: /pay.html
+Allow: /app/
+Allow: /mobile.html
+Allow: /my-account.html
+Allow: /logo.png
+Allow: /og-image.png
+Allow: /app/icon-192.png
+Allow: /app/icon-512.png
+Allow: /feed.xml
+Allow: /sitemap.xml
+
+# Disallow private/admin areas
+Disallow: /admin/
+Disallow: /seo-admin.html
+Disallow: /viral-dashboard.html
+Disallow: /admin.html
+Disallow: /cabinet.html
+Disallow: /my.html
+Disallow: /annotate.html
+Disallow: /payment/
+Disallow: /data/
+Disallow: /api/
+Disallow: /download/win-unpacked/
+Disallow: /download-new/
+Disallow: /download/extracted-app/
+Disallow: /download/extracted-check/
+
+# Sitemap location
+Sitemap: https://doz.com/sitemap.xml
+
+# ============================================
+# GOOGLE (Worldwide - Primary)
+# ============================================
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /logo.png
+Allow: /og-image.png
+Allow: /app/icon-192.png
+Allow: /app/icon-512.png
+Allow: /screenshots/
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Storebot-Google
+Allow: /
+
+User-agent: Google-InspectionTool
+Allow: /
+
+# ============================================
+# BING / MICROSOFT (Worldwide)
+# ============================================
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: BingPreview
+Allow: /
+
+User-agent: msnbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: msnbot-media
+Allow: /
+
+# ============================================
+# YAHOO (Worldwide)
+# ============================================
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# ============================================
+# DUCKDUCKGO (Privacy-focused - Growing)
+# ============================================
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: DuckDuckGo-Favicons-Bot
+Allow: /logo.png
+Allow: /app/icon-192.png
+
+# ============================================
+# BAIDU (China - Largest Chinese Engine)
+# ============================================
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: Baiduspider-image
+Allow: /
+Allow: /logo.png
+Allow: /og-image.png
+
+User-agent: Baiduspider-video
+Allow: /
+
+# ============================================
+# YANDEX (Russia & CIS Countries)
+# ============================================
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: YandexImages
+Allow: /
+Allow: /logo.png
+Allow: /og-image.png
+
+User-agent: YandexMedia
+Allow: /
+
+User-agent: YandexMobileBot
+Allow: /
+
+# ============================================
+# SOGOU (China - 2nd Largest)
+# ============================================
+User-agent: Sogou web spider
+Allow: /
+Crawl-delay: 2
+
+User-agent: Sogou inst spider
+Allow: /
+
+User-agent: Sogou spider2
+Allow: /
+
+# ============================================
+# NAVER (South Korea - Dominant)
+# ============================================
+User-agent: Yeti
+Allow: /
+Crawl-delay: 1
+
+User-agent: NaverBot
+Allow: /
+
+# ============================================
+# SEZNAM (Czech Republic)
+# ============================================
+User-agent: SeznamBot
+Allow: /
+Crawl-delay: 1
+
+# ============================================
+# QWANT (France/EU - Privacy-focused)
+# ============================================
+User-agent: Qwantify
+Allow: /
+
+# ============================================
+# ECOSIA (Germany - Eco-friendly)
+# ============================================
+User-agent: Ecosia
+Allow: /
+
+# ============================================
+# MOJEEK (UK - Independent)
+# ============================================
+User-agent: MojeekBot
+Allow: /
+Crawl-delay: 1
+
+# ============================================
+# COCCOC (Vietnam)
+# ============================================
+User-agent: coccocbot-web
+Allow: /
+Crawl-delay: 2
+
+# ============================================
+# ASK.COM
+# ============================================
+User-agent: Teoma
+Allow: /
+Crawl-delay: 1
+
+# ============================================
+# SOCIAL MEDIA CRAWLERS (Important for Sharing)
+# ============================================
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Pinterestbot
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: redditbot
+Allow: /
+
+# ============================================
+# AI/LLM CRAWLERS (Emerging - Optional)
+# ============================================
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+# ============================================
+# ARCHIVE CRAWLERS (For Historical Record)
+# ============================================
+User-agent: ia_archiver
+Allow: /
+
+User-agent: archive.org_bot
+Allow: /
+
+# ============================================
+# BLOCK UNWANTED CRAWLERS (SEO Scrapers)
+# ============================================
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: SEOkicks
+Disallow: /
+
+User-agent: serpstatbot
+Disallow: /
+
+User-agent: Rogerbot
+Disallow: /
+
+User-agent: Screaming Frog SEO Spider
+Disallow: /
+
+# ============================================
+# BLOCK MALICIOUS/SPAM BOTS
+# ============================================
+User-agent: 360Spider
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+User-agent: ltx71
+Disallow: /
+
+User-agent: Cliqzbot
+Disallow: /
+
+# ============================================
+# HOST DIRECTIVE (For Multiple Domains)
+# ============================================
+Host: https://doz.com

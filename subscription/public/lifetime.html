@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP Lifetime Deal - Pay Once, Use Forever | Limited Spots</title>
+
+    <!-- Inline Checkout -->
+    <link href="/css/inline-checkout.css" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Urgent Banner */
+        .urgent-banner {
+            background: linear-gradient(90deg, #ff0055, #ff6600, #ff0055);
+            background-size: 200% 100%;
+            animation: gradient 2s ease infinite;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero .tagline {
+            font-size: 1.5rem;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .hero .savings-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Countdown */
+        .countdown-section {
+            background: rgba(255, 0, 85, 0.1);
+            border: 2px solid #ff0055;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .countdown-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ff0055;
+        }
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .countdown-item {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px 30px;
+            border-radius: 10px;
+            min-width: 100px;
+        }
+        .countdown-item .number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ff0055;
+        }
+        .countdown-item .label {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        /* Spots remaining */
+        .spots-remaining {
+            background: linear-gradient(135deg, #1a1a2e, #2a2a4e);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .spots-remaining .spots-count {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        .spots-remaining .spots-total {
+            color: #888;
+            font-size: 1.2rem;
+        }
+        .spots-bar {
+            background: #333;
+            height: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        .spots-bar-fill {
+            background: linear-gradient(90deg, #ff0055, #00ff88);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        .pricing-card {
+            background: linear-gradient(135deg, #1a1a2e, #2a2a4e);
+            border-radius: 20px;
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 255, 136, 0.2);
+        }
+        .pricing-card.featured {
+            border: 3px solid #00ff88;
+        }
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: #00ff88;
+            color: #000;
+            padding: 5px 40px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transform: rotate(45deg);
+        }
+        .pricing-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .pricing-card .description {
+            color: #888;
+            margin-bottom: 20px;
+        }
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .original-price {
+            font-size: 1.5rem;
+            color: #666;
+            text-decoration: line-through;
+        }
+        .current-price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        .one-time {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .savings-tag {
+            background: #ff0055;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .features-list {
+            list-style: none;
+            margin: 25px 0;
+        }
+        .features-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .features-list li:last-child { border-bottom: none; }
+        .features-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .spots-left {
+            background: rgba(255, 0, 85, 0.2);
+            color: #ff6b6b;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .buy-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .buy-btn.primary {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: #000;
+        }
+        .buy-btn.primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        /* Referral Section */
+        .referral-section {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 50px;
+            margin: 50px 0;
+            text-align: center;
+        }
+        .referral-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffd93d, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .referral-rewards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .reward-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .reward-item .amount {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd93d;
+        }
+        .reward-item .action {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Trust badges */
+        .trust-section {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        .trust-badge {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .trust-badge .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #00ff88;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #888;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: #0a0a0a;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ff88;
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            color: #888;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .countdown { flex-wrap: wrap; }
+            .countdown-item { min-width: 80px; padding: 15px; }
+            .countdown-item .number { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="urgent-banner">
+        🔥 LIFETIME DEAL ENDS IN <span id="timer">--:--:--</span> - PAY ONCE, USE FOREVER 🔥
+    </div>
+
+    <div class="container">
+        <div class="hero">
+            <h1>DOZ UP Lifetime Deal</h1>
+            <p class="tagline">Pay once today. Use forever. No monthly fees. Ever.</p>
+            <div class="savings-badge">💰 SAVE UP TO 83% vs Monthly Plans</div>
+        </div>
+
+        <div class="countdown-section">
+            <h3>⏰ DEAL EXPIRES IN</h3>
+            <div class="countdown">
+                <div class="countdown-item">
+                    <div class="number" id="days">5</div>
+                    <div class="label">Days</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="hours">23</div>
+                    <div class="label">Hours</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="minutes">59</div>
+                    <div class="label">Minutes</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="number" id="seconds">59</div>
+                    <div class="label">Seconds</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="spots-remaining">
+            <div class="spots-count" id="total-spots">800</div>
+            <div class="spots-total">of 800 lifetime spots remaining</div>
+            <div class="spots-bar">
+                <div class="spots-bar-fill" id="spots-bar" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div class="pricing-grid" id="pricing-grid">
+            <!-- Pricing cards loaded dynamically -->
+        </div>
+
+        <div class="referral-section">
+            <h2>💰 Earn Cash Referring Friends</h2>
+            <p style="color: #888; margin-bottom: 30px;">Share your unique link and earn real money for every signup</p>
+            <div class="referral-rewards" id="referral-rewards">
+                <!-- Rewards loaded dynamically -->
+            </div>
+            <button class="buy-btn primary" style="max-width: 300px; margin-top: 20px;" onclick="showReferralLink()">
+                Get My Referral Link
+            </button>
+        </div>
+
+        <div class="trust-section">
+            <h3>Trusted by 10,000+ Teams Worldwide</h3>
+            <div class="trust-badges">
+                <div class="trust-badge">
+                    <span class="icon">🔒</span>
+                    256-bit SSL
+                </div>
+                <div class="trust-badge">
+                    <span class="icon">💳</span>
+                    Secure Checkout
+                </div>
+                <div class="trust-badge">
+                    <span class="icon">↩️</span>
+                    30-Day Refund
+                </div>
+                <div class="trust-badge">
+                    <span class="icon">⚡</span>
+                    Instant Access
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div class="modal" id="purchase-modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <h3>🎉 Secure Your Lifetime Deal</h3>
+            <form id="purchase-form">
+                <input type="hidden" id="selected-deal" name="dealType">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" required placeholder="john@company.com">
+                </div>
+                <div class="form-group">
+                    <label>Company (Optional)</label>
+                    <input type="text" name="company" placeholder="Acme Inc">
+                </div>
+                <div id="deal-summary" style="background: rgba(0,255,136,0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <!-- Deal summary -->
+                </div>
+                <button type="submit" class="buy-btn primary">Complete Purchase</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let lifetimeDeals = {};
+        let referralRewards = {};
+
+        // Load data
+        async function loadData() {
+            try {
+                const [dealsRes, rewardsRes] = await Promise.all([
+                    fetch('/api/enterprise/lifetime-deals'),
+                    fetch('/api/enterprise/referral-rewards')
+                ]);
+
+                const dealsData = await dealsRes.json();
+                const rewardsData = await rewardsRes.json();
+
+                if (dealsData.success) {
+                    lifetimeDeals = dealsData.deals;
+                    renderPricing();
+                    updateSpots();
+                }
+
+                if (rewardsData.success) {
+                    referralRewards = rewardsData.rewards;
+                    renderRewards();
+                }
+            } catch (err) {
+                console.error('Error loading data:', err);
+            }
+        }
+
+        function renderPricing() {
+            const grid = document.getElementById('pricing-grid');
+            const deals = Object.values(lifetimeDeals);
+
+            grid.innerHTML = deals.map((deal, i) => `
+                <div class="pricing-card ${i === 1 ? 'featured' : ''}">
+                    <h3>${deal.name}</h3>
+                    <p class="description">${deal.description}</p>
+                    <div class="price-row">
+                        <span class="original-price">$${(deal.originalPrice / 100).toLocaleString()}</span>
+                        <span class="current-price">$${(deal.price / 100).toLocaleString()}</span>
+                    </div>
+                    <span class="one-time">one-time payment</span>
+                    <div class="savings-tag">SAVE ${Math.round((1 - deal.price / deal.originalPrice) * 100)}%</div>
+                    <ul class="features-list">
+                        ${deal.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                    <div class="spots-left">Only ${deal.spotsRemaining} spots left!</div>
+                    <button class="buy-btn primary" onclick="openLifetimeCheckout('${deal.id}', this)">
+                        Get Lifetime Access - $${(deal.price / 100).toLocaleString()}
+                    </button>
+                    <div class="doz-inline-checkout theme-cyan" id="doz-checkout-${deal.id}" data-plan-id="${deal.id}"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderRewards() {
+            const container = document.getElementById('referral-rewards');
+            const rewardLabels = {
+                signup: 'Per Signup',
+                trial: 'Per Trial',
+                paid: 'Per Paid User',
+                enterprise: 'Per Enterprise',
+                whale: 'Per $50K+ Deal'
+            };
+
+            container.innerHTML = Object.entries(referralRewards).map(([key, value]) => `
+                <div class="reward-item">
+                    <div class="amount">$${value / 100}</div>
+                    <div class="action">${rewardLabels[key] || key}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateSpots() {
+            const totalSpots = Object.values(lifetimeDeals).reduce((sum, d) => sum + d.spotsRemaining, 0);
+            const maxSpots = Object.values(lifetimeDeals).reduce((sum, d) => sum + d.spotsTotal, 0);
+
+            document.getElementById('total-spots').textContent = totalSpots;
+            document.querySelector('.spots-total').textContent = `of ${maxSpots} lifetime spots remaining`;
+            document.getElementById('spots-bar').style.width = `${(totalSpots / maxSpots) * 100}%`;
+        }
+
+        function selectDeal(dealId) {
+            const deal = lifetimeDeals[dealId];
+            document.getElementById('selected-deal').value = dealId;
+            document.getElementById('deal-summary').innerHTML = `
+                <strong>${deal.name}</strong><br>
+                <span style="font-size: 1.5rem; color: #00ff88;">$${(deal.price / 100).toLocaleString()}</span>
+                <span style="color: #888;"> one-time</span>
+            `;
+            document.getElementById('purchase-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('purchase-modal').classList.remove('active');
+        }
+
+        document.getElementById('purchase-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                dealType: formData.get('dealType'),
+                customer: {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    company: formData.get('company')
+                }
+            };
+
+            try {
+                const res = await fetch('/api/enterprise/lifetime-deals/purchase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    alert('🎉 Purchase successful! Check your email for access details.');
+                    closeModal();
+                    loadData(); // Refresh spots
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Purchase failed. Please try again.');
+            }
+        });
+
+        function showReferralLink() {
+            const code = 'REF' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            prompt('Share this link to earn rewards:', `https://up.doz.com.im/v2/lifetime?ref=${code}`);
+        }
+
+        // Countdown timer
+        function updateCountdown() {
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 5);
+
+            const now = new Date();
+            const diff = endDate - now;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${days}d ${hours}h ${minutes}m`;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        loadData();
+    </script>
+
+    <!-- Inline Checkout Module -->
+    <script src="/js/inline-checkout.js"></script>
+    <script>
+        // Open inline checkout for lifetime deals
+        async function openLifetimeCheckout(dealId, buttonEl) {
+            const deal = lifetimeDeals[dealId];
+            if (!deal) return;
+
+            const plan = {
+                name: deal.name + ' (Lifetime)',
+                price: deal.price,
+                interval: 'forever',
+                features: deal.features
+            };
+
+            const containerId = 'doz-checkout-' + dealId;
+
+            // Change button text while loading
+            const originalText = buttonEl.textContent;
+            buttonEl.textContent = 'Loading...';
+            buttonEl.disabled = true;
+
+            try {
+                await DOZCheckout.open(dealId, plan, containerId);
+            } catch (error) {
+                console.error('Checkout error:', error);
+            }
+
+            buttonEl.textContent = originalText;
+            buttonEl.disabled = false;
+        }
+    </script>
+</body>
+</html>

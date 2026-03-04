@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>DOZ UP - Instant Screenshot Sharing</title>
+    <link>https://doz.com</link>
+    <description>The fastest screenshot and image sharing platform. Capture, upload, and share in milliseconds with pre-generated URLs.</description>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 23 Jan 2026 00:00:00 GMT</lastBuildDate>
+    <pubDate>Thu, 23 Jan 2026 00:00:00 GMT</pubDate>
+    <ttl>60</ttl>
+    <atom:link href="https://doz.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://doz.com/icons/icon-512.png</url>
+      <title>DOZ UP</title>
+      <link>https://doz.com</link>
+      <width>512</width>
+      <height>512</height>
+    </image>
+
+    <item>
+      <title>DOZ UP v2.5.0 Released - Ultra-Fast Upload System</title>
+      <link>https://doz.com/download</link>
+      <guid isPermaLink="true">https://doz.com/download?v=2.5.0</guid>
+      <pubDate>Thu, 23 Jan 2026 00:00:00 GMT</pubDate>
+      <description>Major update with pre-generated URLs for instant sharing. URLs are ready before you take a photo!</description>
+      <content:encoded><![CDATA[
+        <h2>DOZ UP v2.5.0 - Force Update Release</h2>
+        <p>We're excited to announce DOZ UP v2.5.0 with revolutionary features:</p>
+        <ul>
+          <li><strong>Ultra-Fast Upload System</strong>: Pre-generated URLs for instant sharing</li>
+          <li><strong>Enhanced Sound Feedback</strong>: Camera shutter, success chimes</li>
+          <li><strong>Fixed Popup Issues</strong>: All windows display properly</li>
+          <li><strong>Performance Boost</strong>: Non-blocking saves, parallel processing</li>
+        </ul>
+        <p><a href="https://doz.com/download">Download Now</a></p>
+      ]]></content:encoded>
+      <dc:creator>DOZ UP Team</dc:creator>
+      <category>Release</category>
+      <category>Update</category>
+    </item>
+
+    <item>
+      <title>Free Screenshot Tool - Try DOZ UP Demo</title>
+      <link>https://doz.com/demo</link>
+      <guid isPermaLink="true">https://doz.com/demo</guid>
+      <pubDate>Wed, 22 Jan 2026 00:00:00 GMT</pubDate>
+      <description>Try DOZ UP for free! Capture and share screenshots instantly with our web-based demo.</description>
+      <content:encoded><![CDATA[
+        <h2>Try DOZ UP Free Demo</h2>
+        <p>Experience the fastest screenshot sharing without installing anything:</p>
+        <ul>
+          <li>Instant capture from your browser</li>
+          <li>One-click sharing</li>
+          <li>No signup required</li>
+        </ul>
+        <p><a href="https://doz.com/demo">Try Demo Now</a></p>
+      ]]></content:encoded>
+      <dc:creator>DOZ UP Team</dc:creator>
+      <category>Demo</category>
+      <category>Free Tool</category>
+    </item>
+
+    <item>
+      <title>DOZ UP Studio - Professional Screenshot Editor</title>
+      <link>https://doz.com/studio</link>
+      <guid isPermaLink="true">https://doz.com/studio</guid>
+      <pubDate>Tue, 21 Jan 2026 00:00:00 GMT</pubDate>
+      <description>Edit, annotate, and enhance your screenshots with DOZ UP Studio's powerful tools.</description>
+      <content:encoded><![CDATA[
+        <h2>DOZ UP Studio</h2>
+        <p>Professional screenshot editing tools:</p>
+        <ul>
+          <li>Crop, resize, and rotate</li>
+          <li>Add annotations and arrows</li>
+          <li>Blur sensitive information</li>
+          <li>Export in multiple formats</li>
+        </ul>
+        <p><a href="https://doz.com/studio">Open Studio</a></p>
+      ]]></content:encoded>
+      <dc:creator>DOZ UP Team</dc:creator>
+      <category>Tools</category>
+      <category>Editor</category>
+    </item>
+
+    <item>
+      <title>Screenshot Gallery - Browse Shared Images</title>
+      <link>https://doz.com/gallery</link>
+      <guid isPermaLink="true">https://doz.com/gallery</guid>
+      <pubDate>Mon, 20 Jan 2026 00:00:00 GMT</pubDate>
+      <description>Explore the public gallery of screenshots shared by DOZ UP users worldwide.</description>
+      <dc:creator>DOZ UP Team</dc:creator>
+      <category>Gallery</category>
+      <category>Community</category>
+    </item>
+
+    <item>
+      <title>DOZ UP Pro - $3.33/month Unlimited Screenshots</title>
+      <link>https://doz.com/pay</link>
+      <guid isPermaLink="true">https://doz.com/pay</guid>
+      <pubDate>Sun, 19 Jan 2026 00:00:00 GMT</pubDate>
+      <description>Upgrade to DOZ UP Pro for unlimited screenshots, priority upload, and premium features at just $3.33/month.</description>
+      <dc:creator>DOZ UP Team</dc:creator>
+      <category>Pricing</category>
+      <category>Pro</category>
+    </item>
+  </channel>
+</rss>

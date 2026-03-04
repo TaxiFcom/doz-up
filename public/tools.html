@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Power Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: #00d4ff; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-title p {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .tool-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tool-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .tool-header h3 {
+            font-size: 1.3rem;
+        }
+
+        /* Batch Upload */
+        .batch-icon { background: linear-gradient(135deg, #00d4ff, #0099cc); }
+
+        .batch-drop {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .batch-drop:hover, .batch-drop.drag-over {
+            border-color: #00d4ff;
+            background: rgba(0,212,255,0.1);
+        }
+
+        .batch-drop-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .batch-files {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .batch-file {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .batch-file img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .batch-file-info {
+            flex: 1;
+        }
+
+        .batch-file-name {
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .batch-file-size {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .batch-file-status {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .status-pending { background: rgba(255,193,7,0.2); color: #ffc107; }
+        .status-uploading { background: rgba(0,212,255,0.2); color: #00d4ff; }
+        .status-done { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .status-error { background: rgba(244,67,54,0.2); color: #f44336; }
+
+        .batch-progress {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .batch-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* QR Code */
+        .qr-icon { background: linear-gradient(135deg, #7b2ff7, #5b1fd4); }
+
+        .qr-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .qr-input:focus {
+            outline: none;
+            border-color: #7b2ff7;
+        }
+
+        .qr-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .qr-size-btn {
+            padding: 8px 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .qr-size-btn:hover, .qr-size-btn.active {
+            background: #7b2ff7;
+            border-color: #7b2ff7;
+        }
+
+        .qr-preview {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .qr-preview canvas {
+            max-width: 100%;
+        }
+
+        /* Compress */
+        .compress-icon { background: linear-gradient(135deg, #4caf50, #2e7d32); }
+
+        .compress-drop {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .compress-drop:hover {
+            border-color: #4caf50;
+            background: rgba(76,175,80,0.1);
+        }
+
+        .compress-settings {
+            margin-bottom: 15px;
+        }
+
+        .compress-slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .compress-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .compress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+        }
+
+        .compress-result {
+            display: none;
+            background: rgba(76,175,80,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .compress-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .compress-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4caf50;
+        }
+
+        .compress-stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .compress-preview {
+            display: none;
+            margin-bottom: 15px;
+        }
+
+        .compress-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+        }
+
+        /* Resize Tool */
+        .resize-icon { background: linear-gradient(135deg, #ff9800, #f57c00); }
+
+        .resize-drop {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .resize-drop:hover {
+            border-color: #ff9800;
+            background: rgba(255,152,0,0.1);
+        }
+
+        .resize-inputs {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .resize-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .resize-input:focus {
+            outline: none;
+            border-color: #ff9800;
+        }
+
+        .resize-link {
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.3s;
+        }
+
+        .resize-link.linked { color: #ff9800; }
+        .resize-link:hover { transform: scale(1.2); }
+
+        .resize-presets {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .resize-preset {
+            padding: 6px 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .resize-preset:hover {
+            background: #ff9800;
+            border-color: #ff9800;
+            color: #fff;
+        }
+
+        .resize-preview {
+            display: none;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .resize-preview img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,212,255,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Format Converter */
+        .convert-icon { background: linear-gradient(135deg, #e91e63, #c2185b); }
+
+        .convert-formats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .convert-format {
+            padding: 15px 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .convert-format:hover, .convert-format.active {
+            background: #e91e63;
+            border-color: #e91e63;
+        }
+
+        .convert-format-ext {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .convert-format-name {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .resize-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .convert-formats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/up" class="logo" style="text-decoration: none;">DOZ UP</a>
+        <nav class="nav-links">
+            <a href="/up">Upload</a>
+            <a href="/hub.html">Hub</a>
+            <a href="/studio.html">Studio</a>
+            <a href="/gallery.html">Gallery</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-title">
+            <h1>Power Tools</h1>
+            <p>Batch upload, compress, resize, convert & generate QR codes</p>
+        </div>
+
+        <div class="tools-grid">
+            <!-- Batch Upload -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon batch-icon">📦</div>
+                    <h3>Batch Upload</h3>
+                </div>
+                <div class="batch-drop" id="batchDrop">
+                    <div class="batch-drop-icon">📁</div>
+                    <p>Drop multiple images here</p>
+                    <small style="color: rgba(255,255,255,0.5)">or click to select (max 20 files)</small>
+                </div>
+                <input type="file" id="batchInput" multiple accept="image/*" style="display:none">
+                <div class="batch-files" id="batchFiles"></div>
+                <div class="batch-progress">
+                    <div class="batch-progress-bar" id="batchProgress"></div>
+                </div>
+                <button class="btn btn-primary" id="batchUploadBtn" disabled>Upload All</button>
+                <div id="batchResults" style="margin-top:15px; display:none;">
+                    <div style="background:rgba(76,175,80,0.1); padding:15px; border-radius:10px;">
+                        <p style="color:#4caf50; font-weight:600;">All uploads complete!</p>
+                        <button class="btn btn-secondary" id="copyAllLinks">Copy All Links</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Code Generator -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon qr-icon">📱</div>
+                    <h3>QR Code Generator</h3>
+                </div>
+                <input type="text" class="qr-input" id="qrInput" placeholder="Enter URL or text...">
+                <div class="qr-options">
+                    <button class="qr-size-btn active" data-size="128">Small</button>
+                    <button class="qr-size-btn" data-size="256">Medium</button>
+                    <button class="qr-size-btn" data-size="512">Large</button>
+                </div>
+                <div class="qr-preview" id="qrPreview">
+                    <canvas id="qrCanvas"></canvas>
+                </div>
+                <button class="btn btn-primary" id="generateQR">Generate QR Code</button>
+                <button class="btn btn-secondary" id="downloadQR" style="display:none">Download QR Code</button>
+            </div>
+
+            <!-- Image Compressor -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon compress-icon">🗜️</div>
+                    <h3>Image Compressor</h3>
+                </div>
+                <div class="compress-drop" id="compressDrop">
+                    <div style="font-size:2rem; margin-bottom:10px;">🖼️</div>
+                    <p>Drop image to compress</p>
+                </div>
+                <input type="file" id="compressInput" accept="image/*" style="display:none">
+                <div class="compress-preview" id="compressPreview">
+                    <img id="compressPreviewImg">
+                </div>
+                <div class="compress-settings">
+                    <div class="compress-slider-label">
+                        <span>Quality</span>
+                        <span id="qualityValue">80%</span>
+                    </div>
+                    <input type="range" class="compress-slider" id="qualitySlider" min="10" max="100" value="80">
+                </div>
+                <div class="compress-result" id="compressResult">
+                    <div class="compress-stats">
+                        <div>
+                            <div class="compress-stat-value" id="originalSize">0</div>
+                            <div class="compress-stat-label">Original</div>
+                        </div>
+                        <div>
+                            <div class="compress-stat-value" id="compressedSize">0</div>
+                            <div class="compress-stat-label">Compressed</div>
+                        </div>
+                        <div>
+                            <div class="compress-stat-value" id="savedPercent">0%</div>
+                            <div class="compress-stat-label">Saved</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="compressBtn" disabled>Compress Image</button>
+                <button class="btn btn-secondary" id="downloadCompressed" style="display:none">Download Compressed</button>
+            </div>
+
+            <!-- Image Resizer -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon resize-icon">📐</div>
+                    <h3>Image Resizer</h3>
+                </div>
+                <div class="resize-drop" id="resizeDrop">
+                    <div style="font-size:2rem; margin-bottom:10px;">🖼️</div>
+                    <p>Drop image to resize</p>
+                </div>
+                <input type="file" id="resizeInput" accept="image/*" style="display:none">
+                <div class="resize-preview" id="resizePreview">
+                    <img id="resizePreviewImg">
+                    <p style="margin-top:10px; font-size:0.85rem; color:rgba(255,255,255,0.6);">
+                        Original: <span id="originalDimensions">0 x 0</span>
+                    </p>
+                </div>
+                <div class="resize-inputs">
+                    <input type="number" class="resize-input" id="resizeWidth" placeholder="Width">
+                    <span class="resize-link linked" id="resizeLink">🔗</span>
+                    <input type="number" class="resize-input" id="resizeHeight" placeholder="Height">
+                </div>
+                <div class="resize-presets">
+                    <button class="resize-preset" data-w="1920" data-h="1080">1920x1080</button>
+                    <button class="resize-preset" data-w="1280" data-h="720">1280x720</button>
+                    <button class="resize-preset" data-w="800" data-h="600">800x600</button>
+                    <button class="resize-preset" data-w="640" data-h="480">640x480</button>
+                    <button class="resize-preset" data-w="400" data-h="400">400x400</button>
+                    <button class="resize-preset" data-w="150" data-h="150">150x150</button>
+                </div>
+                <button class="btn btn-primary" id="resizeBtn" disabled>Resize Image</button>
+                <button class="btn btn-secondary" id="downloadResized" style="display:none">Download Resized</button>
+            </div>
+
+            <!-- Format Converter -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon convert-icon">🔄</div>
+                    <h3>Format Converter</h3>
+                </div>
+                <div class="resize-drop" id="convertDrop">
+                    <div style="font-size:2rem; margin-bottom:10px;">🖼️</div>
+                    <p>Drop image to convert</p>
+                </div>
+                <input type="file" id="convertInput" accept="image/*" style="display:none">
+                <div class="resize-preview" id="convertPreview">
+                    <img id="convertPreviewImg">
+                </div>
+                <p style="font-size:0.9rem; margin-bottom:10px; color:rgba(255,255,255,0.7);">Convert to:</p>
+                <div class="convert-formats">
+                    <button class="convert-format active" data-format="png">
+                        <div class="convert-format-ext">PNG</div>
+                        <div class="convert-format-name">Lossless</div>
+                    </button>
+                    <button class="convert-format" data-format="jpeg">
+                        <div class="convert-format-ext">JPG</div>
+                        <div class="convert-format-name">Compressed</div>
+                    </button>
+                    <button class="convert-format" data-format="webp">
+                        <div class="convert-format-ext">WEBP</div>
+                        <div class="convert-format-name">Modern</div>
+                    </button>
+                    <button class="convert-format" data-format="gif">
+                        <div class="convert-format-ext">GIF</div>
+                        <div class="convert-format-name">Animation</div>
+                    </button>
+                </div>
+                <button class="btn btn-primary" id="convertBtn" disabled>Convert Image</button>
+                <button class="btn btn-secondary" id="downloadConverted" style="display:none">Download Converted</button>
+            </div>
+
+            <!-- Watermark Tool -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon" style="background: linear-gradient(135deg, #607d8b, #455a64);">©</div>
+                    <h3>Watermark</h3>
+                </div>
+                <div class="resize-drop" id="watermarkDrop">
+                    <div style="font-size:2rem; margin-bottom:10px;">🖼️</div>
+                    <p>Drop image to watermark</p>
+                </div>
+                <input type="file" id="watermarkInput" accept="image/*" style="display:none">
+                <div class="resize-preview" id="watermarkPreview">
+                    <img id="watermarkPreviewImg">
+                </div>
+                <input type="text" class="qr-input" id="watermarkText" placeholder="Enter watermark text..." value="DOZ UP">
+                <div class="resize-presets" style="margin-bottom:15px;">
+                    <button class="resize-preset watermark-pos active" data-pos="br">Bottom Right</button>
+                    <button class="resize-preset watermark-pos" data-pos="bl">Bottom Left</button>
+                    <button class="resize-preset watermark-pos" data-pos="tr">Top Right</button>
+                    <button class="resize-preset watermark-pos" data-pos="tl">Top Left</button>
+                    <button class="resize-preset watermark-pos" data-pos="center">Center</button>
+                </div>
+                <button class="btn btn-primary" id="watermarkBtn" disabled>Add Watermark</button>
+                <button class="btn btn-secondary" id="downloadWatermarked" style="display:none">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+    <script>
+        // ============ BATCH UPLOAD ============
+        const batchDrop = document.getElementById('batchDrop');
+        const batchInput = document.getElementById('batchInput');
+        const batchFiles = document.getElementById('batchFiles');
+        const batchProgress = document.getElementById('batchProgress');
+        const batchUploadBtn = document.getElementById('batchUploadBtn');
+        const batchResults = document.getElementById('batchResults');
+        let filesToUpload = [];
+        let uploadedLinks = [];
+
+        batchDrop.addEventListener('click', () => batchInput.click());
+        batchDrop.addEventListener('dragover', e => { e.preventDefault(); batchDrop.classList.add('drag-over'); });
+        batchDrop.addEventListener('dragleave', () => batchDrop.classList.remove('drag-over'));
+        batchDrop.addEventListener('drop', e => {
+            e.preventDefault();
+            batchDrop.classList.remove('drag-over');
+            handleBatchFiles(e.dataTransfer.files);
+        });
+        batchInput.addEventListener('change', e => handleBatchFiles(e.target.files));
+
+        function handleBatchFiles(files) {
+            filesToUpload = Array.from(files).slice(0, 20);
+            batchFiles.innerHTML = '';
+            uploadedLinks = [];
+
+            filesToUpload.forEach((file, i) => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const div = document.createElement('div');
+                    div.className = 'batch-file';
+                    div.id = `batch-file-${i}`;
+                    div.innerHTML = `
+                        <img src="${e.target.result}">
+                        <div class="batch-file-info">
+                            <div class="batch-file-name">${file.name}</div>
+                            <div class="batch-file-size">${formatSize(file.size)}</div>
+                        </div>
+                        <span class="batch-file-status status-pending">Pending</span>
+                    `;
+                    batchFiles.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            batchUploadBtn.disabled = filesToUpload.length === 0;
+            batchResults.style.display = 'none';
+        }
+
+        batchUploadBtn.addEventListener('click', async () => {
+            batchUploadBtn.disabled = true;
+            let completed = 0;
+
+            for (let i = 0; i < filesToUpload.length; i++) {
+                const fileEl = document.getElementById(`batch-file-${i}`);
+                const statusEl = fileEl.querySelector('.batch-file-status');
+                statusEl.className = 'batch-file-status status-uploading';
+                statusEl.textContent = 'Uploading...';
+
+                try {
+                    const formData = new FormData();
+                    formData.append('image', filesToUpload[i]);
+
+                    // Get userId if logged in
+                    const userId = localStorage.getItem('doz_userId');
+                    const headers = {};
+                    if (userId) headers['X-User-ID'] = userId;
+
+                    const response = await fetch('/upload', { method: 'POST', headers: headers, body: formData });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        statusEl.className = 'batch-file-status status-done';
+                        statusEl.textContent = 'Done';
+                        uploadedLinks.push(data.url);
+                    } else {
+                        throw new Error('Upload failed');
+                    }
+                } catch (err) {
+                    statusEl.className = 'batch-file-status status-error';
+                    statusEl.textContent = 'Error';
+                }
+
+                completed++;
+                batchProgress.style.width = `${(completed / filesToUpload.length) * 100}%`;
+            }
+
+            batchResults.style.display = 'block';
+        });
+
+        document.getElementById('copyAllLinks').addEventListener('click', () => {
+            navigator.clipboard.writeText(uploadedLinks.join('\n'));
+            alert('All links copied!');
+        });
+
+        // ============ QR CODE GENERATOR ============
+        const qrInput = document.getElementById('qrInput');
+        const qrCanvas = document.getElementById('qrCanvas');
+        const qrPreview = document.getElementById('qrPreview');
+        const generateQRBtn = document.getElementById('generateQR');
+        const downloadQRBtn = document.getElementById('downloadQR');
+        let qrSize = 128;
+
+        document.querySelectorAll('.qr-size-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.qr-size-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                qrSize = parseInt(btn.dataset.size);
+            });
+        });
+
+        generateQRBtn.addEventListener('click', () => {
+            const text = qrInput.value.trim();
+            if (!text) return alert('Please enter URL or text');
+
+            QRCode.toCanvas(qrCanvas, text, {
+                width: qrSize,
+                margin: 2,
+                color: { dark: '#000000', light: '#ffffff' }
+            }, err => {
+                if (err) return console.error(err);
+                qrPreview.style.display = 'block';
+                downloadQRBtn.style.display = 'block';
+            });
+        });
+
+        downloadQRBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = qrCanvas.toDataURL();
+            link.click();
+        });
+
+        // ============ IMAGE COMPRESSOR ============
+        const compressDrop = document.getElementById('compressDrop');
+        const compressInput = document.getElementById('compressInput');
+        const compressPreview = document.getElementById('compressPreview');
+        const compressPreviewImg = document.getElementById('compressPreviewImg');
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+        const compressResult = document.getElementById('compressResult');
+        const compressBtn = document.getElementById('compressBtn');
+        const downloadCompressed = document.getElementById('downloadCompressed');
+        let compressFile = null;
+        let compressedBlob = null;
+
+        compressDrop.addEventListener('click', () => compressInput.click());
+        compressDrop.addEventListener('dragover', e => { e.preventDefault(); compressDrop.style.borderColor = '#4caf50'; });
+        compressDrop.addEventListener('dragleave', () => compressDrop.style.borderColor = 'rgba(255,255,255,0.2)');
+        compressDrop.addEventListener('drop', e => {
+            e.preventDefault();
+            compressDrop.style.borderColor = 'rgba(255,255,255,0.2)';
+            handleCompressFile(e.dataTransfer.files[0]);
+        });
+        compressInput.addEventListener('change', e => handleCompressFile(e.target.files[0]));
+
+        function handleCompressFile(file) {
+            if (!file) return;
+            compressFile = file;
+            const reader = new FileReader();
+            reader.onload = e => {
+                compressPreviewImg.src = e.target.result;
+                compressPreview.style.display = 'block';
+                compressBtn.disabled = false;
+                document.getElementById('originalSize').textContent = formatSize(file.size);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        qualitySlider.addEventListener('input', () => {
+            qualityValue.textContent = `${qualitySlider.value}%`;
+        });
+
+        compressBtn.addEventListener('click', () => {
+            const quality = qualitySlider.value / 100;
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob(blob => {
+                    compressedBlob = blob;
+                    document.getElementById('compressedSize').textContent = formatSize(blob.size);
+                    const saved = ((compressFile.size - blob.size) / compressFile.size * 100).toFixed(1);
+                    document.getElementById('savedPercent').textContent = `${saved}%`;
+                    compressResult.style.display = 'block';
+                    downloadCompressed.style.display = 'block';
+                }, 'image/jpeg', quality);
+            };
+            img.src = compressPreviewImg.src;
+        });
+
+        downloadCompressed.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'compressed.jpg';
+            link.href = URL.createObjectURL(compressedBlob);
+            link.click();
+        });
+
+        // ============ IMAGE RESIZER ============
+        const resizeDrop = document.getElementById('resizeDrop');
+        const resizeInput = document.getElementById('resizeInput');
+        const resizePreview = document.getElementById('resizePreview');
+        const resizePreviewImg = document.getElementById('resizePreviewImg');
+        const resizeWidth = document.getElementById('resizeWidth');
+        const resizeHeight = document.getElementById('resizeHeight');
+        const resizeLink = document.getElementById('resizeLink');
+        const resizeBtn = document.getElementById('resizeBtn');
+        const downloadResized = document.getElementById('downloadResized');
+        let resizeFile = null;
+        let originalWidth = 0, originalHeight = 0;
+        let aspectLocked = true;
+        let resizedBlob = null;
+
+        resizeDrop.addEventListener('click', () => resizeInput.click());
+        resizeDrop.addEventListener('dragover', e => { e.preventDefault(); resizeDrop.style.borderColor = '#ff9800'; });
+        resizeDrop.addEventListener('dragleave', () => resizeDrop.style.borderColor = 'rgba(255,255,255,0.2)');
+        resizeDrop.addEventListener('drop', e => {
+            e.preventDefault();
+            resizeDrop.style.borderColor = 'rgba(255,255,255,0.2)';
+            handleResizeFile(e.dataTransfer.files[0]);
+        });
+        resizeInput.addEventListener('change', e => handleResizeFile(e.target.files[0]));
+
+        function handleResizeFile(file) {
+            if (!file) return;
+            resizeFile = file;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    originalWidth = img.width;
+                    originalHeight = img.height;
+                    resizeWidth.value = img.width;
+                    resizeHeight.value = img.height;
+                    document.getElementById('originalDimensions').textContent = `${img.width} x ${img.height}`;
+                };
+                img.src = e.target.result;
+                resizePreviewImg.src = e.target.result;
+                resizePreview.style.display = 'block';
+                resizeBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        resizeLink.addEventListener('click', () => {
+            aspectLocked = !aspectLocked;
+            resizeLink.classList.toggle('linked', aspectLocked);
+        });
+
+        resizeWidth.addEventListener('input', () => {
+            if (aspectLocked && originalWidth) {
+                resizeHeight.value = Math.round(resizeWidth.value * (originalHeight / originalWidth));
+            }
+        });
+
+        resizeHeight.addEventListener('input', () => {
+            if (aspectLocked && originalHeight) {
+                resizeWidth.value = Math.round(resizeHeight.value * (originalWidth / originalHeight));
+            }
+        });
+
+        document.querySelectorAll('.resize-preset').forEach(btn => {
+            if (btn.dataset.w) {
+                btn.addEventListener('click', () => {
+                    resizeWidth.value = btn.dataset.w;
+                    resizeHeight.value = btn.dataset.h;
+                });
+            }
+        });
+
+        resizeBtn.addEventListener('click', () => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = parseInt(resizeWidth.value);
+                canvas.height = parseInt(resizeHeight.value);
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(blob => {
+                    resizedBlob = blob;
+                    downloadResized.style.display = 'block';
+                }, 'image/png');
+            };
+            img.src = resizePreviewImg.src;
+        });
+
+        downloadResized.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = `resized_${resizeWidth.value}x${resizeHeight.value}.png`;
+            link.href = URL.createObjectURL(resizedBlob);
+            link.click();
+        });
+
+        // ============ FORMAT CONVERTER ============
+        const convertDrop = document.getElementById('convertDrop');
+        const convertInput = document.getElementById('convertInput');
+        const convertPreview = document.getElementById('convertPreview');
+        const convertPreviewImg = document.getElementById('convertPreviewImg');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadConverted = document.getElementById('downloadConverted');
+        let convertFile = null;
+        let convertedBlob = null;
+        let targetFormat = 'png';
+
+        convertDrop.addEventListener('click', () => convertInput.click());
+        convertDrop.addEventListener('dragover', e => { e.preventDefault(); convertDrop.style.borderColor = '#e91e63'; });
+        convertDrop.addEventListener('dragleave', () => convertDrop.style.borderColor = 'rgba(255,255,255,0.2)');
+        convertDrop.addEventListener('drop', e => {
+            e.preventDefault();
+            convertDrop.style.borderColor = 'rgba(255,255,255,0.2)';
+            handleConvertFile(e.dataTransfer.files[0]);
+        });
+        convertInput.addEventListener('change', e => handleConvertFile(e.target.files[0]));
+
+        function handleConvertFile(file) {
+            if (!file) return;
+            convertFile = file;
+            const reader = new FileReader();
+            reader.onload = e => {
+                convertPreviewImg.src = e.target.result;
+                convertPreview.style.display = 'block';
+                convertBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.querySelectorAll('.convert-format').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.convert-format').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                targetFormat = btn.dataset.format;
+            });
+        });
+
+        convertBtn.addEventListener('click', () => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                const mimeType = targetFormat === 'jpg' ? 'image/jpeg' : `image/${targetFormat}`;
+                canvas.toBlob(blob => {
+                    convertedBlob = blob;
+                    downloadConverted.style.display = 'block';
+                }, mimeType, 0.92);
+            };
+            img.src = convertPreviewImg.src;
+        });
+
+        downloadConverted.addEventListener('click', () => {
+            const ext = targetFormat === 'jpeg' ? 'jpg' : targetFormat;
+            const link = document.createElement('a');
+            link.download = `converted.${ext}`;
+            link.href = URL.createObjectURL(convertedBlob);
+            link.click();
+        });
+
+        // ============ WATERMARK ============
+        const watermarkDrop = document.getElementById('watermarkDrop');
+        const watermarkInput = document.getElementById('watermarkInput');
+        const watermarkPreview = document.getElementById('watermarkPreview');
+        const watermarkPreviewImg = document.getElementById('watermarkPreviewImg');
+        const watermarkText = document.getElementById('watermarkText');
+        const watermarkBtn = document.getElementById('watermarkBtn');
+        const downloadWatermarked = document.getElementById('downloadWatermarked');
+        let watermarkFile = null;
+        let watermarkedBlob = null;
+        let watermarkPosition = 'br';
+
+        watermarkDrop.addEventListener('click', () => watermarkInput.click());
+        watermarkDrop.addEventListener('dragover', e => { e.preventDefault(); watermarkDrop.style.borderColor = '#607d8b'; });
+        watermarkDrop.addEventListener('dragleave', () => watermarkDrop.style.borderColor = 'rgba(255,255,255,0.2)');
+        watermarkDrop.addEventListener('drop', e => {
+            e.preventDefault();
+            watermarkDrop.style.borderColor = 'rgba(255,255,255,0.2)';
+            handleWatermarkFile(e.dataTransfer.files[0]);
+        });
+        watermarkInput.addEventListener('change', e => handleWatermarkFile(e.target.files[0]));
+
+        function handleWatermarkFile(file) {
+            if (!file) return;
+            watermarkFile = file;
+            const reader = new FileReader();
+            reader.onload = e => {
+                watermarkPreviewImg.src = e.target.result;
+                watermarkPreview.style.display = 'block';
+                watermarkBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.querySelectorAll('.watermark-pos').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.watermark-pos').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                watermarkPosition = btn.dataset.pos;
+            });
+        });
+
+        watermarkBtn.addEventListener('click', () => {
+            const text = watermarkText.value.trim() || 'DOZ UP';
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                // Watermark style
+                const fontSize = Math.max(16, img.width / 25);
+                ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.lineWidth = 2;
+
+                const textWidth = ctx.measureText(text).width;
+                const padding = 20;
+                let x, y;
+
+                switch(watermarkPosition) {
+                    case 'tl': x = padding; y = fontSize + padding; break;
+                    case 'tr': x = img.width - textWidth - padding; y = fontSize + padding; break;
+                    case 'bl': x = padding; y = img.height - padding; break;
+                    case 'br': x = img.width - textWidth - padding; y = img.height - padding; break;
+                    case 'center': x = (img.width - textWidth) / 2; y = img.height / 2; break;
+                }
+
+                ctx.strokeText(text, x, y);
+                ctx.fillText(text, x, y);
+
+                canvas.toBlob(blob => {
+                    watermarkedBlob = blob;
+                    downloadWatermarked.style.display = 'block';
+                }, 'image/png');
+            };
+            img.src = watermarkPreviewImg.src;
+        });
+
+        downloadWatermarked.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'watermarked.png';
+            link.href = URL.createObjectURL(watermarkedBlob);
+            link.click();
+        });
+
+        // ============ HELPERS ============
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+    </script>
+    <!-- DOZ UP Traffic Tracking -->
+    <script src="/track.js" async></script>
+    <script src="/track-advanced.js" async></script>
+</body>
+</html>

@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Center - DOZ UP Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #1a1a2e;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-logo span {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .nav-section {
+            padding: 0 15px;
+            margin-bottom: 20px;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            padding: 0 10px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(0,212,255,0.2));
+            color: #10b981;
+            border: 1px solid rgba(16,185,129,0.3);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: #10b981;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-title p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+
+        /* Health Score Hero */
+        .health-hero {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .health-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .health-score-ring {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+        }
+
+        .health-score-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .health-score-ring circle {
+            transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
+        }
+
+        .health-score-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 800;
+        }
+
+        .health-score-label {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .health-status {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .health-status.healthy { color: #10b981; }
+        .health-status.good { color: #10b981; }
+        .health-status.degraded { color: #f97316; }
+        .health-status.unhealthy { color: #ef4444; }
+
+        .uptime-display {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+
+        /* Gauge Grid */
+        .gauge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .gauge-card {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .gauge-card:hover {
+            border-color: rgba(0,212,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .gauge-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 15px 0 10px;
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease, background 0.3s ease;
+        }
+
+        .gauge-fill.good { background: linear-gradient(90deg, #10b981, #059669); }
+        .gauge-fill.warning { background: linear-gradient(90deg, #fbbf24, #f97316); }
+        .gauge-fill.critical { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+        .gauge-label {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .gauge-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Charts Row */
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-panel {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chart-panel h3 {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+
+        /* Dependencies Row */
+        .dependencies-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dependency-card {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .dependency-card:hover {
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .dependency-card.healthy { border-color: rgba(16,185,129,0.3); }
+        .dependency-card.unhealthy { border-color: rgba(239,68,68,0.3); background: linear-gradient(135deg, #1a1a2e, rgba(239,68,68,0.1)); }
+
+        .dep-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .dep-name {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 5px;
+        }
+
+        .dep-status {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .dep-status.healthy { color: #10b981; }
+        .dep-status.unhealthy { color: #ef4444; }
+
+        .dep-latency {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+        }
+
+        /* Connections Panel */
+        .connections-panel {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .connections-panel h3 {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .connections-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .conn-item {
+            text-align: center;
+            padding: 15px 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+        }
+
+        .conn-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .conn-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+        }
+
+        /* Alerts Panel */
+        .alerts-panel {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .alerts-panel h3 {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-count {
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .alerts-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .alert-item.critical {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+
+        .alert-item.warning {
+            background: rgba(251,191,36,0.1);
+            border: 1px solid rgba(251,191,36,0.3);
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+        }
+
+        .alert-message {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .alert-component {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+        }
+
+        .no-alerts {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            padding: 20px;
+        }
+
+        /* Quick Actions */
+        .actions-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .quick-actions-panel {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .quick-actions-panel h3 {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .actions-grid {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(0,212,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Performance Stats */
+        .perf-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .perf-stat {
+            background: linear-gradient(135deg, #1a1a2e, #252545);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .perf-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .perf-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+        }
+
+        /* Live indicator */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .gauge-grid, .dependencies-row { grid-template-columns: repeat(2, 1fr); }
+            .connections-grid { grid-template-columns: repeat(4, 1fr); }
+            .perf-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .charts-row, .actions-row { grid-template-columns: 1fr; }
+            .connections-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h1>DOZ UP</h1>
+            <span>Admin Panel</span>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <a class="nav-item" href="/admin/dashboard.html">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                Dashboard
+            </a>
+            <a class="nav-item" href="/admin/analytics.html">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Analytics
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Operations</div>
+            <a class="nav-item active" href="/admin/control-center.html">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path></svg>
+                Control Center
+                <span class="nav-badge" id="healthBadge">--</span>
+            </a>
+            <a class="nav-item" href="/admin/ssh-uplinks.html">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                SSH Uplinks
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Growth</div>
+            <a class="nav-item" href="/admin/growth-center.html">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                Growth Center
+            </a>
+        </div>
+
+        <div class="nav-section" style="margin-top: auto;">
+            <a class="nav-item" href="/status.html" target="_blank">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Public Status Page
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <h2>Control Center</h2>
+                <p>Real-time system monitoring and health metrics</p>
+            </div>
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                Live updates every 2s
+            </div>
+        </div>
+
+        <!-- Health Score Hero -->
+        <div class="health-hero">
+            <div class="health-score-ring">
+                <svg width="180" height="180" viewBox="0 0 180 180">
+                    <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
+                    <circle id="healthRing" cx="90" cy="90" r="80" fill="none" stroke="#10b981" stroke-width="12"
+                            stroke-linecap="round" stroke-dasharray="502.6" stroke-dashoffset="0"/>
+                </svg>
+                <div class="health-score-value" id="healthScore">--</div>
+                <div class="health-score-label">Health Score</div>
+            </div>
+            <div class="health-status" id="healthStatus">Loading...</div>
+            <div class="uptime-display">Uptime: <span id="uptime">--</span></div>
+        </div>
+
+        <!-- Performance Stats -->
+        <div class="perf-stats">
+            <div class="perf-stat">
+                <div class="perf-value" id="currentRps">0</div>
+                <div class="perf-label">Requests/sec</div>
+            </div>
+            <div class="perf-stat">
+                <div class="perf-value" id="avgResponseTime">0</div>
+                <div class="perf-label">Avg Response (ms)</div>
+            </div>
+            <div class="perf-stat">
+                <div class="perf-value" id="totalConnections">0</div>
+                <div class="perf-label">WS Connections</div>
+            </div>
+            <div class="perf-stat">
+                <div class="perf-value" id="errorRate">0%</div>
+                <div class="perf-label">Error Rate</div>
+            </div>
+        </div>
+
+        <!-- Gauge Grid -->
+        <div class="gauge-grid">
+            <div class="gauge-card">
+                <div class="gauge-label">Memory (Heap)</div>
+                <div class="gauge-bar">
+                    <div class="gauge-fill good" id="memoryFill" style="width: 0%"></div>
+                </div>
+                <div class="gauge-value" id="memoryValue">--%</div>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label">CPU Usage</div>
+                <div class="gauge-bar">
+                    <div class="gauge-fill good" id="cpuFill" style="width: 0%"></div>
+                </div>
+                <div class="gauge-value" id="cpuValue">--%</div>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label">Event Loop Lag</div>
+                <div class="gauge-bar">
+                    <div class="gauge-fill good" id="eventLoopFill" style="width: 0%"></div>
+                </div>
+                <div class="gauge-value" id="eventLoopValue">--ms</div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-row">
+            <div class="chart-panel">
+                <h3>Throughput (Requests/sec)</h3>
+                <div class="chart-container">
+                    <canvas id="throughputChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-panel">
+                <h3>Response Time (ms)</h3>
+                <div class="chart-container">
+                    <canvas id="responseTimeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dependencies Row -->
+        <div class="dependencies-row">
+            <div class="dependency-card" id="dbCard">
+                <div class="dep-icon">&#x1F4BE;</div>
+                <div class="dep-name">PostgreSQL</div>
+                <div class="dep-status" id="dbStatus">--</div>
+                <div class="dep-latency" id="dbLatency">--</div>
+            </div>
+            <div class="dependency-card" id="redisCard">
+                <div class="dep-icon">&#x26A1;</div>
+                <div class="dep-name">Redis</div>
+                <div class="dep-status" id="redisStatus">--</div>
+                <div class="dep-latency" id="redisLatency">--</div>
+            </div>
+            <div class="dependency-card" id="sshCard">
+                <div class="dep-icon">&#x1F5A5;</div>
+                <div class="dep-name">SSH Uplinks</div>
+                <div class="dep-status" id="sshStatus">--</div>
+                <div class="dep-latency" id="sshDetail">--</div>
+            </div>
+            <div class="dependency-card" id="p2pCard">
+                <div class="dep-icon">&#x1F310;</div>
+                <div class="dep-name">P2P CDN</div>
+                <div class="dep-status" id="p2pStatus">--</div>
+                <div class="dep-latency" id="p2pDetail">--</div>
+            </div>
+        </div>
+
+        <!-- Connections Panel -->
+        <div class="connections-panel">
+            <h3>WebSocket Connections by Channel</h3>
+            <div class="connections-grid" id="connectionsGrid">
+                <div class="conn-item">
+                    <div class="conn-value" id="wsLive">0</div>
+                    <div class="conn-label">Live</div>
+                </div>
+                <div class="conn-item">
+                    <div class="conn-value" id="wsBrain">0</div>
+                    <div class="conn-label">Brain Sync</div>
+                </div>
+                <div class="conn-item">
+                    <div class="conn-value" id="wsAdmin">0</div>
+                    <div class="conn-label">Admin</div>
+                </div>
+                <div class="conn-item">
+                    <div class="conn-value" id="wsAnalytics">0</div>
+                    <div class="conn-label">Analytics</div>
+                </div>
+                <div class="conn-item">
+                    <div class="conn-value" id="wsViral">0</div>
+                    <div class="conn-label">Viral</div>
+                </div>
+                <div class="conn-item">
+                    <div class="conn-value" id="wsSupport">0</div>
+                    <div class="conn-label">Support</div>
+                </div>
+                <div class="conn-item">
+                    <div class="conn-value" id="wsTotal">0</div>
+                    <div class="conn-label">Total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Panel -->
+        <div class="alerts-panel">
+            <h3>System Alerts <span class="alert-count" id="alertCount">0</span></h3>
+            <div class="alerts-list" id="alertsList">
+                <div class="no-alerts">No active alerts</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions-panel">
+            <h3>Quick Actions</h3>
+            <div class="actions-grid">
+                <button class="action-btn" onclick="clearCache()" id="clearCacheBtn">
+                    &#x1F5D1; Clear Cache
+                </button>
+                <button class="action-btn" onclick="forceGC()" id="forceGCBtn">
+                    &#x267B; Force GC
+                </button>
+                <button class="action-btn" onclick="refreshData()">
+                    &#x1F504; Refresh Now
+                </button>
+                <a class="action-btn" href="/status.html" target="_blank">
+                    &#x1F310; View Public Status
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Charts
+        let throughputChart, responseTimeChart;
+        const maxDataPoints = 60;
+
+        // Check authentication
+        const token = localStorage.getItem('admin_token');
+        if (!token) {
+            window.location.href = '/admin/login.html';
+        }
+
+        // Initialize charts
+        function initCharts() {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    x: { display: false },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: 'rgba(255,255,255,0.5)' }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            };
+
+            throughputChart = new Chart(document.getElementById('throughputChart'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0,212,255,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2
+                    }]
+                },
+                options: chartOptions
+            });
+
+            responseTimeChart = new Chart(document.getElementById('responseTimeChart'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16,185,129,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        // Add data to chart
+        function addChartData(chart, value) {
+            chart.data.labels.push('');
+            chart.data.datasets[0].data.push(value);
+
+            if (chart.data.labels.length > maxDataPoints) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+
+            chart.update('none');
+        }
+
+        // Update gauge
+        function updateGauge(id, percent, thresholds = { warning: 60, critical: 80 }) {
+            const fill = document.getElementById(id + 'Fill');
+            fill.style.width = `${Math.min(100, percent)}%`;
+
+            fill.classList.remove('good', 'warning', 'critical');
+            if (percent >= thresholds.critical) {
+                fill.classList.add('critical');
+            } else if (percent >= thresholds.warning) {
+                fill.classList.add('warning');
+            } else {
+                fill.classList.add('good');
+            }
+        }
+
+        // Fetch and update dashboard
+        async function refreshData() {
+            try {
+                const response = await fetch('/api/admin/control-center', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.status === 401) {
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+
+                const data = await response.json();
+                if (!data.success) return;
+
+                // Update health score
+                const score = data.health.score;
+                document.getElementById('healthScore').textContent = score;
+                document.getElementById('healthBadge').textContent = score;
+
+                // Update ring
+                const ring = document.getElementById('healthRing');
+                const circumference = 502.6; // 2 * PI * 80
+                const offset = circumference - (circumference * score / 100);
+                ring.style.strokeDashoffset = offset;
+                ring.style.stroke = score >= 85 ? '#10b981' : score >= 70 ? '#fbbf24' : '#ef4444';
+
+                // Update status
+                const statusEl = document.getElementById('healthStatus');
+                statusEl.textContent = data.health.status.toUpperCase();
+                statusEl.className = `health-status ${data.health.status}`;
+
+                document.getElementById('uptime').textContent = data.health.uptime;
+
+                // Update performance stats
+                document.getElementById('currentRps').textContent = data.performance.throughput.currentRps;
+                document.getElementById('avgResponseTime').textContent = data.performance.responseTime.avgMs;
+                document.getElementById('totalConnections').textContent = data.connections.websockets.total;
+                document.getElementById('errorRate').textContent = data.performance.errors.errorRatePercent + '%';
+
+                // Update gauges
+                updateGauge('memory', data.server.memory.heapUsedPercent, { warning: 70, critical: 85 });
+                document.getElementById('memoryValue').textContent = data.server.memory.heapUsedPercent.toFixed(1) + '%';
+
+                updateGauge('cpu', data.server.cpu.processPercent, { warning: 60, critical: 80 });
+                document.getElementById('cpuValue').textContent = data.server.cpu.processPercent.toFixed(1) + '%';
+
+                const lagPercent = Math.min(100, (data.server.eventLoop.lagMs / 1000) * 100);
+                updateGauge('eventLoop', lagPercent, { warning: 10, critical: 50 });
+                document.getElementById('eventLoopValue').textContent = data.server.eventLoop.lagMs + 'ms';
+
+                // Update charts
+                addChartData(throughputChart, data.performance.throughput.currentRps);
+                addChartData(responseTimeChart, data.performance.responseTime.avgMs);
+
+                // Update dependencies
+                updateDependency('db', data.dependencies.database);
+                updateDependency('redis', data.dependencies.redis);
+
+                // SSH
+                document.getElementById('sshStatus').textContent = `${data.sshUplinks.healthy}/${data.sshUplinks.total}`;
+                document.getElementById('sshDetail').textContent = `${data.sshUplinks.activeSessions} sessions`;
+
+                // P2P
+                document.getElementById('p2pStatus').textContent = `${data.p2pCdn.totalPeers} peers`;
+                document.getElementById('p2pDetail').textContent = `${data.p2pCdn.activeFiles || 0} files`;
+
+                // Update WebSocket connections
+                document.getElementById('wsLive').textContent = data.connections.websockets.live;
+                document.getElementById('wsBrain').textContent = data.connections.websockets.brain;
+                document.getElementById('wsAdmin').textContent = data.connections.websockets.admin;
+                document.getElementById('wsAnalytics').textContent = data.connections.websockets.analytics;
+                document.getElementById('wsViral').textContent = data.connections.websockets.viral;
+                document.getElementById('wsSupport').textContent = data.connections.websockets.support;
+                document.getElementById('wsTotal').textContent = data.connections.websockets.total;
+
+                // Update alerts
+                const allAlerts = [...(data.alerts || []), ...(data.warnings || [])];
+                document.getElementById('alertCount').textContent = allAlerts.length;
+
+                if (allAlerts.length > 0) {
+                    document.getElementById('alertsList').innerHTML = allAlerts.map(alert => `
+                        <div class="alert-item ${alert.type}">
+                            <div class="alert-icon">${alert.type === 'critical' ? '&#x1F534;' : '&#x1F7E1;'}</div>
+                            <div>
+                                <div class="alert-message">${alert.message}</div>
+                                <div class="alert-component">${alert.component}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('alertsList').innerHTML = '<div class="no-alerts">&#x2705; No active alerts</div>';
+                }
+
+            } catch (err) {
+                console.error('Failed to fetch control center data:', err);
+            }
+        }
+
+        function updateDependency(id, dep) {
+            const card = document.getElementById(id + 'Card');
+            const statusEl = document.getElementById(id + 'Status');
+            const latencyEl = document.getElementById(id + 'Latency');
+
+            statusEl.textContent = dep.status;
+            statusEl.className = `dep-status ${dep.status === 'healthy' ? 'healthy' : dep.status === 'unhealthy' ? 'unhealthy' : ''}`;
+
+            if (dep.latencyMs !== null) {
+                latencyEl.textContent = `${dep.latencyMs}ms`;
+            } else {
+                latencyEl.textContent = dep.error || '--';
+            }
+
+            card.classList.remove('healthy', 'unhealthy');
+            if (dep.status === 'healthy') card.classList.add('healthy');
+            if (dep.status === 'unhealthy') card.classList.add('unhealthy');
+        }
+
+        // Quick actions
+        async function clearCache() {
+            const btn = document.getElementById('clearCacheBtn');
+            btn.disabled = true;
+            btn.textContent = 'Clearing...';
+
+            try {
+                const res = await fetch('/api/admin/control-center/actions/clear-cache', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                alert(data.message || data.error);
+            } catch (err) {
+                alert('Failed to clear cache');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '&#x1F5D1; Clear Cache';
+        }
+
+        async function forceGC() {
+            const btn = document.getElementById('forceGCBtn');
+            btn.disabled = true;
+            btn.textContent = 'Running...';
+
+            try {
+                const res = await fetch('/api/admin/control-center/actions/force-gc', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                alert(data.message || data.error);
+            } catch (err) {
+                alert('Failed to trigger GC');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '&#x267B; Force GC';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            refreshData();
+
+            // Refresh every 2 seconds
+            setInterval(refreshData, 2000);
+        });
+    </script>
+</body>
+</html>

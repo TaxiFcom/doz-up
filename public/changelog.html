@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's New - DOZ UP Changelog</title>
+    <meta name="description" content="DOZ UP release notes, changelog, and version history. See the latest updates, fixes, and new features.">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="apple-touch-icon" href="/app/icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-top: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            filter: drop-shadow(0 4px 20px rgba(16, 185, 129, 0.5));
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        .header-badges {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 50px;
+            color: #10b981;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+            color: #818cf8;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .download-link:hover {
+            background: rgba(99, 102, 241, 0.25);
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 40px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .version-nav {
+            list-style: none;
+        }
+
+        .version-nav li {
+            margin-bottom: 8px;
+        }
+
+        .version-nav a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .version-nav a:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .version-nav a.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .version-nav .latest-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .sidebar-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .sidebar-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Version Cards */
+        .changelog-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .version-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border-left: 4px solid #10b981;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+
+        .version-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
+        }
+
+        .version-card.latest {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .version-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .version-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .version-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .latest-badge {
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .release-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Change Categories */
+        .change-category {
+            margin-bottom: 20px;
+        }
+
+        .change-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-critical {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .badge-feature {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .badge-improvement {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+        }
+
+        .badge-platform {
+            background: rgba(168, 85, 247, 0.15);
+            color: #a855f7;
+        }
+
+        .badge-security {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .change-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .change-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .change-list li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #64748b;
+            border-radius: 50%;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+
+        .change-list.critical li::before { background: #ef4444; }
+        .change-list.feature li::before { background: #10b981; }
+        .change-list.improvement li::before { background: #818cf8; }
+        .change-list.platform li::before { background: #a855f7; }
+        .change-list.security li::before { background: #f59e0b; }
+
+        /* Stats Banner */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        footer p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                display: flex;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .sidebar-card {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .stats-banner {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .version-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .version-number {
+                font-size: 1.5rem;
+            }
+
+            .stats-banner {
+                grid-template-columns: 1fr;
+            }
+
+            .header-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/up" class="logo" style="text-decoration: none;">
+                <svg class="logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="50%" style="stop-color:#34d399"/>
+                            <stop offset="100%" style="stop-color:#059669"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#logoGradient)"/>
+                    <path d="M25 62 C25 62 22 62 22 58 C22 52 28 50 32 50 C32 42 40 36 50 36 C60 36 68 42 68 50 C72 50 78 52 78 58 C78 62 75 62 75 62" fill="white" opacity="0.95"/>
+                    <path d="M50 28 L62 44 L54 44 L54 68 L46 68 L46 44 L38 44 Z" fill="#059669"/>
+                </svg>
+                <span class="logo-text">DOZ UP</span>
+            </a>
+            <h1>What's New</h1>
+            <p>Release notes, changelog, and version history. Stay updated with the latest improvements.</p>
+            <div class="header-badges">
+                <span class="version-badge">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    Latest: v2.6.6
+                </span>
+                <a href="/download.html" class="download-link">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    Download
+                </a>
+            </div>
+        </header>
+
+        <!-- Stats Banner -->
+        <div class="stats-banner">
+            <div class="stat-card">
+                <div class="stat-value">6+</div>
+                <div class="stat-label">Platforms Supported</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">Active Development</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">50+</div>
+                <div class="stat-label">Features Added</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">99.9%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-card">
+                    <div class="sidebar-title">Versions</div>
+                    <ul class="version-nav">
+                        <li>
+                            <a href="#v2.6.6" class="active">
+                                <span class="latest-dot"></span>
+                                v2.6.6
+                            </a>
+                        </li>
+                        <li><a href="#v2.6.5">v2.6.5</a></li>
+                        <li><a href="#v2.6.4">v2.6.4</a></li>
+                        <li><a href="#v2.6.3">v2.6.3</a></li>
+                        <li><a href="#v2.6.2">v2.6.2</a></li>
+                        <li><a href="#v2.6.0">v2.6.0</a></li>
+                        <li><a href="#v2.5.0">v2.5.0</a></li>
+                        <li><a href="#v2.0.0">v2.0.0</a></li>
+                    </ul>
+                </div>
+                <a href="/download.html" class="sidebar-btn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    Download Latest
+                </a>
+            </aside>
+
+            <!-- Changelog Content -->
+            <main class="changelog-content">
+                <!-- v2.7.1 -->
+                <article class="version-card latest" id="v2.7.1">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.7.1</span>
+                            <span class="latest-badge">Latest</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 26, 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-feature">Performance</span>
+                        </div>
+                        <ul class="change-list feature">
+                            <li><strong>Instant URL Generation</strong> - URL appears in ~50ms instead of 500-1500ms</li>
+                            <li>Pre-reserved URL pool - 5 URLs cached on startup for instant use</li>
+                            <li>Background upload - URL shown immediately while file uploads in background</li>
+                            <li>Async file operations - no more UI freezing during saves</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-improvement">Server Optimizations</span>
+                        </div>
+                        <ul class="change-list improvement">
+                            <li>Server responds before database operations complete</li>
+                            <li>Non-blocking async database saves</li>
+                            <li>Optimized array filtering (O(n) instead of O(n^2))</li>
+                            <li>Response time tracking in API responses</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-fix">Bug Fixes</span>
+                        </div>
+                        <ul class="change-list fix">
+                            <li>Fixed API endpoint path mismatch causing upload failures</li>
+                            <li>Added proper timeout handling for network requests</li>
+                            <li>Improved error handling and retry logic</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- v2.6.6 -->
+                <article class="version-card" id="v2.6.6">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.6.6</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 25, 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-feature">Major Release</span>
+                        </div>
+                        <ul class="change-list feature">
+                            <li><strong>Complete Feature Consolidation</strong> - all features from v2.0 to v2.6.5 in one release</li>
+                            <li>New download page with multiple installer options (Installer, Portable, 32-bit)</li>
+                            <li>Installer vs Portable options for Windows users</li>
+                            <li>DMG and ZIP options for macOS users</li>
+                            <li>AppImage, DEB, and RPM packages for Linux users</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-improvement">UI Enhancements</span>
+                        </div>
+                        <ul class="change-list improvement">
+                            <li>Redesigned download page with professional card layout</li>
+                            <li>Platform auto-detection with smart recommendations</li>
+                            <li>Type badges (Installer, Portable, Universal) for each download</li>
+                            <li>Enhanced visual hierarchy with gradient backgrounds</li>
+                            <li>Improved mobile responsiveness across all pages</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-platform">All Features Included</span>
+                        </div>
+                        <ul class="change-list platform">
+                            <li>Instant capture (<200ms) with GPU pre-warming</li>
+                            <li>Dark screenshot detection with auto-retry</li>
+                            <li>Sound effects (Nokia, Alcatel, Modern themes)</li>
+                            <li>Custom keyboard shortcuts</li>
+                            <li>URL Accumulator for batch captures</li>
+                            <li>Auto-updates and system tray integration</li>
+                            <li>All platform support: Windows, macOS, Linux, Android, Browser</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- v2.6.5 -->
+                <article class="version-card" id="v2.6.5">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.6.5</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 25, 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-critical">Critical Fix</span>
+                        </div>
+                        <ul class="change-list">
+                            <li><strong>Fixed dark/black screenshot bug</strong> - screen capture now works reliably</li>
+                            <li>Dark image detection with automatic retry (up to 3 attempts)</li>
+                            <li>Progressive retry delays for GPU warm-up</li>
+                            <li>Final brightness validation before caching</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-improvement">Improvements</span>
+                        </div>
+                        <ul class="change-list">
+                            <li>GPU stability switches optimized for screen capture</li>
+                            <li>Widget now has same GPU configuration as desktop app</li>
+                            <li>Better error handling when capture fails</li>
+                            <li>All download links updated to latest versions</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-feature">Technical</span>
+                        </div>
+                        <ul class="change-list">
+                            <li>captureWithDarkRetry() now used in all capture flows</li>
+                            <li>isImageTooDark() brightness threshold: avgBrightness < 15</li>
+                            <li>Prewarm system validates screenshot quality</li>
+                            <li>Force sRGB color profile for consistent captures</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- v2.6.4 -->
+                <article class="version-card" id="v2.6.4">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.6.4</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 25, 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-feature">New Technology</span>
+                        </div>
+                        <ul class="change-list">
+                            <li>GPU pre-warming system - no more cold starts</li>
+                            <li>Display info caching - zero-cost screen detection</li>
+                            <li>Selection window pooling - instant display</li>
+                            <li>Two-phase capture - show cached, refresh in background</li>
+                            <li>Async debug logging - non-blocking file writes</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-critical">Performance</span>
+                        </div>
+                        <ul class="change-list">
+                            <li>Screenshot capture now responds in under 200ms</li>
+                            <li>95% faster screenshot response (was 6-12 seconds)</li>
+                            <li>10-second capture delay completely eliminated</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-improvement">How It Works</span>
+                        </div>
+                        <ul class="change-list">
+                            <li>Press Ctrl+Shift+S - selection window appears INSTANTLY</li>
+                            <li>Cached screenshot shown immediately while fresh one loads</li>
+                            <li>Fresh screenshot seamlessly updates in background</li>
+                            <li>No more waiting - you see results immediately</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- v2.6.3 -->
+                <article class="version-card" id="v2.6.3">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.6.3</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 25, 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-critical">Critical Fixes</span>
+                        </div>
+                        <ul class="change-list critical">
+                            <li>Fixed app not responding issues that caused freezing</li>
+                            <li>Added 10-second timeout to screenshot capture to prevent hangs</li>
+                            <li>Added capture watchdog for automatic hung state recovery</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-improvement">Improvements</span>
+                        </div>
+                        <ul class="change-list improvement">
+                            <li>Keyboard shortcuts now auto-recover when lost</li>
+                            <li>Shortcut fallback chain with automatic persistence</li>
+                            <li>60-second shortcut health monitoring</li>
+                            <li>Enhanced error handling and telemetry</li>
+                            <li>Better crash protection and diagnostics</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- v2.6.2 -->
+                <article class="version-card" id="v2.6.2">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.6.2</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 24, 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-feature">New Features</span>
+                        </div>
+                        <ul class="change-list feature">
+                            <li>Sound effects with Nokia, Alcatel, and Modern themes</li>
+                            <li>Settings window with customizable options</li>
+                            <li>URL Accumulator for capturing multiple screenshots</li>
+                            <li>Custom keyboard shortcuts configuration</li>
+                            <li>Start with Windows option for auto-launch</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-improvement">Improvements</span>
+                        </div>
+                        <ul class="change-list improvement">
+                            <li>Crash protection and auto-recovery mechanisms</li>
+                            <li>Live WebSocket connection for real-time stats</li>
+                            <li>Improved stability with GPU fixes</li>
+                            <li>Cross-platform auto-updater support</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- v2.6.0 -->
+                <article class="version-card" id="v2.6.0">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.6.0</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 24, 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-platform">Platform Updates</span>
+                        </div>
+                        <ul class="change-list platform">
+                            <li>macOS support with universal binary (Intel + Apple Silicon)</li>
+                            <li>Linux AppImage support for all major distributions</li>
+                            <li>Chrome Extension with Manifest V3 compliance</li>
+                            <li>Android APK available for direct download</li>
+                            <li>Mobile web app with PWA capabilities</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-feature">New Features</span>
+                        </div>
+                        <ul class="change-list feature">
+                            <li>Instant screenshot capture response</li>
+                            <li>Restored all features from v2.4.0</li>
+                            <li>Enhanced visual effects and animations</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- v2.5.0 -->
+                <article class="version-card" id="v2.5.0">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.5.0</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-feature">New Features</span>
+                        </div>
+                        <ul class="change-list feature">
+                            <li>Region selection for precise screenshot capture</li>
+                            <li>System tray integration with context menu</li>
+                            <li>Auto-copy URL to clipboard after upload</li>
+                            <li>Desktop notifications for upload status</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-security">Security</span>
+                        </div>
+                        <ul class="change-list security">
+                            <li>End-to-end encryption for all uploads</li>
+                            <li>Secure WebSocket connections</li>
+                            <li>HTTPS-only communication</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- v2.0.0 -->
+                <article class="version-card" id="v2.0.0">
+                    <div class="version-header">
+                        <div class="version-title">
+                            <span class="version-number">v2.0.0</span>
+                        </div>
+                        <div class="release-date">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                            January 2026
+                        </div>
+                    </div>
+
+                    <div class="change-category">
+                        <div class="category-header">
+                            <span class="category-badge badge-feature">Initial Release</span>
+                        </div>
+                        <ul class="change-list feature">
+                            <li>Screenshot capture with one-click upload</li>
+                            <li>Instant shareable URL generation</li>
+                            <li>Windows desktop application</li>
+                            <li>Web dashboard for managing screenshots</li>
+                            <li>User account system with authentication</li>
+                        </ul>
+                    </div>
+                </article>
+            </main>
+        </div>
+
+        <footer>
+            <p>DOZ UP v2.6.6 | Enterprise Screenshot Platform</p>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/download.html">Download</a>
+                <a href="/my-account.html">My Account</a>
+                <a href="/security.html">Security</a>
+                <a href="mailto:support@doz.com.im">Support</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Analytics -->
+    <script src="/js/analytics.js" defer></script>
+    <script src="/track.js" async></script>
+</body>
+</html>

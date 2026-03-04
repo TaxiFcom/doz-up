@@ -1,0 +1,107 @@
+{
+    "name": "DOZ UP - Free Screenshot Tool for Developers | Instant Link Sharing",
+    "short_name": "DOZ UP",
+    "description": "The fastest screenshot tool for coders. Capture screenshots, generate instant shareable links, and share across any device like magic. Free for Windows, Mac, Linux, iOS, Android, and web. Perfect for bug reports, code reviews, and team collaboration.",
+    "start_url": "/?source=pwa&utm_source=pwa&utm_medium=app",
+    "scope": "/",
+    "id": "dozup-app",
+    "display": "standalone",
+    "display_override": ["window-controls-overlay", "standalone", "browser"],
+    "background_color": "#1a1a2e",
+    "theme_color": "#6366f1",
+    "orientation": "any",
+    "lang": "en",
+    "dir": "ltr",
+    "icons": [
+        {
+            "src": "/app/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/app/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["productivity", "utilities", "photo", "developer tools", "graphics"],
+    "screenshots": [
+        {
+            "src": "/screenshots/desktop.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Desktop Screenshot Capture - One-click to capture and share"
+        },
+        {
+            "src": "/screenshots/mobile.png",
+            "sizes": "750x1334",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Mobile Screenshot Sharing - Works on any device"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Upload Screenshot",
+            "short_name": "Upload",
+            "description": "Upload and share a screenshot instantly",
+            "url": "/?action=upload",
+            "icons": [{"src": "/app/icon-192.png", "sizes": "192x192"}]
+        },
+        {
+            "name": "My Gallery",
+            "short_name": "Gallery",
+            "description": "View all your uploaded screenshots",
+            "url": "/gallery.html",
+            "icons": [{"src": "/app/icon-192.png", "sizes": "192x192"}]
+        },
+        {
+            "name": "Screenshot Studio",
+            "short_name": "Studio",
+            "description": "Edit and annotate screenshots",
+            "url": "/studio.html",
+            "icons": [{"src": "/app/icon-192.png", "sizes": "192x192"}]
+        }
+    ],
+    "share_target": {
+        "action": "/share",
+        "method": "POST",
+        "enctype": "multipart/form-data",
+        "params": {
+            "title": "title",
+            "text": "text",
+            "url": "url",
+            "files": [
+                {
+                    "name": "image",
+                    "accept": ["image/*", "image/png", "image/jpeg", "image/gif", "image/webp"]
+                }
+            ]
+        }
+    },
+    "handle_links": "preferred",
+    "launch_handler": {
+        "client_mode": "auto"
+    },
+    "edge_side_panel": {
+        "preferred_width": 400
+    },
+    "related_applications": [
+        {
+            "platform": "windows",
+            "url": "https://doz.com/download.html",
+            "id": "DOZ UP"
+        }
+    ],
+    "prefer_related_applications": false,
+    "iarc_rating_id": "",
+    "protocol_handlers": [
+        {
+            "protocol": "web+dozup",
+            "url": "/share?url=%s"
+        }
+    ]
+}

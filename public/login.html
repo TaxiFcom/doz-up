@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google tag (gtag.js) - Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-441083115"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-441083115');
+    </script>
+
+    <meta name="robots" content="index, follow">
+    <title>Login - DOZ UP | Secure Access to Your Screenshot Platform</title>
+    <meta name="description" content="Log in to DOZ UP to access your screenshots, cloud storage, and team collaboration tools. Secure authentication with enterprise-grade security.">
+    <meta name="keywords" content="DOZ UP login, screenshot tool login, cloud upload login, secure login">
+    <link rel="canonical" href="https://doz.com/login.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://doz.com/login.html">
+    <meta property="og:title" content="Login - DOZ UP">
+    <meta property="og:description" content="Secure login to your DOZ UP account.">
+    <meta property="og:site_name" content="DOZ UP">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Login - DOZ UP">
+    <meta name="twitter:description" content="Secure login to your DOZ UP account.">
+
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="apple-touch-icon" href="/app/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 20px rgba(16, 185, 129, 0.5));
+        }
+        .logo h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .logo p {
+            color: #64748b;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 35px;
+        }
+        .step { display: none; }
+        .step.active { display: block; }
+
+        h2 {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            margin-top: 12px;
+        }
+        .btn-biometric {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-biometric:hover {
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+        }
+        .btn-biometric.prominent {
+            font-size: 1.05rem;
+            padding: 18px;
+            margin-top: 0;
+            animation: biometric-glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes biometric-glow {
+            from { box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3); }
+            to { box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6); }
+        }
+        .welcome-back-text {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+        .welcome-back-text strong { color: #e2e8f0; }
+        .not-you-link {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+        .not-you-link a { color: #6366f1; text-decoration: none; }
+        .not-you-link a:hover { text-decoration: underline; }
+        .biometric-verify-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: pulse-bio 2s infinite;
+        }
+        @keyframes pulse-bio {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+        .divider span {
+            padding: 0 15px;
+        }
+
+        /* TOTP Input */
+        .totp-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .totp-input input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+        }
+        .totp-input input:focus {
+            border-color: #10b981;
+            outline: none;
+        }
+
+        /* Device Confirmation */
+        .device-waiting {
+            text-align: center;
+            padding: 30px 0;
+        }
+        .device-waiting .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        .pulse-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.2);
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+        .pulse-ring svg {
+            color: #10b981;
+        }
+
+        /* Error/Success messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .message.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            display: block;
+        }
+        .message.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            display: block;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #94a3b8;
+        }
+        .register-link a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <!-- Time-Based Theme Styles -->
+    <link rel="stylesheet" href="/css/time-theme.css">
+    <!-- Internationalization (i18n) Styles -->
+    <link rel="stylesheet" href="/css/i18n.css">
+</head>
+<body>
+    <div class="login-container">
+        <a href="/up" class="logo" style="text-decoration: none;">
+            <svg class="logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="loginLogoGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#10b981"/>
+                        <stop offset="50%" style="stop-color:#34d399"/>
+                        <stop offset="100%" style="stop-color:#059669"/>
+                    </linearGradient>
+                    <linearGradient id="loginArrowGradient" x1="50%" y1="100%" x2="50%" y2="0%">
+                        <stop offset="0%" style="stop-color:#059669"/>
+                        <stop offset="100%" style="stop-color:#34d399"/>
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#loginLogoGradient)"/>
+                <path d="M25 62 C25 62 22 62 22 58 C22 52 28 50 32 50 C32 42 40 36 50 36 C60 36 68 42 68 50 C72 50 78 52 78 58 C78 62 75 62 75 62"
+                      fill="white" opacity="0.95"/>
+                <path d="M50 28 L62 44 L54 44 L54 68 L46 68 L46 44 L38 44 Z"
+                      fill="url(#loginArrowGradient)"/>
+            </svg>
+            <h1>DOZ UP</h1>
+            <p>Secure Login</p>
+        </a>
+
+        <div class="login-box">
+            <!-- Step 1: Email/Password -->
+            <div id="step1" class="step active">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Sign in to your account</p>
+
+                <div id="message1" class="message"></div>
+
+                <!-- Biometric section (shown at top for known devices) -->
+                <div id="biometricTopSection" style="display: none;">
+                    <p class="welcome-back-text">Welcome back, <strong id="detectedUserName"></strong></p>
+                    <button class="btn btn-biometric prominent" onclick="loginWithBiometric()" id="biometricTopBtn">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                        Sign in with Biometrics
+                    </button>
+                    <div class="not-you-link">
+                        <a href="#" onclick="dismissBiometricTop(); return false;">Not you? Use email instead</a>
+                    </div>
+                    <div class="divider"><span>or use email</span></div>
+                </div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="Your password">
+                        <div style="text-align: right; margin-top: 10px;">
+                            <a href="#" onclick="showForgotPassword(); return false;" style="color: #10b981; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Forgot Password?</a>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="loginBtn">
+                        Continue
+                    </button>
+                </form>
+
+                <!-- Bottom biometric (shown for unknown devices) -->
+                <div id="biometricBottomSection">
+                    <div class="divider"><span>or</span></div>
+                    <button class="btn btn-biometric" onclick="loginWithBiometric()" id="biometricLoginBtn">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                        Sign in with Face ID / Touch ID
+                    </button>
+                </div>
+
+                <div class="register-link">
+                    Don't have an account? <a href="#" onclick="showRegister()">Sign up</a>
+                </div>
+            </div>
+
+            <!-- Step 2: TOTP Verification -->
+            <div id="step2" class="step">
+                <h2>Two-Factor Authentication</h2>
+                <p class="subtitle">Enter the code from your authenticator app</p>
+
+                <div id="message2" class="message"></div>
+
+                <div class="totp-input" id="totpInput">
+                    <input type="text" maxlength="1" data-index="0">
+                    <input type="text" maxlength="1" data-index="1">
+                    <input type="text" maxlength="1" data-index="2">
+                    <input type="text" maxlength="1" data-index="3">
+                    <input type="text" maxlength="1" data-index="4">
+                    <input type="text" maxlength="1" data-index="5">
+                </div>
+
+                <button class="btn btn-primary" onclick="verifyTOTP()" id="totpBtn">
+                    Verify
+                </button>
+
+                <button class="btn btn-secondary" onclick="goBack()">
+                    Use a different method
+                </button>
+            </div>
+
+            <!-- Step 3: Device Confirmation -->
+            <div id="step3" class="step">
+                <h2>Confirm on Your Device</h2>
+                <p class="subtitle">We sent a login request to your trusted device</p>
+
+                <div class="device-waiting">
+                    <div class="pulse-ring">
+                        <svg width="40" height="40" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <p style="color: #94a3b8; margin-bottom: 20px;">Open DOZ UP on your phone or trusted device and tap "Approve" to continue</p>
+                    <p style="font-size: 0.85rem; color: #64748b;">Request expires in <span id="countdown">5:00</span></p>
+                </div>
+
+                <button class="btn btn-secondary" onclick="goBack()">
+                    Cancel
+                </button>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div id="step4" class="step">
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px;">
+                        <svg width="40" height="40" fill="#10b981" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <h2 style="margin-bottom: 10px;">Welcome!</h2>
+                    <p class="subtitle">You're now signed in</p>
+                </div>
+            </div>
+
+            <!-- Step 5: Forgot Password -->
+            <div id="step5" class="step">
+                <h2>Reset Password</h2>
+                <p class="subtitle">Enter your email to receive a password reset link</p>
+
+                <div id="message5" class="message"></div>
+
+                <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="resetEmail" placeholder="you@example.com" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="resetBtn">
+                        Send Reset Link
+                    </button>
+                </form>
+
+                <button class="btn btn-secondary" onclick="goBack()">
+                    Back to Login
+                </button>
+            </div>
+
+            <!-- Step 6: Reset Email Sent -->
+            <div id="step6" class="step">
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px;">
+                        <svg width="40" height="40" fill="#10b981" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                    </div>
+                    <h2 style="margin-bottom: 10px;">Check Your Email</h2>
+                    <p class="subtitle">We've sent a password reset link to <strong id="sentEmailDisplay"></strong></p>
+                    <p style="color: #64748b; font-size: 0.85rem; margin-top: 15px;">Didn't receive the email? Check your spam folder or <a href="#" onclick="showForgotPassword()" style="color: #10b981;">try again</a></p>
+                </div>
+
+                <button class="btn btn-secondary" onclick="goBack()">
+                    Back to Login
+                </button>
+            </div>
+
+            <!-- Step 7: Biometric Verification (after credential login on new device) -->
+            <div id="step7" class="step">
+                <h2>Verify Your Identity</h2>
+                <p class="subtitle">Your account requires biometric verification for security</p>
+
+                <div id="message7" class="message"></div>
+
+                <div style="text-align: center; padding: 15px 0;">
+                    <div class="biometric-verify-icon">
+                        <svg width="40" height="40" fill="#8b5cf6" viewBox="0 0 24 24">
+                            <path d="M12 1C8.14 1 5 4.14 5 8v2c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2V8c0-3.86-3.14-7-7-7zm0 2c2.76 0 5 2.24 5 5v2H7V8c0-2.76 2.24-5 5-5zm0 10c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z"/>
+                        </svg>
+                    </div>
+                    <p id="biometricVerifyHint" style="color: #94a3b8; margin-bottom: 20px; font-size: 0.9rem;">Use your face, fingerprint, or device PIN to confirm it's you</p>
+                </div>
+
+                <button class="btn btn-biometric prominent" onclick="verifyBiometricAfterLogin()" id="biometricVerifyBtn">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                    Verify with Biometric
+                </button>
+
+                <button class="btn btn-secondary" onclick="goBack()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/auth';
+        let currentEmail = '';
+        let loginRequestId = null;
+        let pollInterval = null;
+        let countdownInterval = null;
+        let BROWSER_DEVICE_ID = null;
+
+        // Generate browser device fingerprint
+        function generateBrowserDeviceId() {
+            const stored = localStorage.getItem('doz_browser_device_id');
+            if (stored) return stored;
+
+            const nav = [
+                navigator.userAgent,
+                navigator.language,
+                screen.width + 'x' + screen.height,
+                screen.colorDepth,
+                new Date().getTimezoneOffset(),
+                navigator.platform
+            ].join('|');
+
+            let hash = 0;
+            for (let i = 0; i < nav.length; i++) {
+                const char = nav.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+
+            const deviceId = 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+            localStorage.setItem('doz_browser_device_id', deviceId);
+            return deviceId;
+        }
+
+        // Device detection state
+        let isKnownDevice = false;
+        let detectedUserId = null;
+        let detectedUserEmail = null;
+        let hasBiometricOnServer = false;
+        let webauthnAvailable = false;
+
+        // Initialize
+        function init() {
+            BROWSER_DEVICE_ID = generateBrowserDeviceId();
+            setupTOTPInputs();
+            checkExistingSession();
+            detectKnownDevice();
+        }
+
+        // Check if WebAuthn/biometric is available on this device
+        async function checkWebAuthnAvailability() {
+            if (!window.PublicKeyCredential) return false;
+            try {
+                return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Detect if this browser is linked to a known account with biometric
+        async function detectKnownDevice() {
+            webauthnAvailable = await checkWebAuthnAvailability();
+
+            // Hide all biometric buttons if WebAuthn not available
+            if (!webauthnAvailable) {
+                document.getElementById('biometricBottomSection').style.display = 'none';
+                return;
+            }
+
+            // Update button text based on platform
+            updateBiometricButtonText(document.getElementById('biometricLoginBtn'));
+
+            if (!BROWSER_DEVICE_ID) return;
+
+            try {
+                const res = await fetch('/api/auth/device-biometric-check/' + BROWSER_DEVICE_ID);
+                const data = await res.json();
+
+                if (!data.success || !data.knownDevice) return;
+
+                isKnownDevice = true;
+                detectedUserId = data.userId;
+                detectedUserEmail = data.email;
+                hasBiometricOnServer = data.hasBiometricCredentials;
+
+                if (hasBiometricOnServer) {
+                    showBiometricTop(data.name || data.email);
+                }
+            } catch (err) {
+                console.log('[Login] Device detection skipped:', err.message);
+            }
+        }
+
+        // Show biometric at top for known devices
+        function showBiometricTop(displayName) {
+            const topSection = document.getElementById('biometricTopSection');
+            const bottomSection = document.getElementById('biometricBottomSection');
+            const topBtn = document.getElementById('biometricTopBtn');
+
+            document.getElementById('detectedUserName').textContent = displayName;
+            updateBiometricButtonText(topBtn);
+            topSection.style.display = 'block';
+            bottomSection.style.display = 'none';
+
+            // Auto-trigger biometric after brief delay
+            setTimeout(() => {
+                loginWithBiometric();
+            }, 600);
+        }
+
+        // Dismiss biometric top section (user clicked "Not you?")
+        function dismissBiometricTop() {
+            document.getElementById('biometricTopSection').style.display = 'none';
+            document.getElementById('biometricBottomSection').style.display = 'block';
+            isKnownDevice = false;
+            detectedUserId = null;
+            detectedUserEmail = null;
+        }
+
+        // Set platform-specific biometric button text/icon
+        function updateBiometricButtonText(btn) {
+            if (!btn) return;
+            const ua = navigator.userAgent;
+            let icon, label;
+
+            if (/iPhone|iPad|iPod/.test(ua)) {
+                icon = '<svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M9 11.75A1.25 1.25 0 107.75 13 1.25 1.25 0 009 11.75zm6 0A1.25 1.25 0 1013.75 13 1.25 1.25 0 0015 11.75zM12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8zm0-4a4.67 4.67 0 01-4.29-2.83.75.75 0 111.38-.58A3.17 3.17 0 0012 14.5a3.17 3.17 0 002.91-1.91.75.75 0 011.38.58A4.67 4.67 0 0112 16z"/></svg>';
+                label = 'Sign in with Face ID';
+            } else if (/Android/.test(ua)) {
+                icon = '<svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72a.499.499 0 01-.25-.93C5.42 7.15 8.12 6 12.01 6c3.88 0 6.57 1.15 8.77 2.79.23.17.27.49.11.72-.17.23-.49.27-.72.11C18.14 8.05 15.62 7 12.01 7 8.39 7 5.84 8.07 3.75 9.65c-.08.05-.16.07-.25.07zM12 13.39c-.28 0-.5-.22-.5-.5 0-1.07-.27-1.76-.83-2.12-.33-.21-.43-.66-.22-.99.21-.33.66-.43.99-.22.89.57 1.33 1.58 1.33 3.08v.25c0 .28-.22.5-.5.5h-.27z"/></svg>';
+                label = 'Sign in with Fingerprint';
+            } else if (/Win/.test(ua)) {
+                icon = '<svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M3 12V6.75l9-3.75 9 3.75V12c0 5.55-3.84 10.74-9 12-5.16-1.26-9-6.45-9-12z"/></svg>';
+                label = 'Sign in with Windows Hello';
+            } else {
+                icon = '<svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>';
+                label = 'Sign in with Biometrics';
+            }
+
+            btn.innerHTML = icon + ' ' + label;
+        }
+
+        // Check for existing session
+        function checkExistingSession() {
+            const token = localStorage.getItem('dozup_session_token');
+            if (token) {
+                // Could validate token here
+            }
+        }
+
+        // Get device info
+        function getDeviceInfo() {
+            return {
+                platform: navigator.platform,
+                browser: navigator.userAgent.includes('Chrome') ? 'Chrome' :
+                         navigator.userAgent.includes('Firefox') ? 'Firefox' :
+                         navigator.userAgent.includes('Safari') ? 'Safari' : 'Other',
+                screenResolution: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+        }
+
+        // Handle login form submission
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+
+            currentEmail = email;
+            btn.innerHTML = '<div class="spinner"></div>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        browserDeviceId: BROWSER_DEVICE_ID,
+                        ...getDeviceInfo()
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Login successful - store all user data
+                    localStorage.setItem('dozup_session_token', data.sessionToken);
+                    localStorage.setItem('dozup_user_id', data.userId);
+                    localStorage.setItem('doz_userId', data.userId);
+                    localStorage.setItem('doz_email', data.email || email);
+                    localStorage.setItem('doz_user', JSON.stringify({
+                        id: data.userId,
+                        email: data.email || email,
+                        name: data.name || email.split('@')[0]
+                    }));
+                    showStep(4);
+                    setTimeout(() => {
+                        window.location.href = '/my-account.html';
+                    }, 1500);
+                } else if (data.requiresAdditionalAuth) {
+                    // Need additional auth
+                    if (data.requirements.includes('totp')) {
+                        showStep(2);
+                    } else if (data.requirements.includes('biometric')) {
+                        showStep(7);
+                        updateBiometricButtonText(document.getElementById('biometricVerifyBtn'));
+                        setTimeout(() => verifyBiometricAfterLogin(), 800);
+                    }
+                } else if (data.requiresConfirmation) {
+                    // Need device confirmation
+                    loginRequestId = data.requestId;
+                    showStep(3);
+                    startPolling();
+                    startCountdown();
+                } else {
+                    // Check if it's a password error and show forgot password link
+                    const errorMsg = data.error || 'Login failed';
+                    if (errorMsg.toLowerCase().includes('password') || errorMsg.toLowerCase().includes('invalid')) {
+                        showMessageWithReset('message1', errorMsg);
+                    } else {
+                        showMessage('message1', errorMsg, 'error');
+                    }
+                }
+            } catch (err) {
+                showMessage('message1', 'Connection error. Please try again.', 'error');
+            }
+
+            btn.innerHTML = 'Continue';
+            btn.disabled = false;
+        }
+
+        // Biometric login - PASSWORDLESS (No email needed!)
+        async function loginWithBiometric() {
+            if (!window.PublicKeyCredential) {
+                showMessage('message1', 'Biometrics not supported on this device', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('biometricLoginBtn');
+            btn.innerHTML = '<div class="spinner"></div> Scanning...';
+            btn.disabled = true;
+
+            try {
+                // Step 1: Get passkey options (no user info needed!)
+                const optionsRes = await fetch(`${API_BASE}/passkey/options`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const optionsData = await optionsRes.json();
+
+                if (!optionsData.success) {
+                    showMessage('message1', optionsData.error || 'Failed to start biometric login', 'error');
+                    resetBiometricButton();
+                    return;
+                }
+
+                const options = optionsData.options;
+                options.challenge = base64ToBuffer(options.challenge);
+                // NO allowCredentials - browser finds discoverable credentials automatically
+
+                // Step 2: Trigger biometric prompt (Face ID / Touch ID / Windows Hello)
+                const credential = await navigator.credentials.get({ publicKey: options });
+
+                // Step 3: Complete login with credential
+                const loginRes = await fetch(`${API_BASE}/passkey/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        challengeId: optionsData.challengeId,
+                        credential: {
+                            id: credential.id,
+                            rawId: bufferToBase64(credential.rawId),
+                            response: {
+                                authenticatorData: bufferToBase64(credential.response.authenticatorData),
+                                clientDataJSON: bufferToBase64(credential.response.clientDataJSON),
+                                signature: bufferToBase64(credential.response.signature),
+                                userHandle: credential.response.userHandle ? bufferToBase64(credential.response.userHandle) : null
+                            }
+                        },
+                        ...getDeviceInfo()
+                    })
+                });
+
+                const loginData = await loginRes.json();
+
+                if (loginData.success) {
+                    // SUCCESS! Store session and redirect
+                    localStorage.setItem('dozup_session_token', loginData.sessionToken);
+                    localStorage.setItem('dozup_user_id', loginData.userId);
+                    localStorage.setItem('doz_userId', loginData.userId);
+                    localStorage.setItem('doz_email', loginData.email);
+                    localStorage.setItem('doz_user', JSON.stringify({
+                        id: loginData.userId,
+                        email: loginData.email,
+                        name: loginData.name
+                    }));
+
+                    showMessage('message1', `Welcome back, ${loginData.name}!`, 'success');
+                    showStep(4);
+                    setTimeout(() => {
+                        window.location.href = '/my-account.html';
+                    }, 1000);
+                } else {
+                    showMessage('message1', loginData.error || 'Biometric login failed. Try email login.', 'error');
+                }
+            } catch (err) {
+                console.error('Biometric error:', err);
+                if (err.name === 'NotAllowedError') {
+                    showMessage('message1', 'Biometric cancelled or not available', 'error');
+                } else if (err.name === 'InvalidStateError') {
+                    showMessage('message1', 'No passkey registered. Please sign up first.', 'error');
+                } else {
+                    showMessage('message1', 'Biometric login failed. Try email login.', 'error');
+                }
+            }
+
+            resetBiometricButton();
+        }
+
+        function resetBiometricButton() {
+            const btn = document.getElementById('biometricLoginBtn');
+            updateBiometricButtonText(btn);
+            btn.disabled = false;
+            // Also reset top button if visible
+            const topBtn = document.getElementById('biometricTopBtn');
+            if (topBtn) {
+                updateBiometricButtonText(topBtn);
+                topBtn.disabled = false;
+            }
+        }
+
+        // Biometric verification AFTER credential login (new device + requireBiometric)
+        async function verifyBiometricAfterLogin() {
+            if (!window.PublicKeyCredential) {
+                showMessage('message7', 'Biometrics not supported on this device', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('biometricVerifyBtn');
+            btn.innerHTML = '<div class="spinner"></div> Verifying...';
+            btn.disabled = true;
+
+            try {
+                // Get passkey challenge
+                const optionsRes = await fetch(API_BASE + '/passkey/options', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const optionsData = await optionsRes.json();
+
+                if (!optionsData.success) {
+                    showMessage('message7', optionsData.error || 'Failed to start verification', 'error');
+                    updateBiometricButtonText(btn);
+                    btn.disabled = false;
+                    return;
+                }
+
+                const options = optionsData.options;
+                options.challenge = base64ToBuffer(options.challenge);
+
+                // Trigger biometric prompt (Face ID / Windows Hello / Fingerprint)
+                const credential = await navigator.credentials.get({ publicKey: options });
+
+                // Complete verification
+                const verifyRes = await fetch(API_BASE + '/passkey/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        challengeId: optionsData.challengeId,
+                        credential: {
+                            id: credential.id,
+                            rawId: bufferToBase64(credential.rawId),
+                            response: {
+                                authenticatorData: bufferToBase64(credential.response.authenticatorData),
+                                clientDataJSON: bufferToBase64(credential.response.clientDataJSON),
+                                signature: bufferToBase64(credential.response.signature),
+                                userHandle: credential.response.userHandle ? bufferToBase64(credential.response.userHandle) : null
+                            }
+                        },
+                        ...getDeviceInfo()
+                    })
+                });
+
+                const verifyData = await verifyRes.json();
+
+                if (verifyData.success) {
+                    // Verified! Store session and redirect
+                    localStorage.setItem('dozup_session_token', verifyData.sessionToken);
+                    localStorage.setItem('dozup_user_id', verifyData.userId);
+                    localStorage.setItem('doz_userId', verifyData.userId);
+                    localStorage.setItem('doz_email', verifyData.email);
+                    localStorage.setItem('doz_user', JSON.stringify({
+                        id: verifyData.userId,
+                        email: verifyData.email,
+                        name: verifyData.name
+                    }));
+
+                    showStep(4);
+                    setTimeout(() => {
+                        window.location.href = '/my-account.html';
+                    }, 1500);
+                } else {
+                    showMessage('message7', verifyData.error || 'Verification failed. Please try again.', 'error');
+                    updateBiometricButtonText(btn);
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error('Biometric verification error:', err);
+                if (err.name === 'NotAllowedError') {
+                    showMessage('message7', 'Verification was cancelled. Tap the button to try again.', 'error');
+                } else {
+                    showMessage('message7', 'Verification failed. Please try again.', 'error');
+                }
+                updateBiometricButtonText(btn);
+                btn.disabled = false;
+            }
+        }
+
+        // Get user ID from email
+        async function getUserIdFromEmail(email) {
+            // Simple hash of email for user ID
+            const encoder = new TextEncoder();
+            const data = encoder.encode(email.toLowerCase());
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.slice(0, 12).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Verify TOTP code
+        async function verifyTOTP() {
+            const inputs = document.querySelectorAll('#totpInput input');
+            const code = Array.from(inputs).map(i => i.value).join('');
+
+            if (code.length !== 6) {
+                showMessage('message2', 'Please enter all 6 digits', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('totpBtn');
+            btn.innerHTML = '<div class="spinner"></div>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: currentEmail,
+                        totpCode: code,
+                        browserDeviceId: BROWSER_DEVICE_ID,
+                        ...getDeviceInfo()
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    localStorage.setItem('dozup_session_token', data.sessionToken);
+                    localStorage.setItem('dozup_user_id', data.userId);
+                    localStorage.setItem('doz_userId', data.userId);
+                    localStorage.setItem('doz_email', data.email || currentEmail);
+                    localStorage.setItem('doz_user', JSON.stringify({
+                        id: data.userId,
+                        email: data.email || currentEmail,
+                        name: data.name || currentEmail.split('@')[0]
+                    }));
+                    showStep(4);
+                    setTimeout(() => {
+                        window.location.href = '/my-account.html';
+                    }, 1500);
+                } else {
+                    showMessage('message2', data.error || 'Invalid code', 'error');
+                    inputs.forEach(i => i.value = '');
+                    inputs[0].focus();
+                }
+            } catch (err) {
+                showMessage('message2', 'Verification failed', 'error');
+            }
+
+            btn.innerHTML = 'Verify';
+            btn.disabled = false;
+        }
+
+        // Poll for device confirmation
+        function startPolling() {
+            pollInterval = setInterval(async () => {
+                try {
+                    const userId = await getUserIdFromEmail(currentEmail);
+                    const res = await fetch(`${API_BASE}/login-requests/${userId}/${loginRequestId}/status`);
+                    const data = await res.json();
+
+                    if (data.approved) {
+                        clearInterval(pollInterval);
+                        clearInterval(countdownInterval);
+
+                        // Complete login
+                        const loginRes = await fetch(`${API_BASE}/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                email: currentEmail,
+                                deviceConfirmationApproved: true,
+                                browserDeviceId: BROWSER_DEVICE_ID,
+                                ...getDeviceInfo()
+                            })
+                        });
+
+                        const loginData = await loginRes.json();
+
+                        if (loginData.success) {
+                            localStorage.setItem('dozup_session_token', loginData.sessionToken);
+                            localStorage.setItem('dozup_user_id', loginData.userId);
+                            localStorage.setItem('doz_userId', loginData.userId);
+                            localStorage.setItem('doz_email', loginData.email || currentEmail);
+                            localStorage.setItem('doz_user', JSON.stringify({
+                                id: loginData.userId,
+                                email: loginData.email || currentEmail,
+                                name: loginData.name || currentEmail.split('@')[0]
+                            }));
+                            showStep(4);
+                            setTimeout(() => {
+                                window.location.href = '/my-account.html';
+                            }, 1500);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Polling error:', err);
+                }
+            }, 2000);
+        }
+
+        // Countdown timer
+        function startCountdown() {
+            let seconds = 300; // 5 minutes
+            const el = document.getElementById('countdown');
+
+            countdownInterval = setInterval(() => {
+                seconds--;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                el.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+                if (seconds <= 0) {
+                    clearInterval(countdownInterval);
+                    clearInterval(pollInterval);
+                    showMessage('message1', 'Request expired. Please try again.', 'error');
+                    showStep(1);
+                }
+            }, 1000);
+        }
+
+        // Show step
+        function showStep(stepNum) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + stepNum).classList.add('active');
+        }
+
+        // Go back
+        function goBack() {
+            clearInterval(pollInterval);
+            clearInterval(countdownInterval);
+            showStep(1);
+        }
+
+        // Show message
+        function showMessage(id, text, type) {
+            const el = document.getElementById(id);
+            el.textContent = text;
+            el.className = 'message ' + type;
+        }
+
+        // Show message with forgot password link (for password errors)
+        function showMessageWithReset(id, text) {
+            const el = document.getElementById(id);
+            el.innerHTML = `
+                ${text}
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(239, 68, 68, 0.3);">
+                    <a href="#" onclick="showForgotPassword(); return false;" style="color: #10b981; text-decoration: none; font-weight: 600;">
+                        Forgot your password? Reset it here
+                    </a>
+                </div>
+            `;
+            el.className = 'message error';
+        }
+
+        // Setup TOTP inputs
+        function setupTOTPInputs() {
+            const inputs = document.querySelectorAll('#totpInput input');
+            inputs.forEach((input, i) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value && i < inputs.length - 1) {
+                        inputs[i + 1].focus();
+                    }
+                    if (i === 5 && e.target.value) {
+                        verifyTOTP();
+                    }
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && i > 0) {
+                        inputs[i - 1].focus();
+                    }
+                });
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = paste.replace(/\D/g, '').slice(0, 6);
+                    digits.split('').forEach((d, j) => {
+                        if (inputs[j]) inputs[j].value = d;
+                    });
+                    if (digits.length === 6) verifyTOTP();
+                });
+            });
+        }
+
+        // Show register
+        function showRegister() {
+            window.location.href = '/register.html';
+        }
+
+        // Show forgot password
+        function showForgotPassword() {
+            showStep(5);
+            // Pre-fill email if already entered
+            const email = document.getElementById('email').value;
+            if (email) {
+                document.getElementById('resetEmail').value = email;
+            }
+        }
+
+        // Handle forgot password form submission
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('resetEmail').value;
+            const btn = document.getElementById('resetBtn');
+
+            btn.innerHTML = '<div class="spinner"></div>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE}/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('sentEmailDisplay').textContent = email;
+                    showStep(6);
+                } else {
+                    showMessage('message5', data.error || 'Failed to send reset email. Please try again.', 'error');
+                }
+            } catch (err) {
+                // Even on error, show success to prevent email enumeration
+                document.getElementById('sentEmailDisplay').textContent = email;
+                showStep(6);
+            }
+
+            btn.innerHTML = 'Send Reset Link';
+            btn.disabled = false;
+        }
+
+        // Helpers
+        function base64ToBuffer(base64) {
+            const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        function bufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
+
+        // Init
+        init();
+    </script>
+    <!-- DOZ UP Traffic Tracking -->
+    <script src="/track.js" async></script>
+    <script src="/track-advanced.js" async></script>
+
+</body>
+</html>

@@ -1,0 +1,2678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>DOZ UP Mobile</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="apple-touch-icon" href="/app/icon-192.png">
+    <link rel="manifest" href="/app/manifest-mobile.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .app {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CAMERA VIEW */
+        .camera-view {
+            flex: 1;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-video.front {
+            transform: scaleX(-1);
+        }
+
+        /* TOP CONTROLS */
+        .top-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
+            padding-top: max(15px, env(safe-area-inset-top));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.5), transparent);
+            z-index: 10;
+        }
+
+        .top-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .top-btn.active {
+            background: #10b981;
+        }
+
+        .top-center {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mode-pill {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .mode-pill.active {
+            background: #10b981;
+        }
+
+        /* FILTER STRIP */
+        .filter-strip {
+            position: absolute;
+            bottom: 180px;
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 10px;
+            padding: 10px 15px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .filter-strip::-webkit-scrollbar { display: none; }
+
+        .filter-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            border: 2px solid transparent;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .filter-thumb.active {
+            border-color: #10b981;
+        }
+
+        .filter-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .filter-thumb span {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 3px;
+            background: rgba(0,0,0,0.7);
+            font-size: 0.6rem;
+            text-align: center;
+        }
+
+        /* BOTTOM CONTROLS */
+        .bottom-controls {
+            background: linear-gradient(transparent, rgba(0,0,0,0.8) 30%);
+            padding: 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+        }
+
+        /* BEAUTY SLIDER */
+        .beauty-slider {
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+        }
+
+        .beauty-slider.active {
+            display: block;
+        }
+
+        .beauty-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        .beauty-label span {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .slider {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.2);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+        }
+
+        /* CAPTURE AREA */
+        .capture-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .side-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            font-size: 0.6rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .side-btn.active {
+            background: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .capture-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .capture-btn::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            background: #fff;
+            border-radius: 50%;
+            transition: all 0.15s ease;
+        }
+
+        .capture-btn:active::after {
+            transform: scale(0.9);
+            background: #10b981;
+        }
+
+        .capture-btn.recording::after {
+            background: #ef4444;
+            border-radius: 8px;
+            top: 22px;
+            left: 22px;
+            right: 22px;
+            bottom: 22px;
+        }
+
+        /* MODE SWITCHER */
+        .mode-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .mode-tab {
+            padding: 8px 0;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .mode-tab.active {
+            color: #fff;
+        }
+
+        .mode-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: #10b981;
+            border-radius: 2px;
+        }
+
+        /* PREVIEW VIEW */
+        .preview-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a1a;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+        }
+
+        .preview-view.active {
+            display: flex;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            padding-top: max(15px, env(safe-area-inset-top));
+        }
+
+        .preview-header h2 {
+            font-size: 1.1rem;
+        }
+
+        .preview-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .preview-content img,
+        .preview-content canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 15px;
+        }
+
+        .preview-actions {
+            padding: 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            display: flex;
+            gap: 15px;
+        }
+
+        .preview-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .preview-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .preview-btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        /* GALLERY VIEW */
+        .gallery-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a1a;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+        }
+
+        .gallery-view.active {
+            display: flex;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            padding-top: max(15px, env(safe-area-inset-top));
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .gallery-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* FLASH OVERLAY */
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .flash.active {
+            animation: flashAnim 0.2s ease-out;
+        }
+
+        @keyframes flashAnim {
+            0% { opacity: 0.9; }
+            100% { opacity: 0; }
+        }
+
+        /* COUNTDOWN */
+        .countdown {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+        }
+
+        .countdown.active {
+            display: flex;
+        }
+
+        .countdown-num {
+            font-size: 120px;
+            font-weight: 800;
+            animation: countPulse 1s ease-in-out;
+        }
+
+        @keyframes countPulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 200;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* LOADING */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 300;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* NO CAMERA */
+        .no-camera {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 30px;
+        }
+
+        .no-camera svg {
+            width: 60px;
+            height: 60px;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .no-camera h3 {
+            margin-bottom: 10px;
+        }
+
+        .no-camera p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .no-camera button {
+            padding: 12px 24px;
+            background: #10b981;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Disable pull-to-refresh */
+        body {
+            overscroll-behavior-y: contain;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- CAMERA VIEW -->
+        <div class="camera-view">
+            <video id="cameraVideo" class="camera-video front" autoplay playsinline muted></video>
+
+            <!-- No Camera State -->
+            <div class="no-camera" id="noCamera" style="display: none;">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                <h3>Camera Access Required</h3>
+                <p>Please allow camera access to use DOZ UP</p>
+                <button onclick="requestCamera()">Allow Camera</button>
+            </div>
+
+            <!-- TOP CONTROLS -->
+            <div class="top-controls">
+                <button class="top-btn" onclick="toggleFlash()" id="flashBtn">
+                    <svg width="22" height="22" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                </button>
+
+                <div class="top-center">
+                    <button class="mode-pill active" id="photoMode" onclick="setMode('photo')">Photo</button>
+                    <button class="mode-pill" id="videoMode" onclick="setMode('video')">Video</button>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="top-btn" onclick="openGallery()">
+                        <svg width="22" height="22" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                    </button>
+                    <button class="top-btn" onclick="openSettings()" id="settingsBtn">
+                        <svg width="22" height="22" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FILTER STRIP -->
+            <div class="filter-strip" id="filterStrip">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- BOTTOM CONTROLS -->
+        <div class="bottom-controls">
+            <!-- BEAUTY SLIDER -->
+            <div class="beauty-slider" id="beautySlider">
+                <div class="beauty-label">
+                    <span>Beauty</span>
+                    <span id="beautyVal">50%</span>
+                </div>
+                <input type="range" class="slider" id="beautyRange" min="0" max="100" value="50" oninput="updateBeauty(this.value)">
+            </div>
+
+            <!-- CAPTURE AREA -->
+            <div class="capture-area">
+                <button class="side-btn" onclick="toggleTimer()" id="timerBtn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                    <span>Timer</span>
+                </button>
+
+                <button class="capture-btn" onclick="capture()" id="captureBtn"></button>
+
+                <button class="side-btn" onclick="toggleBeauty()" id="beautyBtn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"/></svg>
+                    <span>Beauty</span>
+                </button>
+            </div>
+
+            <!-- MODE SWITCHER -->
+            <div class="mode-switcher">
+                <button class="mode-tab" onclick="switchCamera()">Flip</button>
+                <button class="mode-tab active" id="captureTab">Capture</button>
+                <button class="mode-tab" onclick="uploadFile()">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREVIEW VIEW -->
+    <div class="preview-view" id="previewView">
+        <div class="preview-header">
+            <button class="top-btn" onclick="closePreview()">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </button>
+            <h2>Preview</h2>
+            <div style="width: 44px;"></div>
+        </div>
+        <div class="preview-content">
+            <canvas id="previewCanvas"></canvas>
+        </div>
+        <div class="preview-actions">
+            <button class="preview-btn secondary" onclick="retake()">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                Retake
+            </button>
+            <button class="preview-btn primary" onclick="saveAndShare()">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/></svg>
+                Save & Share
+            </button>
+        </div>
+    </div>
+
+    <!-- GALLERY VIEW -->
+    <div class="gallery-view" id="galleryView">
+        <div class="gallery-header">
+            <button class="top-btn" onclick="closeGallery()">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </button>
+            <h2>Gallery</h2>
+            <a href="my-gallery.html" class="top-btn" style="text-decoration: none;" title="My Uploads">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            </a>
+        </div>
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Populated by JS -->
+        </div>
+        <!-- Link to full gallery -->
+        <a href="my-gallery.html" style="display: block; text-align: center; padding: 16px; color: #00d4ff; text-decoration: none; font-weight: 600; background: rgba(0,212,255,0.1); margin: 10px; border-radius: 12px;">
+            View All My Uploads
+        </a>
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div class="gallery-view" id="settingsView">
+        <div class="gallery-header">
+            <button class="top-btn" onclick="closeSettings()">
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </button>
+            <h2>Settings</h2>
+            <div style="width: 44px;"></div>
+        </div>
+        <div style="padding: 20px; overflow-y: auto; flex: 1;">
+            <!-- Security Section -->
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 1.1rem;">
+                    <svg width="24" height="24" fill="#10b981" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                    Security
+                </h3>
+
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Biometric Login -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">Face ID / Touch ID</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">Unlock instantly with biometrics</div>
+                        </div>
+                        <button onclick="setupBiometric()" id="biometricBtn" style="padding: 10px 20px; background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer;">
+                            Set Up
+                        </button>
+                    </div>
+
+                    <!-- Device Trust -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">Trust This Device</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">Skip verification on this device</div>
+                        </div>
+                        <div id="trustToggle" onclick="toggleTrustDevice()" style="width: 50px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 14px; position: relative; cursor: pointer; transition: all 0.3s;">
+                            <div style="position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: all 0.3s;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Login Requests -->
+                    <div id="pendingLoginRequests" style="display: none;"></div>
+
+                    <!-- Full Security Settings -->
+                    <a href="/security.html" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; text-decoration: none; color: #fff;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px; color: #10b981;">Advanced Security</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">2FA, devices, sessions & more</div>
+                        </div>
+                        <svg width="20" height="20" fill="#10b981" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sound Theme -->
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 1.1rem;">
+                    <svg width="24" height="24" fill="#fbbf24" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd"/></svg>
+                    Sound Theme
+                </h3>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="setSoundTheme('nokia')" id="sndNokia" style="flex:1; padding:12px; background:rgba(16,185,129,0.2); border:2px solid #10b981; border-radius:10px; color:#fff; font-weight:600; font-size:0.85rem; cursor:pointer;">Nokia</button>
+                    <button onclick="setSoundTheme('modern')" id="sndModern" style="flex:1; padding:12px; background:rgba(255,255,255,0.05); border:2px solid transparent; border-radius:10px; color:#fff; font-weight:600; font-size:0.85rem; cursor:pointer;">Modern</button>
+                    <button onclick="setSoundTheme('silent')" id="sndSilent" style="flex:1; padding:12px; background:rgba(255,255,255,0.05); border:2px solid transparent; border-radius:10px; color:#fff; font-weight:600; font-size:0.85rem; cursor:pointer;">Silent</button>
+                </div>
+                <button onclick="testSound()" style="width:100%; margin-top:10px; padding:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#94a3b8; font-size:0.8rem; cursor:pointer;">Test Sound</button>
+            </div>
+
+            <!-- Floating Capture Button (Native App Only) -->
+            <div id="floatingBtnSettings" style="display:none; background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 1.1rem;">
+                    <svg width="24" height="24" fill="#10b981" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#10b981" stroke-width="2" fill="none"/><path d="M12 8v4l3 3" stroke="#10b981" stroke-width="2" stroke-linecap="round"/></svg>
+                    Floating Capture Button
+                </h3>
+                <div style="color:#94a3b8; font-size:0.82rem; margin-bottom:14px;">Shazam-style button that floats over all apps. One tap to capture, select &amp; share.</div>
+
+                <!-- Toggle floating service -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(0,0,0,0.2); border-radius:12px; margin-bottom:12px;">
+                    <span style="font-weight:600; font-size:0.9rem;">Enable Floating Button</span>
+                    <label style="position:relative; width:50px; height:28px; cursor:pointer;">
+                        <input type="checkbox" id="floatingBtnToggle" onchange="toggleFloatingService()" style="opacity:0; width:0; height:0;">
+                        <span id="floatingBtnSlider" style="position:absolute; inset:0; background:rgba(255,255,255,0.1); border-radius:28px; transition:0.3s;"></span>
+                        <span id="floatingBtnDot" style="position:absolute; left:2px; top:2px; width:24px; height:24px; background:#fff; border-radius:50%; transition:0.3s;"></span>
+                    </label>
+                </div>
+
+                <!-- Line Color -->
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:8px;">Selection Line Color</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button onclick="setLineColor('cyan')" class="colorBtn" data-color="cyan" style="width:36px; height:36px; border-radius:50%; border:2px solid #10b981; background:#00d4ff; cursor:pointer;"></button>
+                        <button onclick="setLineColor('green')" class="colorBtn" data-color="green" style="width:36px; height:36px; border-radius:50%; border:2px solid transparent; background:#10b981; cursor:pointer;"></button>
+                        <button onclick="setLineColor('red')" class="colorBtn" data-color="red" style="width:36px; height:36px; border-radius:50%; border:2px solid transparent; background:#ef4444; cursor:pointer;"></button>
+                        <button onclick="setLineColor('white')" class="colorBtn" data-color="white" style="width:36px; height:36px; border-radius:50%; border:2px solid transparent; background:#ffffff; cursor:pointer;"></button>
+                        <button onclick="setLineColor('yellow')" class="colorBtn" data-color="yellow" style="width:36px; height:36px; border-radius:50%; border:2px solid transparent; background:#fbbf24; cursor:pointer;"></button>
+                    </div>
+                </div>
+
+                <!-- Auto-Upload Toggle -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(0,0,0,0.2); border-radius:12px; margin-bottom:12px;">
+                    <div>
+                        <span style="font-weight:600; font-size:0.9rem;">Auto-Upload</span>
+                        <div style="font-size:0.75rem; color:#64748b;">Skip annotation & choice, upload instantly</div>
+                    </div>
+                    <label style="position:relative; width:50px; height:28px; cursor:pointer;">
+                        <input type="checkbox" id="autoUploadToggle" onchange="updateCaptureSettings()" style="opacity:0; width:0; height:0;">
+                        <span class="toggleSlider" style="position:absolute; inset:0; background:rgba(255,255,255,0.1); border-radius:28px; transition:0.3s;"></span>
+                        <span class="toggleDot" style="position:absolute; left:2px; top:2px; width:24px; height:24px; background:#fff; border-radius:50%; transition:0.3s;"></span>
+                    </label>
+                </div>
+
+                <!-- Quick Capture Toggle -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(0,0,0,0.2); border-radius:12px;">
+                    <div>
+                        <span style="font-weight:600; font-size:0.9rem;">Quick Capture</span>
+                        <div style="font-size:0.75rem; color:#64748b;">Skip region selection, capture full screen</div>
+                    </div>
+                    <label style="position:relative; width:50px; height:28px; cursor:pointer;">
+                        <input type="checkbox" id="quickCaptureToggle" onchange="updateCaptureSettings()" style="opacity:0; width:0; height:0;">
+                        <span class="toggleSlider" style="position:absolute; inset:0; background:rgba(255,255,255,0.1); border-radius:28px; transition:0.3s;"></span>
+                        <span class="toggleDot" style="position:absolute; left:2px; top:2px; width:24px; height:24px; background:#fff; border-radius:50%; transition:0.3s;"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Account Section -->
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 1.1rem;">
+                    <svg width="24" height="24" fill="#60a5fa" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                    Account
+                </h3>
+
+                <!-- Inline Login (logged out) -->
+                <div id="mobileAccountLoggedOut">
+                    <div style="color:#94a3b8; font-size:0.85rem; margin-bottom:12px;">Sign in to sync uploads across all your devices.</div>
+                    <input type="email" id="mAccountEmail" placeholder="Email" style="width:100%; padding:12px 14px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:8px; font-size:0.9rem; outline:none;">
+                    <input type="password" id="mAccountPassword" placeholder="Password" style="width:100%; padding:12px 14px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px; font-size:0.9rem; outline:none;">
+                    <button onclick="mobileLogin()" id="mLoginBtn" style="width:100%; padding:14px; background:linear-gradient(135deg,#10b981,#059669); border:none; border-radius:10px; color:#fff; font-weight:600; font-size:0.95rem; cursor:pointer;">Sign In</button>
+                    <div id="mLoginError" style="display:none; margin-top:8px; padding:10px; background:rgba(239,68,68,0.15); border-radius:8px; color:#ef4444; font-size:0.8rem;"></div>
+                </div>
+
+                <!-- Logged in state -->
+                <div id="mobileAccountLoggedIn" style="display:none;">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px; padding:12px; background:rgba(0,0,0,0.2); border-radius:12px;">
+                        <div id="mAccountAvatar" style="width:44px; height:44px; background:linear-gradient(135deg,#10b981,#059669); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; flex-shrink:0;">?</div>
+                        <div style="flex:1; min-width:0;">
+                            <div id="mAccountName" style="font-weight:600; font-size:0.95rem;">-</div>
+                            <div id="mAccountEmailDisplay" style="color:#64748b; font-size:0.8rem; overflow:hidden; text-overflow:ellipsis;">-</div>
+                        </div>
+                    </div>
+                    <button onclick="mobileLogout()" style="width:100%; padding:12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:10px; color:#ef4444; font-weight:600; cursor:pointer; font-size:0.9rem;">Sign Out</button>
+                </div>
+
+                <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+                    <a href="/my-account.html" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; text-decoration: none; color: #fff;">
+                        <span>My Account</span>
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                    </a>
+                    <a href="/my" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; text-decoration: none; color: #fff;">
+                        <span>My Uploads</span>
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- App Info -->
+            <div style="text-align: center; color: #64748b; padding: 20px;">
+                <p>DOZ UP Mobile v2.9.0</p>
+                <p style="font-size: 0.8rem; margin-top: 5px;">Capture • Upload • Share</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLASH OVERLAY -->
+    <div class="flash" id="flash"></div>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown" id="countdown">
+        <div class="countdown-num" id="countdownNum">3</div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <span>Uploading...</span>
+    </div>
+
+    <!-- UPLOAD PROGRESS (3-step matching desktop) -->
+    <div id="uploadProgress" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:99999; display:none; align-items:center; justify-content:center;">
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:20px; padding:24px; margin:20px; max-width:340px; width:90%; border:1px solid rgba(255,255,255,0.1);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:18px;">
+                <div class="m-prog-step active" id="mStep1" style="text-align:center; flex:1;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:rgba(16,185,129,0.2); border:2px solid #10b981; display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-size:0.8rem; font-weight:700; color:#10b981;">1</div>
+                    <div style="font-size:0.75rem; color:#94a3b8;">Uploading</div>
+                </div>
+                <div class="m-prog-step" id="mStep2" style="text-align:center; flex:1;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.05); border:2px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-size:0.8rem; font-weight:700; color:#64748b;">2</div>
+                    <div style="font-size:0.75rem; color:#64748b;">Processing</div>
+                </div>
+                <div class="m-prog-step" id="mStep3" style="text-align:center; flex:1;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.05); border:2px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-size:0.8rem; font-weight:700; color:#64748b;">&#10003;</div>
+                    <div style="font-size:0.75rem; color:#64748b;">Published</div>
+                </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:6px; height:6px; margin-bottom:14px; overflow:hidden;">
+                <div id="mProgressBar" style="height:100%; background:linear-gradient(90deg,#10b981,#059669); border-radius:6px; width:0%; transition:width 0.4s ease;"></div>
+            </div>
+            <div id="mProgressStatus" style="text-align:center; font-size:0.85rem; color:#94a3b8;">Uploading to cloud...</div>
+            <div id="mProgressUrl" style="display:none; margin-top:14px; padding:12px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:10px; text-align:center;">
+                <div style="font-size:0.7rem; color:#64748b; margin-bottom:4px;">Share Link (copied to clipboard)</div>
+                <div id="mUrlValue" style="font-size:0.85rem; color:#10b981; word-break:break-all; font-weight:600;"></div>
+            </div>
+            <div id="mProgressError" style="display:none; margin-top:14px; padding:12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:10px; text-align:center;">
+                <div id="mErrorText" style="font-size:0.85rem; color:#ef4444;"></div>
+                <button onclick="hideUploadProgress()" style="margin-top:8px; padding:8px 20px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; font-size:0.8rem;">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILE INPUT -->
+    <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFile(event)">
+
+    <script>
+        // ============ STATE ============
+        let stream = null;
+        let facingMode = 'user';
+        let currentMode = 'photo';
+        let flashEnabled = false;
+        let timerEnabled = false;
+        let beautyEnabled = false;
+        let beautyLevel = 50;
+        let currentFilter = 'none';
+        let capturedImages = [];
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
+        // ============ CAPACITOR / NATIVE PLATFORM ============
+        let isNative = false;
+        let ScreenCapture = null;
+
+        // Check if running in Capacitor native app
+        async function initCapacitor() {
+            try {
+                if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+                    isNative = true;
+                    // Import screen capture plugin
+                    const { registerPlugin } = await import('@capacitor/core');
+                    ScreenCapture = registerPlugin('ScreenCapture');
+                    console.log('Running in native app - screen capture enabled');
+
+                    // Add screen capture button
+                    addScreenCaptureButton();
+
+                    // Show floating button settings in settings panel
+                    var fbSettings = document.getElementById('floatingBtnSettings');
+                    if (fbSettings) fbSettings.style.display = 'block';
+
+                    // Load saved settings from native side
+                    loadFloatingSettings();
+                }
+            } catch (e) {
+                console.log('Not running in Capacitor:', e);
+            }
+        }
+
+        // ============ FLOATING CAPTURE SERVICE CONTROLS ============
+
+        async function loadFloatingSettings() {
+            if (!ScreenCapture) return;
+            try {
+                var settings = await ScreenCapture.getSettings();
+                // Apply to UI
+                var autoUpload = document.getElementById('autoUploadToggle');
+                var quickCapture = document.getElementById('quickCaptureToggle');
+                if (autoUpload) autoUpload.checked = settings.autoUpload || false;
+                if (quickCapture) quickCapture.checked = settings.quickCapture || false;
+                updateToggleVisuals();
+                // Set line color
+                if (settings.lineColor) setLineColor(settings.lineColor, true);
+                // Check if service is running
+                var status = await ScreenCapture.isFloatingServiceRunning();
+                var toggle = document.getElementById('floatingBtnToggle');
+                if (toggle) {
+                    toggle.checked = status.running || false;
+                    updateFloatingToggleVisual();
+                }
+            } catch (e) {
+                console.log('Could not load floating settings:', e);
+            }
+        }
+
+        async function toggleFloatingService() {
+            if (!ScreenCapture) return;
+            var toggle = document.getElementById('floatingBtnToggle');
+            try {
+                if (toggle && toggle.checked) {
+                    await ScreenCapture.startFloatingService();
+                    updateFloatingToggleVisual();
+                } else {
+                    await ScreenCapture.stopFloatingService();
+                    updateFloatingToggleVisual();
+                }
+            } catch (e) {
+                console.log('Floating service error:', e);
+                if (toggle) toggle.checked = false;
+                updateFloatingToggleVisual();
+                showToast(e.message || 'Failed to start floating button');
+            }
+        }
+
+        function updateFloatingToggleVisual() {
+            var toggle = document.getElementById('floatingBtnToggle');
+            var slider = document.getElementById('floatingBtnSlider');
+            var dot = document.getElementById('floatingBtnDot');
+            if (!toggle || !slider || !dot) return;
+            if (toggle.checked) {
+                slider.style.background = '#10b981';
+                dot.style.left = '24px';
+            } else {
+                slider.style.background = 'rgba(255,255,255,0.1)';
+                dot.style.left = '2px';
+            }
+        }
+
+        function setLineColor(color, skipSave) {
+            document.querySelectorAll('.colorBtn').forEach(function(btn) {
+                btn.style.borderColor = btn.getAttribute('data-color') === color ? '#10b981' : 'transparent';
+            });
+            localStorage.setItem('dozLineColor', color);
+            if (!skipSave) updateCaptureSettings();
+        }
+
+        async function updateCaptureSettings() {
+            if (!ScreenCapture) return;
+            try {
+                var autoUpload = document.getElementById('autoUploadToggle');
+                var quickCapture = document.getElementById('quickCaptureToggle');
+                await ScreenCapture.updateSettings({
+                    soundTheme: localStorage.getItem('dozSoundTheme') || 'nokia',
+                    lineColor: localStorage.getItem('dozLineColor') || 'cyan',
+                    autoUpload: autoUpload ? autoUpload.checked : false,
+                    quickCapture: quickCapture ? quickCapture.checked : false
+                });
+                updateToggleVisuals();
+            } catch (e) {
+                console.log('Settings update failed:', e);
+            }
+        }
+
+        function updateToggleVisuals() {
+            document.querySelectorAll('#floatingBtnSettings label').forEach(function(label) {
+                var input = label.querySelector('input[type="checkbox"]');
+                var slider = label.querySelector('.toggleSlider');
+                var dot = label.querySelector('.toggleDot');
+                if (!input || !slider || !dot) return;
+                if (input.checked) {
+                    slider.style.background = '#10b981';
+                    dot.style.left = '24px';
+                } else {
+                    slider.style.background = 'rgba(255,255,255,0.1)';
+                    dot.style.left = '2px';
+                }
+            });
+        }
+
+        // Add floating screen capture button for native app
+        function addScreenCaptureButton() {
+            const btn = document.createElement('button');
+            btn.id = 'screenCaptureBtn';
+            btn.innerHTML = `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>`;
+            btn.style.cssText = `
+                position: fixed; bottom: 100px; right: 20px; z-index: 9999;
+                width: 60px; height: 60px; border-radius: 50%;
+                background: linear-gradient(135deg, #10b981, #059669);
+                border: none; color: white; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            `;
+            btn.onclick = captureScreen;
+            document.body.appendChild(btn);
+        }
+
+        // Native screen capture function
+        async function captureScreen() {
+            if (!isNative || !ScreenCapture) return;
+
+            try {
+                // Check permission
+                const { granted } = await ScreenCapture.hasPermission();
+                if (!granted) {
+                    const result = await ScreenCapture.requestPermission();
+                    if (!result.granted) {
+                        alert('Screen capture permission required');
+                        return;
+                    }
+                }
+
+                // Capture screen
+                playThemedCapture();
+                showUploadProgress();
+                const capture = await ScreenCapture.capture();
+
+                // Convert to blob and upload
+                const byteChars = atob(capture.base64);
+                const byteNumbers = new Array(byteChars.length);
+                for (let i = 0; i < byteChars.length; i++) {
+                    byteNumbers[i] = byteChars.charCodeAt(i);
+                }
+                const blob = new Blob([new Uint8Array(byteNumbers)], { type: 'image/png' });
+
+                // Upload with AI-guided retry
+                const url = await uploadWithRetry(blob, 'screen-capture-' + Date.now() + '.png', 3);
+
+                if (url) {
+                    try { await navigator.clipboard.writeText(url); } catch(e) {}
+                    playThemedSuccess();
+                    showToast('Link copied! ' + url);
+                }
+            } catch (e) {
+                hideUploadProgress();
+                console.warn('Screen capture error:', e);
+                showToast('Capture failed: ' + e.message);
+            }
+        }
+
+        // Helper to show processing state
+        function showProcessingOverlay(text) {
+            const overlay = document.createElement('div');
+            overlay.id = 'processingOverlay';
+            overlay.style.cssText = `
+                position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+                display: flex; align-items: center; justify-content: center;
+                z-index: 99999; color: white; font-size: 1.2rem;
+            `;
+            overlay.textContent = text || 'Processing...';
+            document.body.appendChild(overlay);
+        }
+
+        function hideProcessingOverlay() {
+            const overlay = document.getElementById('processingOverlay');
+            if (overlay) overlay.remove();
+        }
+
+        // Helper function to upload a blob and return the URL
+        async function uploadImageBlob(blob) {
+            const formData = new FormData();
+            formData.append('image', blob, `screen-capture-${Date.now()}.png`);
+            formData.append('deviceId', getDeviceId());
+
+            const userId = localStorage.getItem('doz_userId');
+            const headers = { 'X-Device-ID': getDeviceId() };
+            if (userId) headers['X-User-ID'] = userId;
+
+            // Try to use reserved URL for faster upload
+            const reserved = reservedUrls.shift();
+            let uploadEndpoint = '/upload';
+            if (reserved) {
+                formData.append('token', reserved.token);
+                headers['X-Upload-Token'] = reserved.token;
+                uploadEndpoint = '/api/upload-fast';
+                // Replenish URL pool
+                reserveUrls(1);
+            }
+
+            const res = await fetch(uploadEndpoint, {
+                method: 'POST',
+                headers: headers,
+                body: formData
+            });
+
+            const data = await res.json();
+            return data.url || null;
+        }
+
+        // Initialize Capacitor on load
+        document.addEventListener('DOMContentLoaded', initCapacitor);
+
+        // ============ UPLOAD PROGRESS SYSTEM (3-step matching desktop) ============
+        function showUploadProgress() {
+            const el = document.getElementById('uploadProgress');
+            el.style.display = 'flex';
+            document.getElementById('mProgressError').style.display = 'none';
+            document.getElementById('mProgressUrl').style.display = 'none';
+            updateMobileProgress('uploading', 10);
+        }
+
+        function hideUploadProgress() {
+            document.getElementById('uploadProgress').style.display = 'none';
+        }
+
+        function updateMobileProgress(step, percent, url) {
+            const bar = document.getElementById('mProgressBar');
+            const status = document.getElementById('mProgressStatus');
+            const s1 = document.getElementById('mStep1').querySelector('div');
+            const s2 = document.getElementById('mStep2').querySelector('div');
+            const s3 = document.getElementById('mStep3').querySelector('div');
+
+            bar.style.width = percent + '%';
+
+            // Reset step styles
+            [s1, s2, s3].forEach(s => { s.style.background = 'rgba(255,255,255,0.05)'; s.style.borderColor = 'rgba(255,255,255,0.15)'; s.style.color = '#64748b'; });
+
+            if (step === 'uploading') {
+                s1.style.background = 'rgba(16,185,129,0.2)'; s1.style.borderColor = '#10b981'; s1.style.color = '#10b981';
+                status.textContent = 'Uploading to cloud...';
+            } else if (step === 'processing') {
+                s1.style.background = 'rgba(16,185,129,0.2)'; s1.style.borderColor = '#10b981'; s1.style.color = '#10b981';
+                s2.style.background = 'rgba(16,185,129,0.2)'; s2.style.borderColor = '#10b981'; s2.style.color = '#10b981';
+                status.textContent = 'Processing image...';
+            } else if (step === 'published') {
+                [s1, s2, s3].forEach(s => { s.style.background = 'rgba(16,185,129,0.2)'; s.style.borderColor = '#10b981'; s.style.color = '#10b981'; });
+                status.textContent = 'Published!';
+                if (url) {
+                    document.getElementById('mUrlValue').textContent = url;
+                    document.getElementById('mProgressUrl').style.display = 'block';
+                }
+                setTimeout(hideUploadProgress, 3000);
+            } else if (step === 'error') {
+                status.textContent = 'Upload failed';
+                document.getElementById('mErrorText').textContent = url || 'Upload failed. Try again.';
+                document.getElementById('mProgressError').style.display = 'block';
+            }
+        }
+
+        // ============ AI-GUIDED UPLOAD RETRY ============
+        async function consultUploadAI(errorMessage, errorCode) {
+            try {
+                const res = await fetch('/api/upload-check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Device-ID': getDeviceId() },
+                    body: JSON.stringify({ errorMessage: errorMessage, errorCode: errorCode || '', deviceId: getDeviceId() }),
+                    signal: AbortSignal.timeout(3000)
+                });
+                return await res.json();
+            } catch(e) { return null; }
+        }
+
+        async function uploadWithRetry(blob, filename, maxRetries) {
+            maxRetries = maxRetries || 3;
+            const delays = [100, 300, 500];
+
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    updateMobileProgress('uploading', 10 + (attempt * 15));
+                    const url = await uploadImageBlob(blob);
+                    if (url) {
+                        updateMobileProgress('processing', 70);
+                        await new Promise(function(r) { setTimeout(r, 200); });
+                        updateMobileProgress('published', 100, url);
+                        return url;
+                    }
+                    throw new Error('No URL returned');
+                } catch(err) {
+                    if (attempt >= maxRetries) {
+                        // Last chance: ask AI if we should try once more
+                        var guidance = await consultUploadAI(err.message, '');
+                        if (guidance && guidance.canRetry) {
+                            await new Promise(function(r) { setTimeout(r, guidance.retryDelay || 500); });
+                            try {
+                                var lastUrl = await uploadImageBlob(blob);
+                                if (lastUrl) {
+                                    updateMobileProgress('published', 100, lastUrl);
+                                    return lastUrl;
+                                }
+                            } catch(e2) {}
+                        }
+                        updateMobileProgress('error', 0, guidance && guidance.tip ? guidance.tip : 'Upload failed after retries');
+                        return null;
+                    }
+                    var aiGuidance = await consultUploadAI(err.message, '');
+                    var delay = (aiGuidance && aiGuidance.retryDelay) ? aiGuidance.retryDelay : (delays[attempt] || 300);
+                    if (aiGuidance && !aiGuidance.canRetry) {
+                        updateMobileProgress('error', 0, aiGuidance.tip || 'Cannot retry this upload');
+                        return null;
+                    }
+                    await new Promise(function(r) { setTimeout(r, delay); });
+                }
+            }
+            return null;
+        }
+
+        // ============ ACCOUNT LOGIN (matching desktop) ============
+        async function mobileLogin() {
+            var email = document.getElementById('mAccountEmail').value.trim();
+            var password = document.getElementById('mAccountPassword').value;
+            if (!email || !password) return;
+
+            var btn = document.getElementById('mLoginBtn');
+            btn.textContent = 'Signing in...';
+            btn.disabled = true;
+            document.getElementById('mLoginError').style.display = 'none';
+
+            try {
+                var res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, password: password, browserDeviceId: getDeviceId() })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('doz_userId', data.userId);
+                    localStorage.setItem('doz_email', data.email);
+                    localStorage.setItem('doz_name', data.name || '');
+                    localStorage.setItem('doz_sessionToken', data.sessionToken || '');
+                    showMobileLoggedIn(data);
+                    showToast('Signed in successfully!');
+                } else {
+                    document.getElementById('mLoginError').textContent = data.error || 'Login failed';
+                    document.getElementById('mLoginError').style.display = 'block';
+                }
+            } catch(e) {
+                document.getElementById('mLoginError').textContent = 'Connection failed';
+                document.getElementById('mLoginError').style.display = 'block';
+            }
+            btn.textContent = 'Sign In';
+            btn.disabled = false;
+        }
+
+        function mobileLogout() {
+            localStorage.removeItem('doz_userId');
+            localStorage.removeItem('doz_email');
+            localStorage.removeItem('doz_name');
+            localStorage.removeItem('doz_sessionToken');
+            document.getElementById('mobileAccountLoggedOut').style.display = 'block';
+            document.getElementById('mobileAccountLoggedIn').style.display = 'none';
+            showToast('Signed out');
+        }
+
+        function showMobileLoggedIn(data) {
+            document.getElementById('mobileAccountLoggedOut').style.display = 'none';
+            document.getElementById('mobileAccountLoggedIn').style.display = 'block';
+            var name = data.name || data.email || '-';
+            document.getElementById('mAccountName').textContent = name;
+            document.getElementById('mAccountEmailDisplay').textContent = data.email || '-';
+            document.getElementById('mAccountAvatar').textContent = (name[0] || '?').toUpperCase();
+        }
+
+        function loadMobileAccount() {
+            var userId = localStorage.getItem('doz_userId');
+            var email = localStorage.getItem('doz_email');
+            if (userId && email) {
+                showMobileLoggedIn({ userId: userId, email: email, name: localStorage.getItem('doz_name') || '' });
+            }
+        }
+
+        // ============ SOUND THEMES (matching desktop Nokia/Modern/Silent) ============
+        let currentSoundTheme = localStorage.getItem('dozSoundTheme') || 'nokia';
+
+        const SOUND_THEMES = {
+            nokia: {
+                capture: [{f:1318,d:0.1},{f:1568,d:0.15}],
+                success: [{f:1047,d:0.12},{f:1319,d:0.12},{f:1568,d:0.12},{f:2093,d:0.2}]
+            },
+            modern: {
+                capture: [{f:880,d:0.08}],
+                success: [{f:523,d:0.15},{f:659,d:0.2}]
+            }
+        };
+
+        function setSoundTheme(theme) {
+            currentSoundTheme = theme;
+            localStorage.setItem('dozSoundTheme', theme);
+            // Update button styles
+            ['nokia','modern','silent'].forEach(function(t) {
+                var btn = document.getElementById('snd' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (btn) {
+                    btn.style.background = t === theme ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.05)';
+                    btn.style.borderColor = t === theme ? '#10b981' : 'transparent';
+                }
+            });
+        }
+
+        function testSound() {
+            playThemedCapture();
+            setTimeout(playThemedSuccess, 400);
+        }
+
+        function playThemedCapture() {
+            if (currentSoundTheme === 'silent') return;
+            initAudio();
+            var notes = SOUND_THEMES[currentSoundTheme] ? SOUND_THEMES[currentSoundTheme].capture : SOUND_THEMES.nokia.capture;
+            var now = audioContext.currentTime;
+            notes.forEach(function(note, i) {
+                var osc = audioContext.createOscillator();
+                var gain = audioContext.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(note.f, now + i * 0.12);
+                gain.gain.setValueAtTime(0.2, now + i * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.12 + note.d);
+                osc.connect(gain).connect(audioContext.destination);
+                osc.start(now + i * 0.12);
+                osc.stop(now + i * 0.12 + note.d + 0.05);
+            });
+        }
+
+        function playThemedSuccess() {
+            if (currentSoundTheme === 'silent') return;
+            initAudio();
+            var notes = SOUND_THEMES[currentSoundTheme] ? SOUND_THEMES[currentSoundTheme].success : SOUND_THEMES.nokia.success;
+            var now = audioContext.currentTime;
+            notes.forEach(function(note, i) {
+                var osc = audioContext.createOscillator();
+                var gain = audioContext.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(note.f, now + i * 0.1);
+                gain.gain.setValueAtTime(0.25, now + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + note.d);
+                osc.connect(gain).connect(audioContext.destination);
+                osc.start(now + i * 0.1);
+                osc.stop(now + i * 0.1 + note.d + 0.05);
+            });
+        }
+
+        // ============ SERVER GALLERY ============
+        async function loadServerUploads() {
+            var deviceId = getDeviceId();
+            var userId = localStorage.getItem('doz_userId');
+            var params = userId ? 'user=' + userId : 'device=' + deviceId;
+            try {
+                var res = await fetch('/api/uploads?' + params + '&limit=20');
+                var data = await res.json();
+                if (data.success && data.uploads && data.uploads.length > 0) {
+                    renderServerUploads(data.uploads);
+                }
+            } catch(e) { console.warn('Failed to load server uploads:', e); }
+        }
+
+        function renderServerUploads(uploads) {
+            var grid = document.getElementById('galleryGrid');
+            var existing = grid.innerHTML;
+            var serverHtml = uploads.map(function(u) {
+                var thumbUrl = u.thumbnail || u.url;
+                return '<div class="gallery-item" onclick="window.open(\'' + u.url + '\', \'_blank\')"><img src="' + thumbUrl + '" alt="Upload" style="width:100%; height:100%; object-fit:cover;"><div style="position:absolute; bottom:4px; right:4px; background:rgba(16,185,129,0.8); border-radius:4px; padding:2px 6px; font-size:0.6rem; color:#fff;">Cloud</div></div>';
+            }).join('');
+            grid.innerHTML = serverHtml + existing;
+        }
+
+        // ============ ULTRA-FAST UPLOAD SYSTEM ============
+        // Pre-generated URLs for instant sharing (777x faster!)
+        let reservedUrls = []; // Queue of pre-reserved URLs
+        let audioContext = null;
+        const MIN_RESERVED_URLS = 5; // Keep 5 URLs ready at all times
+        const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+
+        const filters = [
+            { id: 'none', name: 'Normal', css: 'none' },
+            { id: 'clarendon', name: 'Clarendon', css: 'contrast(1.2) saturate(1.35)' },
+            { id: 'gingham', name: 'Gingham', css: 'brightness(1.05) sepia(0.04)' },
+            { id: 'moon', name: 'Moon', css: 'grayscale(1) contrast(1.1) brightness(1.1)' },
+            { id: 'lark', name: 'Lark', css: 'contrast(0.9) brightness(1.1) saturate(0.85)' },
+            { id: 'juno', name: 'Juno', css: 'saturate(1.4) contrast(1.15) brightness(1.05)' },
+            { id: '1977', name: '1977', css: 'sepia(0.5) hue-rotate(-30deg) saturate(1.4)' },
+            { id: 'inkwell', name: 'Inkwell', css: 'grayscale(1) brightness(1.1) contrast(1.3)' }
+        ];
+
+        // ============ AUDIO SYSTEM ============
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+
+        // Shutter/Capture Sound - Quick camera click
+        function playCaptureSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            const now = audioContext.currentTime;
+
+            // Sharp click
+            const click = audioContext.createOscillator();
+            const clickGain = audioContext.createGain();
+            click.type = 'square';
+            click.frequency.setValueAtTime(2000, now);
+            click.frequency.exponentialRampToValueAtTime(500, now + 0.03);
+            clickGain.gain.setValueAtTime(0.3, now);
+            clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+            click.connect(clickGain).connect(audioContext.destination);
+            click.start(now);
+            click.stop(now + 0.05);
+
+            // Mechanical release
+            const release = audioContext.createOscillator();
+            const releaseGain = audioContext.createGain();
+            release.type = 'triangle';
+            release.frequency.setValueAtTime(800, now + 0.02);
+            release.frequency.exponentialRampToValueAtTime(200, now + 0.08);
+            releaseGain.gain.setValueAtTime(0.15, now + 0.02);
+            releaseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            release.connect(releaseGain).connect(audioContext.destination);
+            release.start(now + 0.02);
+            release.stop(now + 0.1);
+        }
+
+        // Upload Complete Sound - Triumphant success chime
+        function playUploadCompleteSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            const now = audioContext.currentTime;
+
+            // Rising success chord - C E G (major chord)
+            const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+            notes.forEach((freq, i) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + i * 0.05);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.25, now + i * 0.05 + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.connect(gain).connect(audioContext.destination);
+                osc.start(now + i * 0.05);
+                osc.stop(now + 0.6);
+            });
+
+            // Sparkle overlay
+            setTimeout(() => {
+                const sparkle = audioContext.createOscillator();
+                const sparkleGain = audioContext.createGain();
+                sparkle.type = 'sine';
+                sparkle.frequency.setValueAtTime(2093, audioContext.currentTime); // C7
+                sparkleGain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                sparkleGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                sparkle.connect(sparkleGain).connect(audioContext.destination);
+                sparkle.start();
+                sparkle.stop(audioContext.currentTime + 0.2);
+            }, 150);
+        }
+
+        // URL Ready Sound - Subtle ready ping
+        function playUrlReadySound() {
+            if (!soundEnabled) return;
+            initAudio();
+            const now = audioContext.currentTime;
+
+            const ping = audioContext.createOscillator();
+            const pingGain = audioContext.createGain();
+            ping.type = 'sine';
+            ping.frequency.setValueAtTime(1200, now);
+            pingGain.gain.setValueAtTime(0.08, now);
+            pingGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            ping.connect(pingGain).connect(audioContext.destination);
+            ping.start(now);
+            ping.stop(now + 0.15);
+        }
+
+        // ============ PRE-GENERATED URL SYSTEM ============
+        async function reserveUrls(count = 5) {
+            try {
+                const res = await fetch('/api/reserve-urls', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        count: count,
+                        deviceId: getDeviceId()
+                    })
+                });
+                const data = await res.json();
+                if (data.success && data.reservations) {
+                    reservedUrls.push(...data.reservations);
+                    console.log(`[FastUpload] Reserved ${data.count} URLs. Queue: ${reservedUrls.length}`);
+                    playUrlReadySound();
+                }
+            } catch (e) {
+                console.warn('[FastUpload] Reserve failed:', e);
+            }
+        }
+
+        function getNextReservedUrl() {
+            const reserved = reservedUrls.shift();
+            // Auto-refill when running low
+            if (reservedUrls.length < MIN_RESERVED_URLS) {
+                reserveUrls(5);
+            }
+            return reserved;
+        }
+
+        // ============ INIT ============
+        async function init() {
+            populateFilters();
+            await requestCamera();
+            // Pre-generate URLs on startup for instant uploads
+            await reserveUrls(10);
+            // Initialize audio on first interaction
+            document.addEventListener('click', initAudio, { once: true });
+            document.addEventListener('touchstart', initAudio, { once: true });
+
+            // Check biometric status and update UI
+            checkBiometricStatus();
+
+            // Trigger instant biometric login (Face ID / Touch ID)
+            // Runs in background - won't block app startup
+            autoLoginWithBiometric();
+
+            // Load saved account state
+            loadMobileAccount();
+
+            // Initialize sound theme UI
+            setSoundTheme(currentSoundTheme);
+
+            // Check for app updates
+            checkForAppUpdate();
+        }
+
+        // ============ SILENT AUTO-UPDATE ============
+        const APP_VERSION = '2.9.8';
+
+        async function checkForAppUpdate() {
+            // Native app: use silent download + auto-install
+            if (isNative && ScreenCapture) {
+                try {
+                    console.log('[Update] Checking via native updater...');
+                    const result = await ScreenCapture.checkForUpdate();
+
+                    if (result.available) {
+                        console.log('[Update] v' + result.version + ' available, downloading silently...');
+                        showUpdateToast('Updating to v' + result.version + '...', true);
+
+                        // Listen for progress
+                        ScreenCapture.addListener('updateProgress', (data) => {
+                            updateProgressToast(data.percent);
+                        });
+
+                        ScreenCapture.addListener('updateReady', () => {
+                            showUpdateToast('Update ready - installing...', false);
+                        });
+
+                        ScreenCapture.addListener('updateInstalling', () => {
+                            showUpdateToast('Installing update...', false);
+                        });
+                    } else {
+                        console.log('[Update] App is up to date');
+                    }
+                } catch (e) {
+                    console.log('[Update] Native check failed, trying web fallback:', e.message);
+                    checkForAppUpdateWeb();
+                }
+                return;
+            }
+
+            // Web/PWA fallback
+            checkForAppUpdateWeb();
+        }
+
+        async function checkForAppUpdateWeb() {
+            try {
+                const res = await fetch('/api/version');
+                if (!res.ok) return;
+                const data = await res.json();
+                const serverVersion = data.apkVersion || data.version;
+                if (!serverVersion) return;
+
+                if (compareVersions(serverVersion, APP_VERSION) > 0) {
+                    // For web users, show a subtle toast directing to download
+                    showToast('New version v' + serverVersion + ' available at doz.com/download');
+                }
+            } catch (e) {
+                console.log('[Update] Web check failed:', e.message);
+            }
+        }
+
+        function compareVersions(a, b) {
+            const pa = a.split('.').map(Number);
+            const pb = b.split('.').map(Number);
+            for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+                const na = pa[i] || 0, nb = pb[i] || 0;
+                if (na > nb) return 1;
+                if (na < nb) return -1;
+            }
+            return 0;
+        }
+
+        // Slim update progress toast
+        function showUpdateToast(message, withProgress) {
+            let toast = document.getElementById('updateToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'updateToast';
+                toast.style.cssText = `
+                    position: fixed; bottom: 90px; left: 16px; right: 16px; z-index: 100000;
+                    padding: 12px 16px; border-radius: 12px;
+                    background: rgba(16, 185, 129, 0.95); color: #fff;
+                    font-size: 0.82rem; font-weight: 600;
+                    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                    display: flex; align-items: center; gap: 10px;
+                    animation: slideUp 0.3s ease-out;
+                `;
+                if (!document.getElementById('updateAnimStyle')) {
+                    const style = document.createElement('style');
+                    style.id = 'updateAnimStyle';
+                    style.textContent = `
+                        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                        @keyframes spin { to { transform: rotate(360deg); } }
+                    `;
+                    document.head.appendChild(style);
+                }
+                document.body.appendChild(toast);
+            }
+
+            const spinner = withProgress ? `<div style="width:20px; height:20px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation: spin 0.8s linear infinite; flex-shrink:0;"></div>` : '';
+            const progressBar = withProgress ? `<div id="updateProgressBar" style="position:absolute; bottom:0; left:0; height:3px; background:#fff; border-radius:0 0 12px 12px; width:0%; transition:width 0.3s;"></div>` : '';
+
+            toast.innerHTML = `${spinner}<span>${message}</span>${progressBar}`;
+        }
+
+        function updateProgressToast(percent) {
+            const bar = document.getElementById('updateProgressBar');
+            if (bar) bar.style.width = percent + '%';
+            if (percent >= 100) {
+                setTimeout(() => {
+                    const toast = document.getElementById('updateToast');
+                    if (toast) toast.remove();
+                }, 2000);
+            }
+        }
+
+        function populateFilters() {
+            const strip = document.getElementById('filterStrip');
+            strip.innerHTML = filters.map((f, i) => `
+                <div class="filter-thumb ${i === 0 ? 'active' : ''}" onclick="applyFilter('${f.id}', '${f.css}', this)" style="background: linear-gradient(135deg, hsl(${i * 45}, 50%, 30%), hsl(${i * 45 + 30}, 50%, 20%));">
+                    <span>${f.name}</span>
+                </div>
+            `).join('');
+        }
+
+        // ============ CAMERA ============
+        async function requestCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: facingMode,
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    },
+                    audio: currentMode === 'video'
+                });
+
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = stream;
+                video.className = 'camera-video ' + (facingMode === 'user' ? 'front' : 'back');
+                document.getElementById('noCamera').style.display = 'none';
+            } catch (err) {
+                console.warn('Camera error:', err);
+                document.getElementById('noCamera').style.display = 'block';
+            }
+        }
+
+        async function switchCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            facingMode = facingMode === 'user' ? 'environment' : 'user';
+            await requestCamera();
+            showToast(facingMode === 'user' ? 'Front Camera' : 'Back Camera');
+        }
+
+        // ============ CAPTURE ============
+        function capture() {
+            if (currentMode === 'video') {
+                toggleRecording();
+                return;
+            }
+
+            if (timerEnabled) {
+                startCountdown(() => takePhoto());
+            } else {
+                takePhoto();
+            }
+        }
+
+        function takePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('previewCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Play capture sound
+            playCaptureSound();
+
+            // Flash effect
+            if (flashEnabled) {
+                const flash = document.getElementById('flash');
+                flash.classList.add('active');
+                setTimeout(() => flash.classList.remove('active'), 200);
+            }
+
+            // Set canvas size
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw image (mirror if front camera)
+            ctx.save();
+            if (facingMode === 'user') {
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            } else {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            }
+            ctx.restore();
+
+            // Apply filter
+            if (currentFilter !== 'none') {
+                canvas.style.filter = currentFilter;
+            }
+
+            // Apply beauty
+            if (beautyEnabled) {
+                applyBeautyToCanvas(canvas);
+            }
+
+            // Show preview
+            document.getElementById('previewView').classList.add('active');
+
+            // Add to gallery
+            capturedImages.unshift({
+                data: canvas.toDataURL('image/jpeg', 0.9),
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        function applyBeautyToCanvas(canvas) {
+            const brightness = 1 + (beautyLevel - 50) / 200;
+            const contrast = 1 + (beautyLevel - 50) / 300;
+            canvas.style.filter = `brightness(${brightness}) contrast(${contrast}) ${currentFilter !== 'none' ? currentFilter : ''}`;
+        }
+
+        // ============ TIMER ============
+        function startCountdown(callback) {
+            const overlay = document.getElementById('countdown');
+            const num = document.getElementById('countdownNum');
+            let count = 3;
+
+            overlay.classList.add('active');
+            num.textContent = count;
+
+            const interval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    num.textContent = count;
+                    num.style.animation = 'none';
+                    num.offsetHeight;
+                    num.style.animation = 'countPulse 1s ease-in-out';
+                } else {
+                    clearInterval(interval);
+                    overlay.classList.remove('active');
+                    callback();
+                }
+            }, 1000);
+        }
+
+        // ============ VIDEO RECORDING ============
+        function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        async function startRecording() {
+            if (!stream) return;
+
+            recordedChunks = [];
+
+            try {
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    showToast('Video recorded!');
+                    // Handle video preview/upload
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                document.getElementById('captureBtn').classList.add('recording');
+                showToast('Recording...');
+            } catch (err) {
+                console.warn('Recording error:', err);
+                showToast('Recording not supported');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('captureBtn').classList.remove('recording');
+            }
+        }
+
+        // ============ FILTERS ============
+        function applyFilter(id, css, element) {
+            currentFilter = css;
+
+            document.querySelectorAll('.filter-thumb').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            const video = document.getElementById('cameraVideo');
+            video.style.filter = css + (beautyEnabled ? ` brightness(${1 + (beautyLevel - 50) / 200})` : '');
+        }
+
+        // ============ BEAUTY ============
+        function toggleBeauty() {
+            beautyEnabled = !beautyEnabled;
+            document.getElementById('beautyBtn').classList.toggle('active', beautyEnabled);
+            document.getElementById('beautySlider').classList.toggle('active', beautyEnabled);
+
+            const video = document.getElementById('cameraVideo');
+            updateVideoFilter();
+        }
+
+        function updateBeauty(value) {
+            beautyLevel = parseInt(value);
+            document.getElementById('beautyVal').textContent = value + '%';
+            updateVideoFilter();
+        }
+
+        function updateVideoFilter() {
+            const video = document.getElementById('cameraVideo');
+            let filter = currentFilter !== 'none' ? currentFilter : '';
+
+            if (beautyEnabled) {
+                const brightness = 1 + (beautyLevel - 50) / 200;
+                const contrast = 1 + (beautyLevel - 50) / 300;
+                filter += ` brightness(${brightness}) contrast(${contrast})`;
+            }
+
+            video.style.filter = filter || 'none';
+        }
+
+        // ============ TOGGLES ============
+        function toggleFlash() {
+            flashEnabled = !flashEnabled;
+            document.getElementById('flashBtn').classList.toggle('active', flashEnabled);
+            showToast(flashEnabled ? 'Flash On' : 'Flash Off');
+        }
+
+        function toggleTimer() {
+            timerEnabled = !timerEnabled;
+            document.getElementById('timerBtn').classList.toggle('active', timerEnabled);
+            showToast(timerEnabled ? 'Timer: 3s' : 'Timer Off');
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('photoMode').classList.toggle('active', mode === 'photo');
+            document.getElementById('videoMode').classList.toggle('active', mode === 'video');
+
+            if (mode === 'video' && stream) {
+                // Re-request with audio
+                stream.getTracks().forEach(track => track.stop());
+                requestCamera();
+            }
+        }
+
+        // ============ PREVIEW ============
+        function closePreview() {
+            document.getElementById('previewView').classList.remove('active');
+        }
+
+        function retake() {
+            closePreview();
+        }
+
+        async function saveAndShare() {
+            const canvas = document.getElementById('previewCanvas');
+            const imageData = canvas.toDataURL('image/jpeg', 0.9);
+            const uploadStart = performance.now();
+
+            // Show 3-step progress overlay
+            showUploadProgress();
+            playThemedCapture();
+
+            try {
+                // Convert to blob
+                const response = await fetch(imageData);
+                const blob = await response.blob();
+
+                // Upload with AI-guided retry
+                const finalUrl = await uploadWithRetry(blob, 'mobile-capture-' + Date.now() + '.jpg', 3);
+                const uploadTime = Math.round(performance.now() - uploadStart);
+
+                if (finalUrl) {
+                    // Play success sound
+                    playThemedSuccess();
+                    console.log('[Upload] Completed in ' + uploadTime + 'ms');
+
+                    // Copy to clipboard
+                    try { await navigator.clipboard.writeText(finalUrl); } catch(e) {}
+
+                    // Try native share
+                    if (navigator.share) {
+                        setTimeout(function() {
+                            navigator.share({ title: 'DOZ UP Photo', text: 'Check out my photo!', url: finalUrl }).catch(function() {});
+                        }, 1500);
+                    }
+                    closePreview();
+                }
+            } catch (err) {
+                hideUploadProgress();
+                console.warn('Upload error:', err);
+                showToast('Upload failed. Try again.');
+            }
+        }
+
+        // ============ GALLERY ============
+        function openGallery() {
+            const grid = document.getElementById('galleryGrid');
+
+            if (capturedImages.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #64748b;">Loading uploads...</div>';
+            } else {
+                grid.innerHTML = capturedImages.map((img, i) => `
+                    <div class="gallery-item" onclick="viewGalleryImage(${i})">
+                        <img src="${img.data}" alt="Photo ${i + 1}">
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('galleryView').classList.add('active');
+            // Also load server uploads
+            loadServerUploads();
+        }
+
+        function closeGallery() {
+            document.getElementById('galleryView').classList.remove('active');
+        }
+
+        // ============ SETTINGS & SECURITY ============
+        function openSettings() {
+            document.getElementById('settingsView').classList.add('active');
+            checkSecurityStatus();
+            checkPendingLoginRequests();
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsView').classList.remove('active');
+        }
+
+        function getUserId() {
+            let userId = localStorage.getItem('dozup_user_id');
+            if (!userId) {
+                const nav = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height].join('|');
+                let hash = 0;
+                for (let i = 0; i < nav.length; i++) {
+                    hash = ((hash << 5) - hash) + nav.charCodeAt(i);
+                    hash = hash & hash;
+                }
+                userId = 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(16, '0');
+                localStorage.setItem('dozup_user_id', userId);
+            }
+            return userId;
+        }
+
+        async function checkSecurityStatus() {
+            try {
+                const res = await fetch(`/api/auth/security-status/${getUserId()}`);
+                const data = await res.json();
+                if (data.biometricEnabled) {
+                    document.getElementById('biometricBtn').textContent = 'Enabled';
+                    document.getElementById('biometricBtn').style.background = 'rgba(16, 185, 129, 0.2)';
+                }
+            } catch (e) {
+                console.log('Security status check failed');
+            }
+        }
+
+        async function setupBiometric() {
+            if (!window.PublicKeyCredential) {
+                showToast('Biometrics not supported on this device');
+                return;
+            }
+
+            try {
+                const userId = getUserId();
+
+                // Get registration options from server
+                const optionsRes = await fetch('/api/auth/biometric/setup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                const optionsData = await optionsRes.json();
+
+                if (!optionsData.success) {
+                    showToast('Failed to setup biometrics: ' + (optionsData.error || 'Unknown error'));
+                    return;
+                }
+
+                const options = optionsData.options;
+
+                // Convert base64url to ArrayBuffer
+                options.challenge = base64ToBuffer(options.challenge);
+                options.user.id = base64ToBuffer(options.user.id);
+
+                // Convert excludeCredentials if present
+                if (options.excludeCredentials) {
+                    options.excludeCredentials = options.excludeCredentials.map(c => ({
+                        ...c,
+                        id: base64ToBuffer(c.id)
+                    }));
+                }
+
+                // Trigger Face ID / Touch ID / Windows Hello
+                const credential = await navigator.credentials.create({ publicKey: options });
+
+                // Serialize credential for server (using standard WebAuthn format)
+                const credentialData = {
+                    id: credential.id,
+                    rawId: bufferToBase64(credential.rawId),
+                    type: credential.type,
+                    response: {
+                        clientDataJSON: bufferToBase64(credential.response.clientDataJSON),
+                        attestationObject: bufferToBase64(credential.response.attestationObject),
+                        transports: credential.response.getTransports ? credential.response.getTransports() : ['internal']
+                    }
+                };
+
+                // Send to server for verification and storage
+                const verifyRes = await fetch('/api/auth/biometric/complete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, credential: credentialData })
+                });
+
+                const result = await verifyRes.json();
+                if (result.success) {
+                    // Store in localStorage for auto-login
+                    localStorage.setItem('biometric_enabled', 'true');
+                    localStorage.setItem('biometric_credential_id', credential.id);
+                    localStorage.setItem('biometric_user_id', userId);
+
+                    showToast('Biometric login enabled!');
+                    updateBiometricUI(true);
+                } else {
+                    showToast('Failed: ' + (result.error || 'Server error'));
+                }
+            } catch (e) {
+                console.warn('Biometric setup error:', e);
+                if (e.name === 'NotAllowedError') {
+                    showToast('Biometric setup cancelled');
+                } else if (e.name === 'NotSupportedError') {
+                    showToast('This device does not support biometrics');
+                } else if (e.name === 'SecurityError') {
+                    showToast('Security error - must use HTTPS');
+                } else {
+                    showToast('Biometric setup failed: ' + e.message);
+                }
+            }
+        }
+
+        function updateBiometricUI(enabled) {
+            const btn = document.getElementById('biometricBtn');
+            if (btn) {
+                if (enabled) {
+                    btn.textContent = 'Enabled';
+                    btn.style.background = 'rgba(16, 185, 129, 0.2)';
+                    btn.style.color = '#10b981';
+                } else {
+                    btn.textContent = 'Set Up';
+                    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    btn.style.color = '#fff';
+                }
+            }
+        }
+
+        // ============ INSTANT BIOMETRIC AUTO-LOGIN ============
+        // Automatically login with Face ID / Touch ID when app opens
+        async function autoLoginWithBiometric() {
+            // Check if biometrics were previously enabled
+            if (localStorage.getItem('biometric_enabled') !== 'true') {
+                console.log('[Biometric] Not enabled, skipping auto-login');
+                return;
+            }
+
+            if (!window.PublicKeyCredential) {
+                console.log('[Biometric] WebAuthn not supported');
+                return;
+            }
+
+            // Check if already logged in
+            if (localStorage.getItem('session_token')) {
+                console.log('[Biometric] Already has session, skipping');
+                updateBiometricUI(true);
+                return;
+            }
+
+            try {
+                console.log('[Biometric] Starting instant auto-login...');
+
+                // Get passwordless auth challenge (no userId needed - credential stored on device)
+                const optionsRes = await fetch('/api/auth/passkey/options', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const optionsData = await optionsRes.json();
+
+                if (!optionsData.success) {
+                    console.log('[Biometric] Failed to get auth options');
+                    return;
+                }
+
+                const options = optionsData.options;
+                const challengeId = optionsData.challengeId;
+
+                // Convert challenge to ArrayBuffer
+                options.challenge = base64ToBuffer(options.challenge);
+
+                // Trigger Face ID / Touch ID automatically
+                // mediation: 'optional' allows silent auth if user recently authenticated
+                const assertion = await navigator.credentials.get({
+                    publicKey: options,
+                    mediation: 'optional'
+                });
+
+                console.log('[Biometric] Got assertion, verifying...');
+
+                // Send assertion to server for verification
+                const authRes = await fetch('/api/auth/passkey/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        challengeId: challengeId,
+                        credential: {
+                            id: assertion.id,
+                            rawId: bufferToBase64(assertion.rawId),
+                            type: assertion.type,
+                            response: {
+                                clientDataJSON: bufferToBase64(assertion.response.clientDataJSON),
+                                authenticatorData: bufferToBase64(assertion.response.authenticatorData),
+                                signature: bufferToBase64(assertion.response.signature),
+                                userHandle: assertion.response.userHandle ?
+                                    bufferToBase64(assertion.response.userHandle) : null
+                            }
+                        }
+                    })
+                });
+
+                const result = await authRes.json();
+                if (result.success) {
+                    // Store session (server returns sessionToken)
+                    localStorage.setItem('session_token', result.sessionToken || result.token);
+                    if (result.userId) {
+                        localStorage.setItem('user_id', result.userId);
+                    }
+                    if (result.email) {
+                        localStorage.setItem('user_email', result.email);
+                    }
+
+                    console.log('[Biometric] Auto-login successful!');
+                    showToast('Welcome back, ' + (result.name || result.email || '') + '!');
+                    updateBiometricUI(true);
+                } else {
+                    console.log('[Biometric] Auth failed:', result.error);
+                }
+            } catch (e) {
+                // Silent fail - user can login manually if needed
+                console.log('[Biometric] Auto-login skipped:', e.name, e.message);
+                // Don't show error toast - this is expected if user hasn't set up biometrics
+            }
+        }
+
+        // Check biometric status on page load
+        function checkBiometricStatus() {
+            if (localStorage.getItem('biometric_enabled') === 'true') {
+                updateBiometricUI(true);
+            }
+        }
+
+        async function toggleTrustDevice() {
+            const toggle = document.getElementById('trustToggle');
+            const isActive = toggle.style.background === 'rgb(16, 185, 129)';
+
+            try {
+                if (!isActive) {
+                    await fetch('/api/auth/devices/trust', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: getUserId(), deviceId: getUserId() })
+                    });
+                    toggle.style.background = '#10b981';
+                    toggle.querySelector('div').style.left = '25px';
+                    showToast('Device trusted');
+                } else {
+                    toggle.style.background = 'rgba(255,255,255,0.1)';
+                    toggle.querySelector('div').style.left = '3px';
+                    showToast('Device untrusted');
+                }
+            } catch (e) {
+                showToast('Failed to update device trust');
+            }
+        }
+
+        async function checkPendingLoginRequests() {
+            try {
+                const res = await fetch(`/api/auth/login-requests/${getUserId()}`);
+                const data = await res.json();
+
+                if (data.success && data.requests.length > 0) {
+                    const container = document.getElementById('pendingLoginRequests');
+                    container.style.display = 'block';
+                    container.innerHTML = data.requests.map(req => `
+                        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2)); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 15px; margin-bottom: 10px;">
+                            <div style="font-weight: 600; margin-bottom: 8px; color: #60a5fa;">New Login Request</div>
+                            <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 12px;">
+                                ${req.newDevice.name} is trying to sign in
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="approveLogin('${req.id}')" style="flex: 1; padding: 10px; background: #10b981; border: none; border-radius: 8px; color: #fff; font-weight: 600;">Approve</button>
+                                <button onclick="denyLogin('${req.id}')" style="flex: 1; padding: 10px; background: rgba(239, 68, 68, 0.2); border: none; border-radius: 8px; color: #ef4444; font-weight: 600;">Deny</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.log('Login requests check failed');
+            }
+        }
+
+        async function approveLogin(requestId) {
+            try {
+                await fetch('/api/auth/login-requests/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: getUserId(), requestId, approverDeviceId: getUserId() })
+                });
+                showToast('Login approved!');
+                checkPendingLoginRequests();
+            } catch (e) {
+                showToast('Failed to approve');
+            }
+        }
+
+        async function denyLogin(requestId) {
+            try {
+                await fetch('/api/auth/login-requests/deny', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: getUserId(), requestId })
+                });
+                showToast('Login denied');
+                checkPendingLoginRequests();
+            } catch (e) {
+                showToast('Failed to deny');
+            }
+        }
+
+        function base64ToBuffer(base64) {
+            const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        function bufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
+
+        function viewGalleryImage(index) {
+            const canvas = document.getElementById('previewCanvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                closeGallery();
+                document.getElementById('previewView').classList.add('active');
+            };
+            img.src = capturedImages[index].data;
+        }
+
+        // ============ FILE UPLOAD ============
+        function uploadFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('previewCanvas');
+                    const ctx = canvas.getContext('2d');
+
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    document.getElementById('previewView').classList.add('active');
+
+                    capturedImages.unshift({
+                        data: canvas.toDataURL('image/jpeg', 0.9),
+                        timestamp: new Date().toISOString()
+                    });
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ============ UTILS ============
+        function getDeviceId() {
+            const nav = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height, navigator.platform].join('|');
+            let hash = 0;
+            for (let i = 0; i < nav.length; i++) { hash = ((hash << 5) - hash) + nav.charCodeAt(i); hash = hash & hash; }
+            return 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // ============ DOZ UP BRAIN - NEURAL MESH SYNC ============
+        const BrainSync = {
+            ws: null,
+            connected: false,
+            encryptionKey: null,
+            reconnectAttempts: 0,
+            maxReconnectAttempts: 10,
+            deviceId: null,
+            userId: null,
+
+            async init() {
+                this.deviceId = getDeviceId();
+                this.userId = localStorage.getItem('doz_userId') || getUserId();
+
+                // Get or generate encryption key
+                this.encryptionKey = localStorage.getItem('brain_encryption_key');
+                if (!this.encryptionKey) {
+                    this.encryptionKey = await this.generateKey();
+                    localStorage.setItem('brain_encryption_key', this.encryptionKey);
+                }
+
+                this.connect();
+                console.log('[Brain] DOZ UP Brain initialized - Mobile v2.9.0');
+            },
+
+            async generateKey() {
+                const key = await crypto.subtle.generateKey(
+                    { name: 'AES-GCM', length: 256 },
+                    true,
+                    ['encrypt', 'decrypt']
+                );
+                const exported = await crypto.subtle.exportKey('raw', key);
+                return this.bufferToHex(new Uint8Array(exported));
+            },
+
+            bufferToHex(buffer) {
+                return Array.from(buffer).map(b => b.toString(16).padStart(2, '0')).join('');
+            },
+
+            hexToBuffer(hex) {
+                const bytes = new Uint8Array(hex.length / 2);
+                for (let i = 0; i < hex.length; i += 2) {
+                    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+                }
+                return bytes;
+            },
+
+            async encrypt(data) {
+                const key = await crypto.subtle.importKey(
+                    'raw', this.hexToBuffer(this.encryptionKey),
+                    { name: 'AES-GCM' }, false, ['encrypt']
+                );
+                const iv = crypto.getRandomValues(new Uint8Array(16));
+                const encoded = new TextEncoder().encode(JSON.stringify(data));
+                const encrypted = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv }, key, encoded
+                );
+                return {
+                    iv: this.bufferToHex(iv),
+                    data: this.bufferToHex(new Uint8Array(encrypted)),
+                    tag: '' // GCM includes auth tag in ciphertext
+                };
+            },
+
+            async decrypt(payload) {
+                try {
+                    const key = await crypto.subtle.importKey(
+                        'raw', this.hexToBuffer(this.encryptionKey),
+                        { name: 'AES-GCM' }, false, ['decrypt']
+                    );
+                    const iv = this.hexToBuffer(payload.iv);
+                    const data = this.hexToBuffer(payload.data);
+                    const decrypted = await crypto.subtle.decrypt(
+                        { name: 'AES-GCM', iv }, key, data
+                    );
+                    return JSON.parse(new TextDecoder().decode(decrypted));
+                } catch (e) {
+                    console.warn('[Brain] Decrypt failed:', e);
+                    return null;
+                }
+            },
+
+            connect() {
+                const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const host = location.host;
+                const wsUrl = `${protocol}//${host}/ws/brain?device=${this.deviceId}&user=${this.userId}&platform=mobile`;
+
+                try {
+                    this.ws = new WebSocket(wsUrl);
+
+                    this.ws.onopen = () => {
+                        this.connected = true;
+                        this.reconnectAttempts = 0;
+                        console.log('[Brain] Connected to neural mesh');
+
+                        // Send encryption key for server-side pairing
+                        this.ws.send(JSON.stringify({
+                            type: 'register',
+                            encryptionKey: this.encryptionKey
+                        }));
+                    };
+
+                    this.ws.onmessage = async (event) => {
+                        try {
+                            const message = JSON.parse(event.data);
+                            if (message.type === 'sync' && message.encrypted) {
+                                const data = await this.decrypt(message.payload);
+                                if (data) this.handleSyncEvent(data);
+                            } else if (message.type === 'sync-queue') {
+                                // Process queued events from when offline
+                                const data = await this.decrypt(message.payload);
+                                if (data) this.handleSyncEvent(data);
+                            }
+                        } catch (e) {
+                            console.warn('[Brain] Message parse error:', e);
+                        }
+                    };
+
+                    this.ws.onclose = () => {
+                        this.connected = false;
+                        console.log('[Brain] Disconnected from neural mesh');
+                        this.scheduleReconnect();
+                    };
+
+                    this.ws.onerror = (err) => {
+                        console.warn('[Brain] WebSocket error:', err);
+                    };
+
+                } catch (e) {
+                    console.warn('[Brain] Connection failed:', e);
+                    this.scheduleReconnect();
+                }
+            },
+
+            scheduleReconnect() {
+                if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+                    console.log('[Brain] Max reconnect attempts reached');
+                    return;
+                }
+                const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+                this.reconnectAttempts++;
+                console.log(`[Brain] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
+                setTimeout(() => this.connect(), delay);
+            },
+
+            handleSyncEvent(event) {
+                console.log('[Brain] Sync event received:', event.type);
+
+                switch (event.type) {
+                    case 'upload':
+                        // New upload from another device - show notification
+                        if (event.data && event.data.url) {
+                            showToast('New upload synced: ' + event.data.url.split('/').pop());
+                        }
+                        break;
+
+                    case 'settings':
+                        // Settings changed on another device
+                        if (event.data) {
+                            Object.keys(event.data).forEach(key => {
+                                localStorage.setItem(key, event.data[key]);
+                            });
+                            showToast('Settings synced');
+                        }
+                        break;
+
+                    case 'clipboard':
+                        // Clipboard sync from another device
+                        if (event.data && event.data.text) {
+                            navigator.clipboard.writeText(event.data.text).then(() => {
+                                showToast('Clipboard synced');
+                            }).catch(() => {});
+                        }
+                        break;
+
+                    case 'activity':
+                        // Activity sync (real-time status)
+                        console.log('[Brain] Activity:', event.data);
+                        break;
+                }
+            },
+
+            async syncUpload(uploadData) {
+                if (!this.connected || !this.ws) return;
+                const encrypted = await this.encrypt({
+                    type: 'upload',
+                    data: uploadData,
+                    source: this.deviceId,
+                    timestamp: Date.now()
+                });
+                this.ws.send(JSON.stringify({ type: 'sync-event', payload: encrypted }));
+            },
+
+            async syncSettings(settings) {
+                if (!this.connected || !this.ws) return;
+                const encrypted = await this.encrypt({
+                    type: 'settings',
+                    data: settings,
+                    source: this.deviceId,
+                    timestamp: Date.now()
+                });
+                this.ws.send(JSON.stringify({ type: 'sync-event', payload: encrypted }));
+            },
+
+            async syncClipboard(text) {
+                if (!this.connected || !this.ws) return;
+                const encrypted = await this.encrypt({
+                    type: 'clipboard',
+                    data: { text },
+                    source: this.deviceId,
+                    timestamp: Date.now()
+                });
+                this.ws.send(JSON.stringify({ type: 'sync-event', payload: encrypted }));
+            }
+        };
+
+        // Initialize Brain sync after DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            BrainSync.init();
+        });
+
+        // ============ START ============
+        init();
+
+        // Prevent zoom on double tap
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+    <!-- DOZ UP Traffic Tracking -->
+    <script src="/track.js" async></script>
+    <script src="/track-advanced.js" async></script>
+
+</body>
+</html>

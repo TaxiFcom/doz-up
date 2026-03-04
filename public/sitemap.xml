@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
+                            http://www.google.com/schemas/sitemap-image/1.1
+                            http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
+
+    <!-- ============================================ -->
+    <!-- DOZ UP - Universal Screenshot & Sharing Tool -->
+    <!-- Domain: https://doz.com                      -->
+    <!-- For: Coders, Developers, Screenshot Users    -->
+    <!-- ============================================ -->
+
+    <!-- Homepage - Primary Landing -->
+    <url>
+        <loc>https://doz.com/</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://doz.com/logo.png</image:loc>
+            <image:title>DOZ UP - Screenshot Tool for Developers</image:title>
+            <image:caption>DOZ UP - Instant screenshot capture and cloud sharing for coders and professionals</image:caption>
+        </image:image>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>DOZ UP Screenshot Platform</image:title>
+            <image:caption>Cross-platform screenshot tool with instant link generation</image:caption>
+        </image:image>
+        <!-- Multi-language support for global reach -->
+        <xhtml:link rel="alternate" hreflang="en" href="https://doz.com/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://doz.com/"/>
+    </url>
+
+    <!-- Landing Page - Marketing -->
+    <url>
+        <loc>https://doz.com/landing.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>DOZ UP Cloud Sharing Features</image:title>
+            <image:caption>Fast and secure file sharing for developers and teams</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Download Page - Desktop App -->
+    <url>
+        <loc>https://doz.com/download.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+        <image:image>
+            <image:loc>https://doz.com/app/icon-512.png</image:loc>
+            <image:title>Download DOZ UP Desktop App</image:title>
+            <image:caption>Free screenshot tool for Windows, Mac, and Linux</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Upload Page - Core Functionality -->
+    <url>
+        <loc>https://doz.com/upload.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>Upload Screenshots Instantly</image:title>
+            <image:caption>Drag and drop screenshot upload with instant shareable links</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Gallery - User Content -->
+    <url>
+        <loc>https://doz.com/gallery.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.85</priority>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>DOZ UP Screenshot Gallery</image:title>
+            <image:caption>Browse and manage your uploaded screenshots and images</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Studio - Image Editor -->
+    <url>
+        <loc>https://doz.com/studio.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>DOZ UP Image Studio</image:title>
+            <image:caption>Professional screenshot editor with annotation tools for developers</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Tools Page -->
+    <url>
+        <loc>https://doz.com/tools.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>DOZ UP Screenshot Tools</image:title>
+            <image:caption>Developer tools for screenshot capture, annotation, and sharing</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Collage Creator -->
+    <url>
+        <loc>https://doz.com/collage.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>Screenshot Collage Creator</image:title>
+            <image:caption>Combine multiple screenshots into shareable collages</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Frames - Screenshot Mockups -->
+    <url>
+        <loc>https://doz.com/frames.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>Device Frame Mockups</image:title>
+            <image:caption>Add device frames to screenshots for professional presentations</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Themes Page -->
+    <url>
+        <loc>https://doz.com/themes.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Demo Page -->
+    <url>
+        <loc>https://doz.com/demo.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://doz.com/og-image.png</image:loc>
+            <image:title>DOZ UP Live Demo</image:title>
+            <image:caption>Try DOZ UP screenshot tool - no signup required</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Hub - Community/Resources -->
+    <url>
+        <loc>https://doz.com/hub.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.75</priority>
+    </url>
+
+    <!-- Security Information -->
+    <url>
+        <loc>https://doz.com/security.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Login Page -->
+    <url>
+        <loc>https://doz.com/login.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- PWA App Entry -->
+    <url>
+        <loc>https://doz.com/app/</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+        <image:image>
+            <image:loc>https://doz.com/app/icon-512.png</image:loc>
+            <image:title>DOZ UP Progressive Web App</image:title>
+            <image:caption>Install DOZ UP as an app on any device</image:caption>
+        </image:image>
+    </url>
+
+    <!-- Payment/Pricing (public info only) -->
+    <url>
+        <loc>https://doz.com/pay.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.65</priority>
+    </url>
+
+    <!-- My Account -->
+    <url>
+        <loc>https://doz.com/my-account.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+    <!-- Mobile Web App -->
+    <url>
+        <loc>https://doz.com/mobile.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://doz.com/icons/icon-512.png</image:loc>
+            <image:title>DOZ UP Mobile Screenshot App</image:title>
+            <image:caption>Capture and share screenshots from your mobile device</image:caption>
+        </image:image>
+    </url>
+
+    <!-- RSS Feed for syndication -->
+    <url>
+        <loc>https://doz.com/feed.xml</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+</urlset>

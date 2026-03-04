@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Professional Ad Images</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            min-height: 100vh;
+            padding: 40px;
+            color: #fff;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+        }
+        .ad-section {
+            max-width: 1400px;
+            margin: 0 auto 60px;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .section-desc {
+            color: #10b981;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .ad-container {
+            display: inline-block;
+            border: 2px solid rgba(167, 139, 250, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            margin-bottom: 15px;
+        }
+        canvas {
+            display: block;
+            border-radius: 8px;
+        }
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            color: #fff;
+            margin-top: 12px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+        }
+        .ad-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        .ad-card {
+            text-align: center;
+        }
+        .size-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.3), transparent);
+            margin: 50px 0;
+        }
+        .info-box {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            text-align: center;
+        }
+        .info-box h3 {
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        .info-box p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>DOZ UP Professional Ad Images</h1>
+    <p class="subtitle">Download high-quality marketing images for Google Ads</p>
+
+    <!-- AD 1: Landscape Marketing Image (1200x628) -->
+    <div class="ad-section">
+        <h2 class="section-title">Marketing Image - Landscape</h2>
+        <p class="section-desc">1200 x 628 px - Perfect for Google Display & Facebook Ads</p>
+
+        <div class="ad-grid">
+            <div class="ad-card">
+                <div class="size-badge">1200 x 628</div>
+                <div class="ad-container">
+                    <canvas id="adLandscape1" width="600" height="314"></canvas>
+                </div>
+                <br>
+                <button class="btn" onclick="downloadAd('landscape1')">Download HD Image</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- AD 2: Square Marketing Image (1200x1200) -->
+    <div class="ad-section">
+        <h2 class="section-title">Marketing Image - Square</h2>
+        <p class="section-desc">1200 x 1200 px - Perfect for Instagram & Display Ads</p>
+
+        <div class="ad-grid">
+            <div class="ad-card">
+                <div class="size-badge">1200 x 1200</div>
+                <div class="ad-container">
+                    <canvas id="adSquare1" width="400" height="400"></canvas>
+                </div>
+                <br>
+                <button class="btn" onclick="downloadAd('square1')">Download HD Image</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- AD 3: Feature Showcase -->
+    <div class="ad-section">
+        <h2 class="section-title">Feature Showcase Ads</h2>
+        <p class="section-desc">Highlight the speed and simplicity</p>
+
+        <div class="ad-grid">
+            <div class="ad-card">
+                <div class="size-badge">1200 x 628</div>
+                <div class="ad-container">
+                    <canvas id="adFeature1" width="600" height="314"></canvas>
+                </div>
+                <br>
+                <button class="btn" onclick="downloadAd('feature1')">Download HD Image</button>
+            </div>
+
+            <div class="ad-card">
+                <div class="size-badge">1200 x 628</div>
+                <div class="ad-container">
+                    <canvas id="adFeature2" width="600" height="314"></canvas>
+                </div>
+                <br>
+                <button class="btn" onclick="downloadAd('feature2')">Download HD Image</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- AD 4: CTA Focused -->
+    <div class="ad-section">
+        <h2 class="section-title">Call-to-Action Ads</h2>
+        <p class="section-desc">Strong CTAs for high conversion</p>
+
+        <div class="ad-grid">
+            <div class="ad-card">
+                <div class="size-badge">1200 x 628</div>
+                <div class="ad-container">
+                    <canvas id="adCTA1" width="600" height="314"></canvas>
+                </div>
+                <br>
+                <button class="btn" onclick="downloadAd('cta1')">Download HD Image</button>
+            </div>
+
+            <div class="ad-card">
+                <div class="size-badge">1200 x 1200</div>
+                <div class="ad-container">
+                    <canvas id="adCTA2" width="400" height="400"></canvas>
+                </div>
+                <br>
+                <button class="btn" onclick="downloadAd('cta2')">Download HD Image</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>Google Ads Image Requirements</h3>
+        <p>Landscape: 1200x628 | Square: 1200x1200 | Format: PNG/JPG | Max size: 5MB</p>
+    </div>
+
+    <script>
+        // Load icon
+        const icon = new Image();
+        icon.crossOrigin = 'anonymous';
+        icon.src = '/app/icon-192.png';
+
+        // Load screenshot mockup (we'll draw a stylized version)
+        icon.onload = function() {
+            drawAllAds();
+        };
+        icon.onerror = function() {
+            icon.src = '/favicon.png';
+        };
+
+        function drawAllAds() {
+            drawLandscapeAd1();
+            drawSquareAd1();
+            drawFeatureAd1();
+            drawFeatureAd2();
+            drawCTAAd1();
+            drawCTAAd2();
+        }
+
+        // Helper: Draw rounded rectangle
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        // Helper: Draw browser mockup
+        function drawBrowserMockup(ctx, x, y, w, h, scale = 1) {
+            // Browser window
+            ctx.fillStyle = '#1e1e2e';
+            roundRect(ctx, x, y, w, h, 8 * scale);
+            ctx.fill();
+
+            // Browser header
+            ctx.fillStyle = '#2d2d3d';
+            roundRect(ctx, x, y, w, 25 * scale, 8 * scale);
+            ctx.fill();
+            ctx.fillRect(x, y + 15 * scale, w, 10 * scale);
+
+            // Traffic lights
+            const dotY = y + 12 * scale;
+            ctx.fillStyle = '#ff5f57';
+            ctx.beginPath();
+            ctx.arc(x + 15 * scale, dotY, 4 * scale, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffbd2e';
+            ctx.beginPath();
+            ctx.arc(x + 30 * scale, dotY, 4 * scale, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#28c840';
+            ctx.beginPath();
+            ctx.arc(x + 45 * scale, dotY, 4 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // URL bar
+            ctx.fillStyle = '#0a0a1a';
+            roundRect(ctx, x + 60 * scale, y + 6 * scale, w - 75 * scale, 14 * scale, 4 * scale);
+            ctx.fill();
+            ctx.fillStyle = '#10b981';
+            ctx.font = `${8 * scale}px Inter`;
+            ctx.fillText('doz.com/up', x + 68 * scale, y + 16 * scale);
+
+            // Content area - screenshot preview
+            const contentY = y + 25 * scale;
+            const contentH = h - 25 * scale;
+
+            // Gradient content background
+            const contentGrad = ctx.createLinearGradient(x, contentY, x, contentY + contentH);
+            contentGrad.addColorStop(0, '#12122a');
+            contentGrad.addColorStop(1, '#0a0a1a');
+            ctx.fillStyle = contentGrad;
+            ctx.fillRect(x, contentY, w, contentH);
+
+            // Draw DOZ UP icon in browser
+            const iconSize = 40 * scale;
+            ctx.drawImage(icon, x + w/2 - iconSize/2, contentY + 15 * scale, iconSize, iconSize);
+
+            // Share link preview
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+            roundRect(ctx, x + 20 * scale, contentY + 65 * scale, w - 40 * scale, 20 * scale, 4 * scale);
+            ctx.fill();
+            ctx.fillStyle = '#10b981';
+            ctx.font = `${7 * scale}px Inter`;
+            ctx.fillText('doz.com/up/i/abc123...', x + 30 * scale, contentY + 78 * scale);
+
+            // Copy button
+            ctx.fillStyle = '#10b981';
+            roundRect(ctx, x + w - 55 * scale, contentY + 67 * scale, 30 * scale, 16 * scale, 3 * scale);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = `bold ${6 * scale}px Inter`;
+            ctx.fillText('COPY', x + w - 50 * scale, contentY + 78 * scale);
+        }
+
+        // Helper: Draw phone mockup
+        function drawPhoneMockup(ctx, x, y, w, h, scale = 1) {
+            // Phone body
+            ctx.fillStyle = '#1a1a2e';
+            roundRect(ctx, x, y, w, h, 20 * scale);
+            ctx.fill();
+
+            // Phone border
+            ctx.strokeStyle = '#3d3d5c';
+            ctx.lineWidth = 2 * scale;
+            roundRect(ctx, x, y, w, h, 20 * scale);
+            ctx.stroke();
+
+            // Screen
+            const screenX = x + 8 * scale;
+            const screenY = y + 35 * scale;
+            const screenW = w - 16 * scale;
+            const screenH = h - 70 * scale;
+
+            const screenGrad = ctx.createLinearGradient(screenX, screenY, screenX, screenY + screenH);
+            screenGrad.addColorStop(0, '#0a0a1a');
+            screenGrad.addColorStop(1, '#12122a');
+            ctx.fillStyle = screenGrad;
+            roundRect(ctx, screenX, screenY, screenW, screenH, 4 * scale);
+            ctx.fill();
+
+            // Notch
+            ctx.fillStyle = '#1a1a2e';
+            roundRect(ctx, x + w/2 - 30 * scale, y + 8 * scale, 60 * scale, 18 * scale, 10 * scale);
+            ctx.fill();
+
+            // App icon on screen
+            const appIconSize = 35 * scale;
+            ctx.drawImage(icon, x + w/2 - appIconSize/2, screenY + 20 * scale, appIconSize, appIconSize);
+
+            // Share notification
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
+            roundRect(ctx, screenX + 10 * scale, screenY + 70 * scale, screenW - 20 * scale, 35 * scale, 6 * scale);
+            ctx.fill();
+
+            ctx.fillStyle = '#10b981';
+            ctx.font = `bold ${8 * scale}px Inter`;
+            ctx.fillText('Link Copied!', screenX + 20 * scale, screenY + 85 * scale);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = `${6 * scale}px Inter`;
+            ctx.fillText('Ready to share', screenX + 20 * scale, screenY + 97 * scale);
+
+            // Home indicator
+            ctx.fillStyle = '#3d3d5c';
+            roundRect(ctx, x + w/2 - 25 * scale, y + h - 18 * scale, 50 * scale, 4 * scale, 2 * scale);
+            ctx.fill();
+        }
+
+        // AD 1: Landscape Marketing
+        function drawLandscapeAd1() {
+            const canvas = document.getElementById('adLandscape1');
+            const ctx = canvas.getContext('2d');
+            const w = 600, h = 314;
+
+            // Background gradient
+            const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+            bgGrad.addColorStop(0, '#0a0a1a');
+            bgGrad.addColorStop(0.5, '#12122a');
+            bgGrad.addColorStop(1, '#1a1a3e');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Decorative circles
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.1)';
+            ctx.beginPath();
+            ctx.arc(500, 50, 120, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.1)';
+            ctx.beginPath();
+            ctx.arc(550, 280, 100, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Left side: Text content
+            // Icon
+            ctx.drawImage(icon, 30, 30, 50, 50);
+
+            // DOZ UP text
+            ctx.font = 'bold 28px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('DOZ', 90, 65);
+            const upGrad = ctx.createLinearGradient(145, 0, 195, 0);
+            upGrad.addColorStop(0, '#a78bfa');
+            upGrad.addColorStop(1, '#8b5cf6');
+            ctx.fillStyle = upGrad;
+            ctx.fillText('UP', 145, 65);
+
+            // Headline
+            ctx.font = 'bold 32px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Share Screenshots', 30, 130);
+            ctx.fillText('in 3 Seconds', 30, 168);
+
+            // Subheadline
+            ctx.font = '14px Inter';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('Capture. Upload. Share. Instantly.', 30, 200);
+            ctx.fillText('No signup required.', 30, 220);
+
+            // CTA Button
+            const ctaGrad = ctx.createLinearGradient(30, 250, 180, 250);
+            ctaGrad.addColorStop(0, '#10b981');
+            ctaGrad.addColorStop(1, '#059669');
+            ctx.fillStyle = ctaGrad;
+            roundRect(ctx, 30, 250, 150, 40, 8);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 14px Inter';
+            ctx.fillText('Try Free Now', 62, 275);
+
+            // Right side: Browser mockup
+            drawBrowserMockup(ctx, 320, 40, 250, 160, 1);
+
+            // Floating elements
+            // Speed badge
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+            roundRect(ctx, 400, 220, 80, 28, 14);
+            ctx.fill();
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 11px Inter';
+            ctx.fillText('3 SEC', 422, 238);
+
+            // Free badge
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.2)';
+            roundRect(ctx, 490, 220, 70, 28, 14);
+            ctx.fill();
+            ctx.fillStyle = '#a78bfa';
+            ctx.fillText('FREE', 510, 238);
+        }
+
+        // AD 2: Square Marketing
+        function drawSquareAd1() {
+            const canvas = document.getElementById('adSquare1');
+            const ctx = canvas.getContext('2d');
+            const s = 400;
+
+            // Background
+            const bgGrad = ctx.createLinearGradient(0, 0, s, s);
+            bgGrad.addColorStop(0, '#0a0a1a');
+            bgGrad.addColorStop(1, '#1a1a3e');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, s, s);
+
+            // Decorative elements
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+            ctx.beginPath();
+            ctx.arc(350, 80, 100, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.08)';
+            ctx.beginPath();
+            ctx.arc(50, 350, 80, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Top: Logo
+            ctx.drawImage(icon, s/2 - 35, 25, 70, 70);
+
+            // DOZ UP text
+            ctx.font = 'bold 32px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('DOZ', s/2 - 35, 125);
+            const upGrad = ctx.createLinearGradient(s/2, 0, s/2 + 70, 0);
+            upGrad.addColorStop(0, '#a78bfa');
+            upGrad.addColorStop(1, '#8b5cf6');
+            ctx.fillStyle = upGrad;
+            ctx.fillText('UP', s/2 + 35, 125);
+            ctx.textAlign = 'left';
+
+            // Center: Phone mockup
+            drawPhoneMockup(ctx, s/2 - 55, 145, 110, 180, 1);
+
+            // Bottom: Text
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 20px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Share Screenshots Instantly', s/2, 350);
+
+            ctx.font = '12px Inter';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('3 Seconds. No Signup. Free.', s/2, 375);
+            ctx.textAlign = 'left';
+        }
+
+        // AD 3: Feature Ad 1 - Speed
+        function drawFeatureAd1() {
+            const canvas = document.getElementById('adFeature1');
+            const ctx = canvas.getContext('2d');
+            const w = 600, h = 314;
+
+            // Background
+            const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+            bgGrad.addColorStop(0, '#0a0a1a');
+            bgGrad.addColorStop(1, '#12122a');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Large "3" with glow
+            ctx.font = 'bold 200px Inter';
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+            ctx.fillText('3', 30, 220);
+
+            const numGrad = ctx.createLinearGradient(30, 0, 150, 0);
+            numGrad.addColorStop(0, '#10b981');
+            numGrad.addColorStop(1, '#059669');
+            ctx.fillStyle = numGrad;
+            ctx.font = 'bold 140px Inter';
+            ctx.fillText('3', 50, 200);
+
+            // SEC text
+            ctx.font = 'bold 50px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('SEC', 170, 180);
+
+            // Subtext
+            ctx.font = '16px Inter';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('That\'s all it takes', 170, 210);
+
+            // Right side content
+            // Logo
+            ctx.drawImage(icon, 420, 30, 45, 45);
+            ctx.font = 'bold 20px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('DOZ', 475, 55);
+            ctx.fillStyle = '#a78bfa';
+            ctx.fillText('UP', 525, 55);
+
+            // Feature list
+            const features = [
+                { icon: '1', text: 'Capture Screen' },
+                { icon: '2', text: 'Auto Upload' },
+                { icon: '3', text: 'Share Link' }
+            ];
+
+            features.forEach((f, i) => {
+                const y = 100 + i * 45;
+
+                // Number circle
+                ctx.fillStyle = i === 2 ? '#10b981' : 'rgba(255,255,255,0.1)';
+                ctx.beginPath();
+                ctx.arc(420, y + 10, 15, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = i === 2 ? '#fff' : '#94a3b8';
+                ctx.font = 'bold 12px Inter';
+                ctx.fillText(f.icon, 416, y + 15);
+
+                ctx.fillStyle = '#fff';
+                ctx.font = '14px Inter';
+                ctx.fillText(f.text, 445, y + 15);
+            });
+
+            // CTA
+            ctx.fillStyle = '#10b981';
+            roundRect(ctx, 400, 255, 160, 40, 8);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 14px Inter';
+            ctx.fillText('Start Sharing Free', 420, 280);
+        }
+
+        // AD 4: Feature Ad 2 - No Signup
+        function drawFeatureAd2() {
+            const canvas = document.getElementById('adFeature2');
+            const ctx = canvas.getContext('2d');
+            const w = 600, h = 314;
+
+            // Background
+            const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+            bgGrad.addColorStop(0, '#1a1a3e');
+            bgGrad.addColorStop(1, '#0a0a1a');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Pattern dots
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.1)';
+            for (let i = 0; i < 10; i++) {
+                for (let j = 0; j < 5; j++) {
+                    ctx.beginPath();
+                    ctx.arc(50 + i * 60, 30 + j * 70, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Logo top left
+            ctx.drawImage(icon, 30, 30, 40, 40);
+            ctx.font = 'bold 18px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('DOZ', 80, 55);
+            ctx.fillStyle = '#a78bfa';
+            ctx.fillText('UP', 120, 55);
+
+            // Main message
+            ctx.font = 'bold 42px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.fillText('No Signup Needed', w/2, 140);
+
+            ctx.font = 'bold 28px Inter';
+            const subGrad = ctx.createLinearGradient(0, 0, w, 0);
+            subGrad.addColorStop(0, '#10b981');
+            subGrad.addColorStop(1, '#34d399');
+            ctx.fillStyle = subGrad;
+            ctx.fillText('Just Capture & Share', w/2, 180);
+
+            // Benefits row
+            const benefits = ['Instant', 'Free', 'Private'];
+            benefits.forEach((b, i) => {
+                const x = 150 + i * 150;
+
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+                roundRect(ctx, x - 40, 210, 80, 35, 17);
+                ctx.fill();
+
+                ctx.fillStyle = '#10b981';
+                ctx.font = 'bold 14px Inter';
+                ctx.fillText(b, x, 233);
+            });
+
+            // CTA
+            ctx.fillStyle = '#8b5cf6';
+            roundRect(ctx, w/2 - 80, 260, 160, 40, 8);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 14px Inter';
+            ctx.fillText('Try It Now', w/2, 285);
+            ctx.textAlign = 'left';
+        }
+
+        // AD 5: CTA Ad 1
+        function drawCTAAd1() {
+            const canvas = document.getElementById('adCTA1');
+            const ctx = canvas.getContext('2d');
+            const w = 600, h = 314;
+
+            // Gradient background
+            const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+            bgGrad.addColorStop(0, '#059669');
+            bgGrad.addColorStop(0.5, '#10b981');
+            bgGrad.addColorStop(1, '#34d399');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Overlay pattern
+            ctx.fillStyle = 'rgba(255,255,255,0.05)';
+            for (let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 50 + 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Dark card in center
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            roundRect(ctx, 50, 40, w - 100, h - 80, 20);
+            ctx.fill();
+
+            // Logo
+            ctx.drawImage(icon, w/2 - 30, 55, 60, 60);
+
+            // Text
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 36px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Start Sharing Today', w/2, 160);
+
+            ctx.font = '16px Inter';
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.fillText('Screenshot to link in 3 seconds', w/2, 190);
+
+            // CTA Button
+            ctx.fillStyle = '#fff';
+            roundRect(ctx, w/2 - 90, 215, 180, 50, 25);
+            ctx.fill();
+
+            ctx.fillStyle = '#059669';
+            ctx.font = 'bold 16px Inter';
+            ctx.fillText('Get DOZ UP Free', w/2, 245);
+            ctx.textAlign = 'left';
+        }
+
+        // AD 6: CTA Ad 2 Square
+        function drawCTAAd2() {
+            const canvas = document.getElementById('adCTA2');
+            const ctx = canvas.getContext('2d');
+            const s = 400;
+
+            // Purple gradient background
+            const bgGrad = ctx.createLinearGradient(0, 0, s, s);
+            bgGrad.addColorStop(0, '#7c3aed');
+            bgGrad.addColorStop(0.5, '#8b5cf6');
+            bgGrad.addColorStop(1, '#a78bfa');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, s, s);
+
+            // Decorative circles
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            ctx.beginPath();
+            ctx.arc(350, 50, 80, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(50, 350, 60, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Logo
+            ctx.drawImage(icon, s/2 - 40, 40, 80, 80);
+
+            // Text
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 30px Inter';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('DOZ UP', s/2, 155);
+
+            ctx.font = 'bold 24px Inter';
+            ctx.fillText('Screenshot Sharing', s/2, 200);
+            ctx.fillText('Made Simple', s/2, 232);
+
+            // Feature badges
+            ctx.font = '14px Inter';
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.fillText('3 Seconds  •  Free  •  No Signup', s/2, 275);
+
+            // CTA
+            ctx.fillStyle = '#fff';
+            roundRect(ctx, s/2 - 80, 305, 160, 50, 25);
+            ctx.fill();
+
+            ctx.fillStyle = '#7c3aed';
+            ctx.font = 'bold 16px Inter';
+            ctx.fillText('Try Free', s/2, 335);
+            ctx.textAlign = 'left';
+        }
+
+        // Download functions
+        function downloadAd(type) {
+            let sourceCanvas, exportW, exportH, filename;
+
+            switch(type) {
+                case 'landscape1':
+                    sourceCanvas = document.getElementById('adLandscape1');
+                    exportW = 1200; exportH = 628;
+                    filename = 'DOZ-UP-Ad-Landscape-Main';
+                    break;
+                case 'square1':
+                    sourceCanvas = document.getElementById('adSquare1');
+                    exportW = 1200; exportH = 1200;
+                    filename = 'DOZ-UP-Ad-Square-Main';
+                    break;
+                case 'feature1':
+                    sourceCanvas = document.getElementById('adFeature1');
+                    exportW = 1200; exportH = 628;
+                    filename = 'DOZ-UP-Ad-3-Seconds';
+                    break;
+                case 'feature2':
+                    sourceCanvas = document.getElementById('adFeature2');
+                    exportW = 1200; exportH = 628;
+                    filename = 'DOZ-UP-Ad-No-Signup';
+                    break;
+                case 'cta1':
+                    sourceCanvas = document.getElementById('adCTA1');
+                    exportW = 1200; exportH = 628;
+                    filename = 'DOZ-UP-Ad-CTA-Green';
+                    break;
+                case 'cta2':
+                    sourceCanvas = document.getElementById('adCTA2');
+                    exportW = 1200; exportH = 1200;
+                    filename = 'DOZ-UP-Ad-CTA-Purple';
+                    break;
+            }
+
+            // Create high-res export canvas
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = exportW;
+            exportCanvas.height = exportH;
+            const ctx = exportCanvas.getContext('2d');
+
+            // Scale up
+            const scaleX = exportW / sourceCanvas.width;
+            const scaleY = exportH / sourceCanvas.height;
+            ctx.scale(scaleX, scaleY);
+
+            // Redraw at high res by scaling
+            ctx.drawImage(sourceCanvas, 0, 0);
+
+            // Download
+            const link = document.createElement('a');
+            link.download = filename + '.png';
+            link.href = exportCanvas.toDataURL('image/png', 1.0);
+            link.click();
+        }
+
+        // Initialize
+        setTimeout(drawAllAds, 500);
+    </script>
+</body>
+</html>

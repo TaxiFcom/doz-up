@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Pricing & Plans</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #2E7D32;
+            --secondary: #8BC34A;
+            --bg-dark: #0a0a12;
+            --bg-card: rgba(255,255,255,0.03);
+            --text: #ffffff;
+            --text-muted: #888;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(145deg, var(--bg-dark) 0%, #1a1a2e 50%, #0f0f1a 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .billing-toggle {
+            display: inline-flex;
+            background: var(--bg-card);
+            border-radius: 30px;
+            padding: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .billing-toggle button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 24px;
+            border-radius: 26px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .billing-toggle button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .save-badge {
+            background: var(--secondary);
+            color: #000;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* Pricing Grid */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .plan-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .plan-card.popular {
+            border-color: var(--primary);
+            background: linear-gradient(180deg, rgba(76,175,80,0.1) 0%, var(--bg-card) 100%);
+        }
+
+        .plan-card.checkout-active {
+            transform: none;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .plan-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .plan-price {
+            margin-bottom: 24px;
+        }
+
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .price-currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+            color: var(--text-muted);
+        }
+
+        .price-period {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .plan-features li::before {
+            content: "\2713";
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .plan-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .plan-btn.primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .plan-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .plan-btn.secondary:hover {
+            border-color: var(--primary);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        /* Inline Checkout */
+        .inline-checkout {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.4s ease-out;
+            margin-top: 0;
+        }
+
+        .inline-checkout.active {
+            max-height: 800px;
+            opacity: 1;
+            margin-top: 24px;
+        }
+
+        .inline-checkout-inner {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+        }
+
+        .checkout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .checkout-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .checkout-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .checkout-close:hover {
+            color: var(--text);
+        }
+
+        .express-checkout-container {
+            margin-bottom: 16px;
+            min-height: 44px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .divider::before { margin-right: 12px; }
+        .divider::after { margin-left: 12px; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        #payment-element {
+            margin-bottom: 20px;
+        }
+
+        .order-summary-inline {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .order-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+        }
+
+        .order-line.total {
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            padding-top: 12px;
+            font-weight: 600;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .checkout-btn:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .checkout-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .checkout-btn .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .payment-error {
+            color: #f44336;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .payment-error.show {
+            display: block;
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Features Section */
+        .features-section {
+            text-align: center;
+            padding: 60px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .features-section h2 {
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-item {
+            padding: 24px;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 16px;
+        }
+
+        .feature-item h3 {
+            margin-bottom: 8px;
+        }
+
+        .feature-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 16px;
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price-amount {
+                font-size: 2.5rem;
+            }
+
+            .inline-checkout.active {
+                max-height: 900px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="/up" class="logo" style="text-decoration: none;">DOZ UP</a>
+            <p class="tagline">Professional Screenshot & Upload Platform</p>
+
+            <div class="billing-toggle">
+                <button id="monthlyBtn" class="active">Monthly</button>
+                <button id="yearlyBtn">Yearly <span class="save-badge">Save 33%</span></button>
+            </div>
+        </header>
+
+        <div class="pricing-grid" id="pricingGrid">
+            <!-- Plans will be loaded dynamically -->
+        </div>
+
+        <section class="features-section">
+            <h2>Everything You Need</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">&#9889;</div>
+                    <h3>Instant Upload</h3>
+                    <p>One-click screenshot capture and instant cloud upload</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">&#128274;</div>
+                    <h3>Secure Storage</h3>
+                    <p>End-to-end encryption for all your images</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">&#128279;</div>
+                    <h3>Easy Sharing</h3>
+                    <p>Generate shareable links instantly</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">&#128241;</div>
+                    <h3>Cross-Platform</h3>
+                    <p>Access from desktop app or web browser</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Secure payments powered by <a href="https://stripe.com" target="_blank">Stripe</a></p>
+            <p style="margin-top: 10px;">&copy; 2026 DOZ Network Corporation. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        let billingInterval = 'month';
+        let selectedPlan = null;
+        let plans = {};
+        let stripe = null;
+        let elements = null;
+        let paymentElement = null;
+        let expressCheckoutElement = null;
+        let activeCheckoutPlanId = null;
+        let clientSecret = null;
+
+        // Load plans from API
+        async function loadPlans() {
+            try {
+                const response = await fetch('/api/stripe/plans');
+                const data = await response.json();
+
+                if (data.success) {
+                    plans = data.plans;
+                    // Get publishable key
+                    const keyResponse = await fetch('/api/checkout/plans');
+                    const keyData = await keyResponse.json();
+                    if (keyData.publicKey) {
+                        initStripe(keyData.publicKey);
+                    }
+                    renderPlans();
+                }
+            } catch (error) {
+                console.error('Failed to load plans:', error);
+            }
+        }
+
+        function initStripe(publicKey) {
+            if (!publicKey || publicKey.includes('xxxx')) {
+                console.log('Stripe not configured - mock mode');
+                return;
+            }
+            stripe = Stripe(publicKey);
+        }
+
+        function renderPlans() {
+            const grid = document.getElementById('pricingGrid');
+            const suffix = billingInterval === 'year' ? '_yearly' : '_monthly';
+
+            const planOrder = ['starter', 'pro', 'team'];
+
+            grid.innerHTML = planOrder.map(planKey => {
+                const plan = plans[planKey + suffix];
+                if (!plan) return '';
+
+                const isPopular = planKey === 'pro';
+                const price = (plan.price / 100).toFixed(2);
+                const planId = plan.id;
+
+                return `
+                    <div class="plan-card ${isPopular ? 'popular' : ''}" id="card-${planId}">
+                        ${isPopular ? '<div class="popular-badge">Most Popular</div>' : ''}
+                        <h3 class="plan-name">${plan.name.replace(' Yearly', '').replace(' Monthly', '')}</h3>
+                        <p class="plan-description">${plan.description}</p>
+                        <div class="plan-price">
+                            <span class="price-currency">$</span>
+                            <span class="price-amount">${price}</span>
+                            <span class="price-period">/${plan.interval}</span>
+                        </div>
+                        <ul class="plan-features">
+                            ${plan.features.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                        <button class="plan-btn ${isPopular ? 'primary' : 'secondary'}"
+                                onclick="openCheckout('${planId}')"
+                                id="btn-${planId}">
+                            Get Started
+                        </button>
+
+                        <!-- Inline Checkout -->
+                        <div class="inline-checkout" id="checkout-${planId}">
+                            <div class="inline-checkout-inner">
+                                <div class="checkout-header">
+                                    <h3>Complete Payment</h3>
+                                    <button class="checkout-close" onclick="closeCheckout('${planId}')">&times;</button>
+                                </div>
+
+                                <!-- Express Checkout (Apple Pay, Google Pay) -->
+                                <div class="express-checkout-container" id="express-${planId}"></div>
+
+                                <div class="divider">or pay with card</div>
+
+                                <form id="form-${planId}" onsubmit="handleSubmit(event, '${planId}')">
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" id="email-${planId}" required placeholder="you@example.com">
+                                    </div>
+
+                                    <!-- Stripe Payment Element -->
+                                    <div id="payment-element-${planId}"></div>
+
+                                    <div class="order-summary-inline">
+                                        <div class="order-line">
+                                            <span>${plan.name}</span>
+                                            <span>$${price}/${plan.interval}</span>
+                                        </div>
+                                        <div class="order-line total">
+                                            <span>Total</span>
+                                            <span>$${price}</span>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="checkout-btn" id="submit-${planId}">
+                                        <span class="btn-text">Subscribe Now</span>
+                                    </button>
+
+                                    <div class="payment-error" id="error-${planId}"></div>
+
+                                    <div class="secure-badge">
+                                        <span>&#128274;</span>
+                                        <span>Secured by Stripe</span>
+                                    </div>
+                                </form>
+
+                                <div class="success-message" id="success-${planId}">
+                                    <div class="success-icon">&#10003;</div>
+                                    <h3>Payment Successful!</h3>
+                                    <p style="color: var(--text-muted); margin-top: 8px;">Your subscription is now active.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function openCheckout(planId) {
+            const plan = plans[planId];
+            if (!plan) return;
+
+            // Close any other open checkouts
+            if (activeCheckoutPlanId && activeCheckoutPlanId !== planId) {
+                closeCheckout(activeCheckoutPlanId);
+            }
+
+            const checkoutEl = document.getElementById(`checkout-${planId}`);
+            const cardEl = document.getElementById(`card-${planId}`);
+            const btnEl = document.getElementById(`btn-${planId}`);
+
+            // If already open, close it
+            if (checkoutEl.classList.contains('active')) {
+                closeCheckout(planId);
+                return;
+            }
+
+            btnEl.textContent = 'Loading...';
+            btnEl.disabled = true;
+
+            try {
+                // Get email if user entered it before
+                const emailInput = document.getElementById(`email-${planId}`);
+                let email = emailInput?.value || 'guest@checkout.temp';
+
+                // If no Stripe, use mock mode
+                if (!stripe) {
+                    checkoutEl.classList.add('active');
+                    cardEl.classList.add('checkout-active');
+                    btnEl.textContent = 'Get Started';
+                    btnEl.disabled = false;
+                    activeCheckoutPlanId = planId;
+                    return;
+                }
+
+                // Create checkout session to get client secret
+                const response = await fetch('/api/stripe/create-inline-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        planId: planId,
+                        email: email,
+                        customerName: ''
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to initialize checkout');
+                }
+
+                clientSecret = data.clientSecret;
+
+                // Initialize Stripe Elements
+                const appearance = {
+                    theme: 'night',
+                    variables: {
+                        colorPrimary: '#4CAF50',
+                        colorBackground: 'rgba(255,255,255,0.05)',
+                        colorText: '#ffffff',
+                        colorDanger: '#f44336',
+                        fontFamily: 'Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif',
+                        borderRadius: '10px',
+                        spacingUnit: '4px'
+                    },
+                    rules: {
+                        '.Input': {
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            boxShadow: 'none'
+                        },
+                        '.Input:focus': {
+                            border: '1px solid #4CAF50',
+                            boxShadow: 'none'
+                        }
+                    }
+                };
+
+                elements = stripe.elements({
+                    clientSecret: clientSecret,
+                    appearance: appearance
+                });
+
+                // Mount Payment Element
+                paymentElement = elements.create('payment', {
+                    layout: 'tabs'
+                });
+                paymentElement.mount(`#payment-element-${planId}`);
+
+                // Mount Express Checkout Element
+                try {
+                    expressCheckoutElement = elements.create('expressCheckout', {
+                        buttonType: {
+                            applePay: 'subscribe',
+                            googlePay: 'subscribe'
+                        }
+                    });
+
+                    expressCheckoutElement.on('confirm', async (event) => {
+                        const { error } = await stripe.confirmPayment({
+                            elements,
+                            clientSecret,
+                            confirmParams: {
+                                return_url: window.location.origin + '/v2/payment/success'
+                            },
+                            redirect: 'if_required'
+                        });
+
+                        if (error) {
+                            showError(planId, error.message);
+                        } else {
+                            showSuccess(planId);
+                        }
+                    });
+
+                    expressCheckoutElement.mount(`#express-${planId}`);
+                } catch (e) {
+                    console.log('Express checkout not available:', e.message);
+                }
+
+                // Show checkout
+                checkoutEl.classList.add('active');
+                cardEl.classList.add('checkout-active');
+                activeCheckoutPlanId = planId;
+
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showError(planId, error.message);
+            }
+
+            btnEl.textContent = 'Get Started';
+            btnEl.disabled = false;
+        }
+
+        function closeCheckout(planId) {
+            const checkoutEl = document.getElementById(`checkout-${planId}`);
+            const cardEl = document.getElementById(`card-${planId}`);
+
+            checkoutEl.classList.remove('active');
+            cardEl.classList.remove('checkout-active');
+
+            // Clean up Stripe elements
+            if (paymentElement) {
+                paymentElement.destroy();
+                paymentElement = null;
+            }
+            if (expressCheckoutElement) {
+                expressCheckoutElement.destroy();
+                expressCheckoutElement = null;
+            }
+            elements = null;
+            clientSecret = null;
+
+            if (activeCheckoutPlanId === planId) {
+                activeCheckoutPlanId = null;
+            }
+
+            // Hide error/success messages
+            const errorEl = document.getElementById(`error-${planId}`);
+            const successEl = document.getElementById(`success-${planId}`);
+            const formEl = document.getElementById(`form-${planId}`);
+            if (errorEl) errorEl.classList.remove('show');
+            if (successEl) successEl.classList.remove('show');
+            if (formEl) formEl.style.display = 'block';
+        }
+
+        async function handleSubmit(event, planId) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById(`submit-${planId}`);
+            const emailInput = document.getElementById(`email-${planId}`);
+            const email = emailInput.value;
+
+            if (!email) {
+                showError(planId, 'Please enter your email address');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+            hideError(planId);
+
+            try {
+                // Mock mode
+                if (!stripe || !elements) {
+                    // Simulate payment for testing
+                    const response = await fetch('/api/checkout/simulate-success', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: btoa(email).replace(/[^a-zA-Z0-9]/g, '').substring(0, 16),
+                            planId: planId,
+                            email: email,
+                            customerName: ''
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showSuccess(planId);
+                    } else {
+                        throw new Error(result.error || 'Payment failed');
+                    }
+                    return;
+                }
+
+                // Confirm payment with Stripe
+                const { error, paymentIntent } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        receipt_email: email,
+                        return_url: window.location.origin + '/v2/payment/success?plan=' + planId
+                    },
+                    redirect: 'if_required'
+                });
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                if (paymentIntent && paymentIntent.status === 'succeeded') {
+                    showSuccess(planId);
+                }
+
+            } catch (error) {
+                showError(planId, error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span class="btn-text">Subscribe Now</span>';
+            }
+        }
+
+        function showError(planId, message) {
+            const errorEl = document.getElementById(`error-${planId}`);
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.add('show');
+            }
+        }
+
+        function hideError(planId) {
+            const errorEl = document.getElementById(`error-${planId}`);
+            if (errorEl) {
+                errorEl.classList.remove('show');
+            }
+        }
+
+        function showSuccess(planId) {
+            const formEl = document.getElementById(`form-${planId}`);
+            const successEl = document.getElementById(`success-${planId}`);
+            const expressEl = document.getElementById(`express-${planId}`);
+
+            if (formEl) formEl.style.display = 'none';
+            if (expressEl) expressEl.style.display = 'none';
+            if (successEl) successEl.classList.add('show');
+
+            // Redirect after delay
+            setTimeout(() => {
+                window.location.href = '/v2/payment/success?plan=' + planId;
+            }, 2000);
+        }
+
+        // Billing toggle
+        document.getElementById('monthlyBtn').addEventListener('click', () => {
+            billingInterval = 'month';
+            document.getElementById('monthlyBtn').classList.add('active');
+            document.getElementById('yearlyBtn').classList.remove('active');
+            if (activeCheckoutPlanId) closeCheckout(activeCheckoutPlanId);
+            renderPlans();
+        });
+
+        document.getElementById('yearlyBtn').addEventListener('click', () => {
+            billingInterval = 'year';
+            document.getElementById('yearlyBtn').classList.add('active');
+            document.getElementById('monthlyBtn').classList.remove('active');
+            if (activeCheckoutPlanId) closeCheckout(activeCheckoutPlanId);
+            renderPlans();
+        });
+
+        // Initialize
+        loadPlans();
+    </script>
+</body>
+</html>

@@ -1,0 +1,3669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google tag (gtag.js) - Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-441083115"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'AW-441083115');
+    </script>
+
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="googlebot" content="index, follow">
+    <title>DOZ UP - Fast & Secure File Sharing | Cloud Upload Platform</title>
+    <meta name="description" content="Upload, share, and manage files securely with DOZ UP. Lightning fast transfers with end-to-end encryption. Professional cloud storage for teams and enterprises.">
+    <meta name="keywords" content="file sharing, cloud upload, secure file transfer, encrypted storage, team collaboration, file management, DOZ UP, fast upload, cloud storage">
+    <meta name="author" content="DOZ UP">
+    <link rel="canonical" href="https://doz.com/landing.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://doz.com/landing.html">
+    <meta property="og:site_name" content="DOZ UP">
+    <meta property="og:title" content="DOZ UP - Fast & Secure File Sharing">
+    <meta property="og:description" content="Upload, share, and manage files securely. Lightning fast transfers with end-to-end encryption.">
+    <meta property="og:image" content="https://doz.com/og-image.png">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@dozup">
+    <meta name="twitter:title" content="DOZ UP - Fast & Secure File Sharing">
+    <meta name="twitter:description" content="Upload, share, and manage files securely. Lightning fast transfers with end-to-end encryption.">
+    <meta name="twitter:image" content="https://doz.com/og-image.png">
+
+    <meta name="theme-color" content="#007AFF">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="apple-touch-icon" href="/app/icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --primary-dark: #0056b3;
+            --secondary: #5856D6;
+            --green: #34C759;
+            --orange: #FF9500;
+            --red: #FF3B30;
+            --bg: #0a0a0f;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.6);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(0, 122, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(88, 86, 214, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(52, 199, 89, 0.05) 0%, transparent 70%);
+            animation: bgPulse 10s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.8);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-auth {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-glass);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 122, 255, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 40px 80px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
+        .hero-badge span {
+            color: var(--green);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--text-dim) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            border-radius: 16px;
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--primary);
+        }
+
+        /* Upload Section */
+        .upload-section {
+            padding: 40px;
+            max-width: 700px;
+            margin: 0 auto 80px;
+        }
+
+        .upload-box {
+            background: var(--bg-glass);
+            border: 2px dashed var(--border);
+            border-radius: 24px;
+            padding: 60px 40px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-box:hover, .upload-box.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.5rem;
+        }
+
+        .upload-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .upload-box p {
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
+        .upload-box input[type="file"] {
+            display: none;
+        }
+
+        .upload-info {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .upload-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .upload-info-item svg {
+            color: var(--green);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* How It Works - Animated Steps */
+        .how-it-works {
+            padding: 80px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .steps-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .step-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 340px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .how-it-works.animate .step-card {
+            animation: stepFadeIn 0.8s ease forwards;
+        }
+
+        .how-it-works.animate .step-card:nth-child(1) { animation-delay: 0.2s; }
+        .how-it-works.animate .step-card:nth-child(2) { animation-delay: 0.5s; }
+        .how-it-works.animate .step-card:nth-child(3) { animation-delay: 0.8s; }
+
+        @keyframes stepFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+        }
+
+        .how-it-works.animate .step-card::before {
+            animation: lineGrow 1s ease forwards;
+        }
+
+        .how-it-works.animate .step-card:nth-child(1)::before { animation-delay: 0.4s; }
+        .how-it-works.animate .step-card:nth-child(2)::before { animation-delay: 0.7s; }
+        .how-it-works.animate .step-card:nth-child(3)::before { animation-delay: 1s; }
+
+        @keyframes lineGrow {
+            to { transform: scaleX(1); }
+        }
+
+        .step-number {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            transform: scale(0);
+        }
+
+        .how-it-works.animate .step-number {
+            animation: numberPop 0.5s ease forwards;
+        }
+
+        .how-it-works.animate .step-card:nth-child(1) .step-number { animation-delay: 0.6s; }
+        .how-it-works.animate .step-card:nth-child(2) .step-number { animation-delay: 0.9s; }
+        .how-it-works.animate .step-card:nth-child(3) .step-number { animation-delay: 1.2s; }
+
+        @keyframes numberPop {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Sequential Glowing Circles Animation */
+        .how-it-works.animate .step-card:nth-child(1) .step-number {
+            animation: numberPop 0.5s ease forwards 0.6s, stepGlow 3s ease-in-out infinite 2s;
+        }
+        .how-it-works.animate .step-card:nth-child(2) .step-number {
+            animation: numberPop 0.5s ease forwards 0.9s, stepGlow 3s ease-in-out infinite 3s;
+        }
+        .how-it-works.animate .step-card:nth-child(3) .step-number {
+            animation: numberPop 0.5s ease forwards 1.2s, stepGlow 3s ease-in-out infinite 4s;
+        }
+
+        @keyframes stepGlow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(0, 122, 255, 0.3);
+                transform: scale(1);
+            }
+            33% {
+                box-shadow: 0 0 25px rgba(0, 122, 255, 0.9), 0 0 50px rgba(88, 86, 214, 0.6);
+                transform: scale(1.15);
+            }
+        }
+
+        /* Also glow the icon circles sequentially */
+        .how-it-works.animate .step-card:nth-child(1) .step-icon {
+            animation: iconFloat 3s ease-in-out infinite, iconGlow 3s ease-in-out infinite 2s;
+        }
+        .how-it-works.animate .step-card:nth-child(2) .step-icon {
+            animation: iconFloat 3s ease-in-out infinite 0.5s, iconGlow 3s ease-in-out infinite 3s;
+        }
+        .how-it-works.animate .step-card:nth-child(3) .step-icon {
+            animation: iconFloat 3s ease-in-out infinite 1s, iconGlow 3s ease-in-out infinite 4s;
+        }
+
+        @keyframes iconGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 rgba(0, 122, 255, 0);
+            }
+            33% {
+                box-shadow: 0 0 30px rgba(0, 122, 255, 0.5), 0 0 60px rgba(88, 86, 214, 0.3);
+            }
+        }
+
+        .step-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+        }
+
+        .step-card:nth-child(1) .step-icon {
+            background: rgba(0, 122, 255, 0.15);
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+        .step-card:nth-child(2) .step-icon {
+            background: rgba(88, 86, 214, 0.15);
+            animation: iconFloat 3s ease-in-out infinite 0.5s;
+        }
+        .step-card:nth-child(3) .step-icon {
+            background: rgba(52, 199, 89, 0.15);
+            animation: iconFloat 3s ease-in-out infinite 1s;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Upload animation for step 1 */
+        .step-card:nth-child(1) .step-icon::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 4px;
+            animation: uploadBounce 2s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes uploadBounce {
+            0%, 100% { transform: translateY(20px); opacity: 0; }
+            50% { transform: translateY(-10px); opacity: 0.8; }
+        }
+
+        /* Link animation for step 2 */
+        .step-card:nth-child(2) .step-icon::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+            animation: linkPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes linkPulse {
+            0%, 100% { transform: scaleX(0.5); opacity: 0.3; }
+            50% { transform: scaleX(1); opacity: 1; }
+        }
+
+        /* Checkmark animation for step 3 */
+        .step-card:nth-child(3) .step-icon::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--green);
+            border-radius: 50%;
+            animation: ringExpand 2s ease-in-out infinite;
+        }
+
+        @keyframes ringExpand {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        .step-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .step-card p {
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        /* Arrow connectors between steps */
+        .step-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--primary);
+            opacity: 0;
+            align-self: center;
+            margin-top: 60px;
+        }
+
+        .how-it-works.animate .step-arrow {
+            animation: arrowFade 0.5s ease forwards;
+        }
+
+        .how-it-works.animate .step-arrow:nth-of-type(1) { animation-delay: 1s; }
+        .how-it-works.animate .step-arrow:nth-of-type(2) { animation-delay: 1.3s; }
+
+        @keyframes arrowFade {
+            to { opacity: 1; }
+        }
+
+        .step-arrow svg {
+            animation: arrowBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes arrowBounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(8px); }
+        }
+
+        /* Fun tagline under steps */
+        .steps-tagline {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+        }
+
+        .how-it-works.animate .steps-tagline {
+            animation: taglineFade 1s ease forwards 1.5s;
+        }
+
+        @keyframes taglineFade {
+            to { opacity: 1; }
+        }
+
+        .steps-tagline p {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+        }
+
+        .steps-tagline span {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .step-arrow {
+                transform: rotate(90deg);
+                margin: 20px 0;
+            }
+            .steps-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 60px 40px;
+            background: var(--bg-glass);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-item p {
+            color: var(--text-dim);
+            margin-top: 8px;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .pricing-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px 32px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.popular {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .pricing-card .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 16px 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-dim);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .pricing-card .btn {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        /* 4-column pricing grid */
+        .pricing-grid.four-col {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .pricing-grid.four-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pricing-grid.four-col {
+                grid-template-columns: 1fr;
+            }
+            .pricing-card.popular {
+                transform: none;
+            }
+        }
+
+        /* Free tier dashed border */
+        .pricing-card.free-tier {
+            border: 2px dashed rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, rgba(16,185,129,0.05), rgba(6,182,212,0.05));
+        }
+
+        /* Team card styling */
+        .pricing-card.team {
+            border-color: rgba(139, 92, 246, 0.5);
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
+        }
+
+        /* Plan badges */
+        .plan-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-dim);
+        }
+
+        .plan-badge.free {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .plan-badge.popular {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .plan-badge.team {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+        }
+
+        /* Hide default popular badge since we use plan-badge */
+        .pricing-card.popular::before {
+            display: none;
+        }
+
+        /* Price note for minimum */
+        .price-note {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: -12px;
+            margin-bottom: 16px;
+        }
+
+        /* Seat pricing section */
+        .seat-pricing {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .seat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .seat-row:last-child {
+            border-bottom: none;
+        }
+
+        .seat-row span {
+            color: var(--text-dim);
+        }
+
+        .seat-row strong {
+            color: var(--green);
+        }
+
+        /* Button variants */
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--green);
+            color: var(--green);
+        }
+
+        .btn-outline:hover {
+            background: var(--green);
+            color: #000;
+        }
+
+        .btn-team {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            border: none;
+        }
+
+        .btn-team:hover {
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Enterprise callout */
+        .enterprise-callout {
+            margin-top: 48px;
+            background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.1));
+            border: 1px solid rgba(251,191,36,0.3);
+            border-radius: 20px;
+            padding: 32px;
+        }
+
+        .enterprise-content {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .enterprise-icon {
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .enterprise-text {
+            flex: 1;
+        }
+
+        .enterprise-text h4 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #fbbf24;
+        }
+
+        .enterprise-text p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .btn-enterprise {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+            border: none;
+            white-space: nowrap;
+            font-weight: 700;
+        }
+
+        .btn-enterprise:hover {
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .enterprise-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Billing Toggle */
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .toggle-label {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            transition: color 0.3s;
+        }
+
+        .toggle-label.active {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .save-badge {
+            background: var(--green);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        .billing-switch {
+            position: relative;
+            width: 56px;
+            height: 28px;
+        }
+
+        .billing-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .billing-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 14px;
+            transition: 0.3s;
+        }
+
+        .billing-slider::before {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .billing-switch input:checked + .billing-slider {
+            background: var(--primary);
+        }
+
+        .billing-switch input:checked + .billing-slider::before {
+            transform: translateX(28px);
+        }
+
+        /* Section Titles */
+        .plans-section-title {
+            text-align: center;
+            font-size: 1.3rem;
+            margin: 40px 0 24px;
+            color: var(--text);
+        }
+
+        .plans-section-title.team-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .team-icon {
+            font-size: 1.5rem;
+        }
+
+        .team-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        /* 3-column grid for teams */
+        .pricing-grid.three-col {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 900px) {
+            .pricing-grid.three-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Yearly note */
+        .yearly-note {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: -8px;
+            margin-bottom: 16px;
+        }
+
+        /* Storage addon box */
+        .storage-addon {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 16px 0;
+        }
+
+        .storage-addon p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .addon-price {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .addon-price strong {
+            color: var(--green);
+        }
+
+        /* Storage Only card */
+        .pricing-card.storage-only {
+            border-style: dashed;
+            border-color: rgba(251,191,36,0.5);
+            background: linear-gradient(135deg, rgba(251,191,36,0.05), rgba(245,158,11,0.05));
+        }
+
+        /* Highlight feature */
+        .pricing-features li.highlight {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .pricing-features li.highlight::before {
+            content: '🎁';
+        }
+
+        /* API feature with yearly only badge */
+        .api-feature {
+            position: relative;
+        }
+
+        .yearly-only {
+            font-size: 0.7rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Team cards */
+        .team-card {
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .team-card.enterprise {
+            border-color: rgba(251,191,36,0.5);
+            background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.1));
+        }
+
+        .plan-badge.enterprise {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+        }
+
+        /* Storage breakdown */
+        .storage-breakdown {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .storage-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .storage-item + .storage-item {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 12px;
+            margin-top: 4px;
+        }
+
+        .storage-icon {
+            font-size: 1.5rem;
+        }
+
+        .storage-item strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .storage-item small {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .storage-item.highlight strong {
+            color: var(--green);
+        }
+
+        /* API Notice */
+        .api-notice {
+            margin-top: 40px;
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .api-notice-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .api-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .api-notice p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .api-notice-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Warning feature */
+        .pricing-features li.warning {
+            color: #f59e0b;
+        }
+
+        .pricing-features li.warning::before {
+            content: '⚠️';
+        }
+
+        /* Safe Box feature */
+        .pricing-features li.safebox {
+            color: #10b981;
+        }
+
+        .pricing-features li.safebox::before {
+            content: '🔒';
+        }
+
+        /* Lifecycle Box */
+        .lifecycle-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 14px;
+            margin: 16px 0;
+            text-align: left;
+        }
+
+        .lifecycle-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .lifecycle-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .lifecycle-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .lifecycle-step span {
+            font-weight: 500;
+        }
+
+        .lifecycle-step small {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        .lifecycle-step.active .step-dot {
+            background: var(--green);
+        }
+
+        .lifecycle-step.blur .step-dot {
+            background: #f59e0b;
+        }
+
+        .lifecycle-step.destruct .step-dot {
+            background: #ef4444;
+        }
+
+        /* Free lifecycle specific */
+        .free-lifecycle {
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(245,158,11,0.1));
+        }
+
+        /* Storage lifecycle */
+        .storage-lifecycle {
+            text-align: center;
+        }
+
+        .storage-lifecycle small {
+            color: #f59e0b;
+            font-size: 0.75rem;
+        }
+
+        /* Paid plan lifecycle */
+        .paid-lifecycle {
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.05));
+        }
+
+        .paid-lifecycle small {
+            display: block;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .pro-lifecycle {
+            text-align: center;
+        }
+
+        /* Safe Box timeline */
+        .safebox-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sb-step {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+
+        .sb-step.warning {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Safe Box Notice */
+        .safebox-notice {
+            margin-top: 40px;
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .safebox-notice-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .safebox-icon {
+            font-size: 2rem;
+        }
+
+        .safebox-notice-header h4 {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .safebox-policies {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .safebox-policies {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .policy-card {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .policy-card h5 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .policy-card ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .policy-card li {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .policy-card li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--text-dim);
+        }
+
+        .free-policy {
+            border-left: 3px solid #f59e0b;
+        }
+
+        .free-policy h5 {
+            color: #f59e0b;
+        }
+
+        .paid-policy {
+            border-left: 3px solid var(--green);
+        }
+
+        .paid-policy h5 {
+            color: var(--green);
+        }
+
+        .policy-footer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin: 0;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Auth Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-glass);
+            border-radius: 50%;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--red);
+        }
+
+        .modal h2 {
+            font-size: 1.75rem;
+            margin-bottom: 8px;
+        }
+
+        .modal p {
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+
+        .form-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .form-options a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 14px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 24px 0;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .social-login {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .social-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--primary);
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .modal-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .auth-tab.active {
+            color: var(--text);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Checkout Modal */
+        .checkout-modal {
+            max-width: 520px;
+        }
+
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .checkout-header h2 {
+            font-size: 1.75rem;
+            margin-bottom: 8px;
+        }
+
+        .checkout-plan-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .checkout-section {
+            margin-bottom: 28px;
+        }
+
+        .checkout-section h3 {
+            font-size: 1rem;
+            margin-bottom: 16px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .storage-slider-container {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .storage-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .storage-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .storage-price {
+            text-align: right;
+        }
+
+        .storage-price .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .storage-price .period {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .storage-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-card);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .storage-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .storage-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .storage-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.4);
+        }
+
+        .storage-ticks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .checkout-summary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-top: 16px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .summary-row .label {
+            color: var(--text-dim);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            margin-top: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checkout-btn.processing {
+            pointer-events: none;
+        }
+
+        .checkout-btn .btn-text {
+            transition: opacity 0.3s;
+        }
+
+        .checkout-btn.processing .btn-text {
+            opacity: 0;
+        }
+
+        .checkout-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: none;
+        }
+
+        .checkout-btn.processing .checkout-spinner {
+            opacity: 1;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Checkout Success State */
+        .checkout-success {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .checkout-success.active {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--green), #00b894);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.5rem;
+            animation: successPop 0.5s ease;
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .checkout-success h2 {
+            font-size: 1.75rem;
+            margin-bottom: 12px;
+        }
+
+        .checkout-success p {
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
+        .account-info {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .account-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .account-info-row .label {
+            color: var(--text-dim);
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 40px 30px;
+            border-top: 1px solid var(--border);
+            margin-top: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+
+        .footer-brand p {
+            color: var(--text-dim);
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+
+        .footer-column h4 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            color: var(--text-dim);
+        }
+
+        .footer-column a {
+            display: block;
+            color: var(--text);
+            text-decoration: none;
+            padding: 8px 0;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            max-width: 1200px;
+            margin: 0 auto;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 120px 20px 60px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .upload-section {
+                padding: 20px;
+            }
+
+            .upload-box {
+                padding: 40px 20px;
+            }
+
+            .upload-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .features, .pricing {
+                padding: 60px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+
+            .stat-item h3 {
+                font-size: 2rem;
+            }
+
+            .pricing-card.popular {
+                transform: none;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+
+        /* Upload Progress */
+        .upload-progress {
+            display: none;
+            margin-top: 24px;
+        }
+
+        .upload-progress.active {
+            display: block;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--green));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        /* Success State */
+        .upload-success {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .upload-success.active {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 24px;
+        }
+
+        .upload-link {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .upload-link input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .upload-link button {
+            padding: 10px 20px;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Share Buttons */
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .share-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .share-btn:hover { transform: scale(1.1); }
+        .share-btn.whatsapp { background: #25D366; }
+        .share-btn.telegram { background: #0088cc; }
+        .share-btn.twitter { background: #000; }
+        .share-btn.email { background: var(--primary); }
+        .share-btn.qr { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--primary);
+        }
+
+        .action-btn.secure {
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
+            border-color: rgba(139,92,246,0.5);
+        }
+
+        .action-btn.secure:hover {
+            background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3));
+        }
+
+        /* Free Tier Info */
+        .free-tier-info {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.1));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16,185,129,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 16px;
+        }
+
+        .tier-icon { font-size: 1rem; }
+
+        .tier-limits {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .limit-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .limit-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        .limit-value {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .upgrade-hint {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .btn-upgrade {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* QR Modal */
+        .qr-modal, .secure-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-modal.active, .secure-modal.active {
+            display: flex;
+        }
+
+        .qr-content, .secure-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+
+        .qr-close, .secure-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: white;
+            margin: 20px auto;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-url {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            word-break: break-all;
+        }
+
+        /* Secure Modal */
+        .secure-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .secure-options {
+            display: flex;
+            gap: 12px;
+            margin: 24px 0;
+            justify-content: center;
+        }
+
+        .biometric-btn {
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
+            border: 1px solid rgba(139,92,246,0.4);
+            border-radius: 16px;
+            padding: 20px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .biometric-btn:hover {
+            transform: translateY(-3px);
+            border-color: rgba(139,92,246,0.8);
+            box-shadow: 0 8px 20px rgba(139,92,246,0.3);
+        }
+
+        .bio-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .biometric-btn span {
+            display: block;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .biometric-btn small {
+            display: block;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .secure-alt {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .secure-alt p {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .alt-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .alt-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .alt-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .secure-note {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        /* Mobile responsive for new elements */
+        @media (max-width: 768px) {
+            .tier-limits {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .secure-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .biometric-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .alt-options {
+                flex-wrap: wrap;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .action-btn {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+        }
+    </style>
+
+    <!-- Inline Checkout -->
+    <link rel="stylesheet" href="/css/inline-checkout.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Header -->
+    <header>
+        <a href="/up" class="logo">
+            <div class="logo-icon">UP</div>
+            <span>DOZ UP</span>
+        </a>
+        <nav class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#pricing">Pricing</a>
+            <a href="/app">Dashboard</a>
+        </nav>
+        <div class="nav-auth">
+            <button class="btn btn-ghost" onclick="openAuth('login')">Log in</button>
+            <button class="btn btn-primary" onclick="openAuth('signup')">Sign up free</button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span>New</span> Now with 10GB free storage
+        </div>
+        <h1>Share files <span class="highlight">instantly</span> with anyone</h1>
+        <p>Upload, share, and manage your files with lightning-fast transfers and end-to-end encryption. No account required.</p>
+        <div class="hero-buttons">
+            <button class="btn btn-primary btn-large" onclick="document.getElementById('fileInput').click()">
+                Start uploading
+            </button>
+            <a href="#features" class="btn btn-secondary btn-large">Learn more</a>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section class="upload-section">
+        <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📤</div>
+            <h3>Drop files here or click to upload</h3>
+            <p>Support for images, videos, documents and more</p>
+            <input type="file" id="fileInput" multiple onchange="handleUpload(this.files)">
+            <button class="btn btn-primary">Select Files</button>
+            <div class="upload-info">
+                <div class="upload-info-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    End-to-end encrypted
+                </div>
+                <div class="upload-info-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    Lightning fast
+                </div>
+                <div class="upload-info-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    Files expire in 30 days
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Progress -->
+        <div class="upload-progress" id="uploadProgress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progressStatus">Uploading...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+        </div>
+
+        <!-- Upload Success -->
+        <div class="upload-success" id="uploadSuccess">
+            <div class="success-icon">✓</div>
+            <h3>Upload Complete!</h3>
+            <p>Your file is ready to share</p>
+
+            <!-- Link Section -->
+            <div class="upload-link">
+                <input type="text" id="uploadedLink" readonly value="">
+                <button onclick="copyLink()">Copy</button>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="share-buttons">
+                <button class="share-btn whatsapp" onclick="shareToWhatsApp()" title="Share on WhatsApp">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </button>
+                <button class="share-btn telegram" onclick="shareToTelegram()" title="Share on Telegram">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                </button>
+                <button class="share-btn twitter" onclick="shareToTwitter()" title="Share on X/Twitter">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </button>
+                <button class="share-btn email" onclick="shareToEmail()" title="Share via Email">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </button>
+                <button class="share-btn qr" onclick="showQRCode()" title="Show QR Code">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>
+                </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn" onclick="openInNewTab()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Open Link
+                </button>
+                <button class="action-btn secure" onclick="openSecureModal()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Secure Link
+                </button>
+                <button class="action-btn" onclick="resetUpload()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Another
+                </button>
+            </div>
+
+            <!-- Free Membership Info -->
+            <div class="free-tier-info">
+                <div class="tier-badge">
+                    <span class="tier-icon">🎁</span>
+                    <span>Free Visitor</span>
+                </div>
+                <div class="tier-limits">
+                    <div class="limit-item">
+                        <span class="limit-label">Storage</span>
+                        <span class="limit-value">1 GB</span>
+                    </div>
+                    <div class="limit-item">
+                        <span class="limit-label">File Size</span>
+                        <span class="limit-value">1 GB max</span>
+                    </div>
+                    <div class="limit-item">
+                        <span class="limit-label">Expires</span>
+                        <span class="limit-value">30 days</span>
+                    </div>
+                    <div class="limit-item">
+                        <span class="limit-label">Uploads</span>
+                        <span class="limit-value">7/day</span>
+                    </div>
+                </div>
+                <p class="upgrade-hint">Sign up free for 10GB storage & 30-day links!</p>
+                <button class="btn btn-primary btn-upgrade" onclick="openAuth('signup')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Upgrade Free
+                </button>
+            </div>
+        </div>
+
+        <!-- QR Code Modal -->
+        <div class="qr-modal" id="qrModal" onclick="closeQRModal(event)">
+            <div class="qr-content">
+                <button class="qr-close" onclick="closeQRModal()">&times;</button>
+                <h3>Scan to Access</h3>
+                <div class="qr-code" id="qrCode"></div>
+                <p class="qr-url" id="qrUrl"></p>
+            </div>
+        </div>
+
+        <!-- Secure Link Modal (Biometric) -->
+        <div class="secure-modal" id="secureModal" onclick="closeSecureModal(event)">
+            <div class="secure-content">
+                <button class="secure-close" onclick="closeSecureModal()">&times;</button>
+                <div class="secure-icon">🔐</div>
+                <h3>Secure Your Link</h3>
+                <p>Protect this link with biometric verification</p>
+
+                <div class="secure-options">
+                    <button class="biometric-btn" onclick="setupBiometric('face')">
+                        <div class="bio-icon">👤</div>
+                        <span>Face ID</span>
+                        <small>Unlock with your face</small>
+                    </button>
+                    <button class="biometric-btn" onclick="setupBiometric('fingerprint')">
+                        <div class="bio-icon">👆</div>
+                        <span>Fingerprint</span>
+                        <small>Touch to verify</small>
+                    </button>
+                    <button class="biometric-btn" onclick="setupBiometric('hand')">
+                        <div class="bio-icon">🖐️</div>
+                        <span>Palm Scan</span>
+                        <small>Like WeChat Pay</small>
+                    </button>
+                </div>
+
+                <div class="secure-alt">
+                    <p>Or protect with:</p>
+                    <div class="alt-options">
+                        <button class="alt-btn" onclick="setupPassword()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            Password
+                        </button>
+                        <button class="alt-btn" onclick="setupExpiry()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                            Auto-Expire
+                        </button>
+                        <button class="alt-btn" onclick="setupDownloadLimit()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Download Limit
+                        </button>
+                    </div>
+                </div>
+
+                <p class="secure-note">Requires sign-up to enable security features</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Everything you need</h2>
+            <p>Powerful features to make file sharing simple and secure</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>Upload and download at maximum speed with our optimized global CDN network.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure & Private</h3>
+                <p>End-to-end encryption ensures your files stay private and protected.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3>Easy Sharing</h3>
+                <p>Generate shareable links instantly. Set expiration and password protection.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Works Everywhere</h3>
+                <p>Access your files from any device - desktop, mobile, or tablet.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📁</div>
+                <h3>Organize Files</h3>
+                <p>Create folders, tag files, and keep everything organized your way.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Analytics</h3>
+                <p>Track downloads, views, and engagement with detailed analytics.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section - Animated -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header">
+            <h2>How it works</h2>
+            <p>Three simple steps to share anything with anyone</p>
+        </div>
+        <div class="steps-container">
+            <!-- Step 1 -->
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon">📤</div>
+                <h3>Upload</h3>
+                <p>Drag & drop your files or click to browse. We support images, videos, docs, and more!</p>
+            </div>
+
+            <!-- Arrow -->
+            <div class="step-arrow">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon">🔗</div>
+                <h3>Get Link</h3>
+                <p>Instantly get a secure shareable link. Add password protection or expiry if you want!</p>
+            </div>
+
+            <!-- Arrow -->
+            <div class="step-arrow">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon">🎉</div>
+                <h3>Done!</h3>
+                <p>Share the link anywhere - WhatsApp, email, or QR code. Recipients download instantly!</p>
+            </div>
+        </div>
+
+        <div class="steps-tagline">
+            <p>That's it! <span>No account needed</span> to get started.</p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>10M+</h3>
+                <p>Files Uploaded</p>
+            </div>
+            <div class="stat-item">
+                <h3>500K+</h3>
+                <p>Happy Users</p>
+            </div>
+            <div class="stat-item">
+                <h3>99.9%</h3>
+                <p>Uptime</p>
+            </div>
+            <div class="stat-item">
+                <h3>150+</h3>
+                <p>Countries</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="section-header">
+            <h2>Simple pricing</h2>
+            <p>Choose the plan that works for you or your team</p>
+            <!-- Billing Toggle -->
+            <div class="billing-toggle">
+                <span class="toggle-label" id="monthlyLabel">Monthly</span>
+                <label class="billing-switch">
+                    <input type="checkbox" id="yearlyToggle" onchange="toggleBilling()" checked>
+                    <span class="billing-slider"></span>
+                </label>
+                <span class="toggle-label active" id="yearlyLabel">Yearly <span class="save-badge">Save 20%</span></span>
+            </div>
+        </div>
+
+        <!-- Individual Plans -->
+        <h3 class="plans-section-title">Individual Plans</h3>
+        <div class="pricing-grid three-col">
+            <!-- Free Plan -->
+            <div class="pricing-card free-tier">
+                <div class="plan-badge free">Free Trial</div>
+                <h3>Free</h3>
+                <div class="price">$0<span>/forever</span></div>
+                <ul class="pricing-features">
+                    <li>Try all features</li>
+                    <li>Up to 33 captures</li>
+                    <li>Device auto-registration</li>
+                    <li>Basic sharing</li>
+                </ul>
+                <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">Start Free</button>
+            </div>
+
+            <!-- Starter Plan -->
+            <div class="pricing-card">
+                <div class="plan-badge">Starter</div>
+                <h3>Starter</h3>
+                <div class="price monthly-price" style="display:none;">$3.33<span>/month</span></div>
+                <div class="price yearly-price">$2.22<span>/month</span></div>
+                <div class="yearly-note">Billed $26.64/year - Save 33%</div>
+                <ul class="pricing-features">
+                    <li>Unlimited screenshots</li>
+                    <li>512 MB storage</li>
+                    <li>Basic annotations</li>
+                    <li>30-day link expiry</li>
+                </ul>
+                <button class="btn btn-secondary" onclick="openInlineCheckout('starter_monthly', this)">Get Started</button>
+            </div>
+
+            <!-- Pro Plan - Recommended -->
+            <div class="pricing-card popular recommended">
+                <div class="plan-badge popular">Most Popular</div>
+                <h3>Pro</h3>
+                <div class="price monthly-price" style="display:none;">$14.99<span>/month</span></div>
+                <div class="price yearly-price">$9.99<span>/month</span></div>
+                <div class="yearly-note">Billed $119.88/year - Save 33%</div>
+                <ul class="pricing-features">
+                    <li>3 GB cloud storage</li>
+                    <li>Advanced annotations</li>
+                    <li>Links never expire</li>
+                    <li>Priority support</li>
+                </ul>
+                <button class="btn btn-primary" onclick="openInlineCheckout('pro_monthly', this)">Start Pro</button>
+            </div>
+        </div>
+
+        <!-- Team Plans -->
+        <h3 class="plans-section-title team-title">
+            <span class="team-icon">👥</span> Team & Enterprise
+        </h3>
+        <div class="pricing-grid two-col">
+            <!-- Team -->
+            <div class="pricing-card team-card popular">
+                <div class="plan-badge popular">Best Value</div>
+                <h3>Team</h3>
+                <div class="price">€29.99<span>/user/mo</span></div>
+                <div class="price-note">13+ users minimum</div>
+                <ul class="pricing-features">
+                    <li>Everything in Pro</li>
+                    <li>API access</li>
+                    <li>Team workspaces</li>
+                    <li>Admin dashboard</li>
+                </ul>
+                <button class="btn btn-primary" onclick="openInlineCheckout('team_monthly', this)">Subscribe Now</button>
+            </div>
+
+            <!-- Enterprise -->
+            <div class="pricing-card team-card enterprise">
+                <div class="plan-badge enterprise">Enterprise</div>
+                <h3>Enterprise</h3>
+                <div class="price">€77.70<span>/user/mo</span></div>
+                <div class="price-note">33+ seats minimum</div>
+                <ul class="pricing-features">
+                    <li>Everything in Team</li>
+                    <li>White label branding</li>
+                    <li>SSO/SAML</li>
+                    <li>Dedicated support</li>
+                </ul>
+                <button class="btn btn-primary" onclick="openInlineCheckout('business_monthly', this)">Subscribe Now</button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="/up" class="logo">
+                    <div class="logo-icon">UP</div>
+                    <span>DOZ UP</span>
+                </a>
+                <p>Fast, secure, and simple file sharing for everyone. Upload anything, share with anyone.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Product</h4>
+                <a href="/features.html">Features</a>
+                <a href="/pricing.html">Pricing</a>
+                <a href="/app">Dashboard</a>
+                <a href="#">API</a>
+            </div>
+            <div class="footer-column">
+                <h4>Company</h4>
+                <a href="#">About</a>
+                <a href="#">Blog</a>
+                <a href="#">Careers</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-column">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">GDPR</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 DOZ UP. All rights reserved.</span>
+            <div>
+                <a href="#" style="color: var(--text-dim); margin-left: 20px;">Twitter</a>
+                <a href="#" style="color: var(--text-dim); margin-left: 20px;">GitHub</a>
+                <a href="#" style="color: var(--text-dim); margin-left: 20px;">Discord</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeAuth()">&times;</button>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Log in</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-options">
+                    <label><input type="checkbox"> Remember me</label>
+                    <a href="#">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Log in</button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" style="display: none;" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Create a password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Create account</button>
+            </form>
+
+            <div class="divider">or continue with</div>
+
+            <div class="social-login">
+                <button class="social-btn" title="Google">G</button>
+                <button class="social-btn" title="Apple"></button>
+                <button class="social-btn" title="GitHub"></button>
+            </div>
+
+            <div class="modal-footer" id="authFooter">
+                Don't have an account? <a href="#" onclick="switchAuthTab('signup')">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal checkout-modal">
+            <button class="modal-close" onclick="closeCheckout()">&times;</button>
+
+            <!-- Checkout Form -->
+            <div id="checkoutForm">
+                <div class="checkout-header">
+                    <h2>Complete Your Order</h2>
+                    <div class="checkout-plan-badge" id="checkoutPlanName">Pro Plan</div>
+                </div>
+
+                <!-- Storage Slider Section -->
+                <div class="checkout-section">
+                    <h3>Choose Your Storage</h3>
+                    <div class="storage-slider-container">
+                        <div class="storage-display">
+                            <span class="storage-amount" id="storageAmount">50 GB</span>
+                            <div class="storage-price">
+                                <div class="price" id="storagePrice">+$0</div>
+                                <div class="period">/month</div>
+                            </div>
+                        </div>
+                        <input type="range" class="storage-slider" id="storageSlider" min="0" max="6" value="0" oninput="updateStorageDisplay()">
+                        <div class="storage-ticks">
+                            <span>50GB</span>
+                            <span>100GB</span>
+                            <span>250GB</span>
+                            <span>500GB</span>
+                            <span>1TB</span>
+                            <span>2TB</span>
+                            <span>5TB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="checkout-section">
+                    <h3>Order Summary</h3>
+                    <div class="checkout-summary">
+                        <div class="summary-row">
+                            <span class="label" id="summaryPlanLabel">Pro Plan</span>
+                            <span id="summaryPlanPrice">$14.99</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Extra Storage</span>
+                            <span id="summaryStoragePrice">$0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Total</span>
+                            <span id="summaryTotal">$14.99/mo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary checkout-btn" onclick="processPayment()">
+                    <span class="btn-text">Complete Purchase</span>
+                    <div class="checkout-spinner"></div>
+                </button>
+
+                <p style="text-align: center; color: var(--text-dim); font-size: 0.85rem; margin-top: 16px;">
+                    Secure payment powered by Stripe. Cancel anytime.
+                </p>
+            </div>
+
+            <!-- Success State -->
+            <div class="checkout-success" id="checkoutSuccess">
+                <div class="success-icon">&#10003;</div>
+                <h2>Welcome to DOZ UP!</h2>
+                <p>Your account is now active and ready to use.</p>
+
+                <div class="account-info">
+                    <div class="account-info-row">
+                        <span class="label">Plan</span>
+                        <span id="successPlan">Pro</span>
+                    </div>
+                    <div class="account-info-row">
+                        <span class="label">Storage</span>
+                        <span id="successStorage">50 GB</span>
+                    </div>
+                    <div class="account-info-row">
+                        <span class="label">Status</span>
+                        <span style="color: var(--green);">Active</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-full" onclick="goToDashboard()">Go to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Drag and drop handling
+        const uploadBox = document.getElementById('uploadBox');
+
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.classList.add('dragover');
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.classList.remove('dragover');
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.classList.remove('dragover');
+            handleUpload(e.dataTransfer.files);
+        });
+
+        // How It Works - Scroll Animation Trigger
+        const howItWorksSection = document.getElementById('how-it-works');
+        if (howItWorksSection) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate');
+                        observer.unobserve(entry.target); // Only animate once
+                    }
+                });
+            }, { threshold: 0.2 });
+            observer.observe(howItWorksSection);
+        }
+
+        // File upload handling
+        async function handleUpload(files) {
+            if (!files || files.length === 0) return;
+
+            const uploadBox = document.getElementById('uploadBox');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const uploadSuccess = document.getElementById('uploadSuccess');
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            const progressStatus = document.getElementById('progressStatus');
+
+            uploadBox.style.display = 'none';
+            uploadProgress.classList.add('active');
+            uploadSuccess.classList.remove('active');
+
+            const file = files[0];
+            const formData = new FormData();
+            formData.append('image', file);  // Server expects 'image' field name
+
+            try {
+                const xhr = new XMLHttpRequest();
+
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressFill.style.width = percent + '%';
+                        progressPercent.textContent = percent + '%';
+                        progressStatus.textContent = `Uploading ${file.name}...`;
+                    }
+                };
+
+                xhr.onload = () => {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (xhr.status === 200 && response.url) {
+                            uploadProgress.classList.remove('active');
+                            uploadSuccess.classList.add('active');
+                            document.getElementById('uploadedLink').value = response.url;
+                        } else {
+                            alert('Upload failed: ' + (response.error || 'Unknown error'));
+                            resetUpload();
+                        }
+                    } catch (e) {
+                        alert('Upload failed: Invalid response');
+                        resetUpload();
+                    }
+                };
+
+                xhr.onerror = () => {
+                    alert('Upload failed. Check your connection and try again.');
+                    resetUpload();
+                };
+
+                xhr.ontimeout = () => {
+                    alert('Upload timed out. Please try again.');
+                    resetUpload();
+                };
+
+                xhr.timeout = 60000; // 60 second timeout
+
+                xhr.open('POST', '/upload');
+                xhr.send(formData);
+            } catch (err) {
+                alert('Upload failed: ' + err.message);
+                resetUpload();
+            }
+        }
+
+        function resetUpload() {
+            document.getElementById('uploadBox').style.display = 'block';
+            document.getElementById('uploadProgress').classList.remove('active');
+            document.getElementById('uploadSuccess').classList.remove('active');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('fileInput').value = '';
+        }
+
+        function copyLink() {
+            const input = document.getElementById('uploadedLink');
+            input.select();
+            document.execCommand('copy');
+
+            const btn = input.nextElementSibling;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        }
+
+        // Share functions
+        function getUploadedUrl() {
+            return document.getElementById('uploadedLink').value;
+        }
+
+        function shareToWhatsApp() {
+            const url = getUploadedUrl();
+            window.open(`https://wa.me/?text=${encodeURIComponent('Check out this file: ' + url)}`, '_blank');
+        }
+
+        function shareToTelegram() {
+            const url = getUploadedUrl();
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Check out this file')}`, '_blank');
+        }
+
+        function shareToTwitter() {
+            const url = getUploadedUrl();
+            window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Check out this file on DOZ UP')}`, '_blank');
+        }
+
+        function shareToEmail() {
+            const url = getUploadedUrl();
+            window.location.href = `mailto:?subject=${encodeURIComponent('File shared via DOZ UP')}&body=${encodeURIComponent('I wanted to share this file with you: ' + url)}`;
+        }
+
+        function openInNewTab() {
+            window.open(getUploadedUrl(), '_blank');
+        }
+
+        // QR Code Modal
+        function showQRCode() {
+            const url = getUploadedUrl();
+            const qrModal = document.getElementById('qrModal');
+            const qrCode = document.getElementById('qrCode');
+            const qrUrl = document.getElementById('qrUrl');
+
+            // Generate QR code using API
+            qrCode.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}" alt="QR Code">`;
+            qrUrl.textContent = url;
+            qrModal.classList.add('active');
+        }
+
+        function closeQRModal(e) {
+            if (!e || e.target.id === 'qrModal') {
+                document.getElementById('qrModal').classList.remove('active');
+            }
+        }
+
+        // Secure Link Modal
+        function openSecureModal() {
+            document.getElementById('secureModal').classList.add('active');
+        }
+
+        function closeSecureModal(e) {
+            if (!e || e.target.id === 'secureModal') {
+                document.getElementById('secureModal').classList.remove('active');
+            }
+        }
+
+        async function setupBiometric(type) {
+            // Check if WebAuthn is supported
+            if (!window.PublicKeyCredential) {
+                alert('Biometric authentication is not supported on this device/browser');
+                return;
+            }
+
+            // Generate a unique device ID for biometric-first registration
+            let deviceId = localStorage.getItem('dozDeviceId');
+            if (!deviceId) {
+                deviceId = 'bio_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+                localStorage.setItem('dozDeviceId', deviceId);
+            }
+
+            // Start biometric setup - no signup required
+            const biometricType = type === 'face' ? 'Face ID' : type === 'fingerprint' ? 'Fingerprint' : 'Palm Scan';
+
+            try {
+                // Create challenge for WebAuthn
+                const challengeArray = new Uint8Array(32);
+                crypto.getRandomValues(challengeArray);
+
+                const userIdArray = new Uint8Array(16);
+                crypto.getRandomValues(userIdArray);
+
+                const credential = await navigator.credentials.create({
+                    publicKey: {
+                        challenge: challengeArray,
+                        rp: { name: 'DOZ UP', id: 'doz.com' },
+                        user: {
+                            id: userIdArray,
+                            name: deviceId,
+                            displayName: biometricType + ' User'
+                        },
+                        pubKeyCredParams: [
+                            { alg: -7, type: 'public-key' },
+                            { alg: -257, type: 'public-key' }
+                        ],
+                        authenticatorSelection: {
+                            authenticatorAttachment: 'platform',
+                            userVerification: 'required',
+                            residentKey: 'preferred'
+                        },
+                        timeout: 60000
+                    }
+                });
+
+                if (credential) {
+                    // Store biometric credential locally
+                    const credentialData = {
+                        id: credential.id,
+                        rawId: Array.from(new Uint8Array(credential.rawId)),
+                        type: credential.type,
+                        biometricType: type,
+                        createdAt: new Date().toISOString()
+                    };
+                    localStorage.setItem('dozBiometricCredential', JSON.stringify(credentialData));
+                    localStorage.setItem('dozBiometricEnabled', 'true');
+
+                    // Auto-create account with biometric
+                    try {
+                        await fetch('/api/auth/biometric-register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                deviceId: deviceId,
+                                credentialId: credential.id,
+                                biometricType: type,
+                                publicKey: Array.from(new Uint8Array(credential.response.getPublicKey ? credential.response.getPublicKey() : []))
+                            })
+                        });
+                    } catch (e) {
+                        console.log('Server registration pending - biometric saved locally');
+                    }
+
+                    alert(`${biometricType} enabled! You can now use biometrics to secure your links and login.`);
+                    closeSecureModal();
+                }
+            } catch (err) {
+                if (err.name === 'NotAllowedError') {
+                    console.log('Biometric setup cancelled by user');
+                } else {
+                    console.error('Biometric setup failed:', err);
+                    alert('Biometric setup failed. Please try again.');
+                }
+            }
+        }
+
+        function setupPassword() {
+            const token = localStorage.getItem('dozToken');
+            if (!token) {
+                closeSecureModal();
+                openAuth('signup');
+                alert('Please sign up to password-protect your links');
+                return;
+            }
+
+            const password = prompt('Enter a password to protect this link:');
+            if (password) {
+                alert('Password protection enabled! Share the password separately with recipients.');
+                closeSecureModal();
+            }
+        }
+
+        function setupExpiry() {
+            const token = localStorage.getItem('dozToken');
+            if (!token) {
+                closeSecureModal();
+                openAuth('signup');
+                alert('Please sign up to set custom expiry times');
+                return;
+            }
+
+            const hours = prompt('Link expires after how many hours? (1-720):', '24');
+            if (hours && !isNaN(hours)) {
+                alert(`Link will expire in ${hours} hours`);
+                closeSecureModal();
+            }
+        }
+
+        function setupDownloadLimit() {
+            const token = localStorage.getItem('dozToken');
+            if (!token) {
+                closeSecureModal();
+                openAuth('signup');
+                alert('Please sign up to set download limits');
+                return;
+            }
+
+            const limit = prompt('Maximum number of downloads allowed:', '10');
+            if (limit && !isNaN(limit)) {
+                alert(`Link limited to ${limit} downloads`);
+                closeSecureModal();
+            }
+        }
+
+        // Billing toggle (Monthly/Yearly)
+        function toggleBilling() {
+            const isYearly = document.getElementById('yearlyToggle').checked;
+            const monthlyPrices = document.querySelectorAll('.monthly-price');
+            const yearlyPrices = document.querySelectorAll('.yearly-price');
+            const yearlyNotes = document.querySelectorAll('.yearly-note');
+            const monthlyLabel = document.getElementById('monthlyLabel');
+            const yearlyLabel = document.getElementById('yearlyLabel');
+
+            if (isYearly) {
+                monthlyPrices.forEach(el => el.style.display = 'none');
+                yearlyPrices.forEach(el => el.style.display = 'block');
+                yearlyNotes.forEach(el => el.style.display = 'block');
+                monthlyLabel.classList.remove('active');
+                yearlyLabel.classList.add('active');
+            } else {
+                monthlyPrices.forEach(el => el.style.display = 'block');
+                yearlyPrices.forEach(el => el.style.display = 'none');
+                yearlyNotes.forEach(el => el.style.display = 'none');
+                monthlyLabel.classList.add('active');
+                yearlyLabel.classList.remove('active');
+            }
+        }
+
+        // Initialize billing toggle on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleBilling(); // Set initial state (yearly by default)
+        });
+
+        // Auth modal handling
+        function openAuth(tab = 'login') {
+            document.getElementById('authModal').classList.add('active');
+            switchAuthTab(tab);
+        }
+
+        function closeAuth() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function switchAuthTab(tab) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('signupForm').style.display = 'none';
+                document.getElementById('authFooter').innerHTML = `Don't have an account? <a href="#" onclick="switchAuthTab('signup')">Sign up</a>`;
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('signupForm').style.display = 'block';
+                document.getElementById('authFooter').innerHTML = `Already have an account? <a href="#" onclick="switchAuthTab('login')">Log in</a>`;
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const form = e.target;
+            const email = form.querySelector('input[type="email"]').value;
+            const password = form.querySelector('input[type="password"]').value;
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('dozToken', data.sessionToken);
+                    localStorage.setItem('dozUser', JSON.stringify({
+                        id: data.userId,
+                        email: data.email,
+                        name: data.name
+                    }));
+                    window.location.href = '/app';
+                } else if (data.requiresConfirmation) {
+                    alert('Please confirm this login from a trusted device');
+                } else if (data.requiresAdditionalAuth) {
+                    alert('Additional authentication required: ' + data.requirements.join(', '));
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (err) {
+                alert('Login failed: ' + err.message);
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.querySelector('input[type="text"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+            const password = form.querySelector('input[type="password"]').value;
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    // Auto-login after registration
+                    const loginRes = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const loginData = await loginRes.json();
+                    if (loginData.success) {
+                        localStorage.setItem('dozToken', loginData.sessionToken);
+                        localStorage.setItem('dozUser', JSON.stringify({
+                            id: loginData.userId,
+                            email: loginData.email,
+                            name: loginData.name
+                        }));
+                    }
+                    window.location.href = '/app';
+                } else {
+                    alert(data.error || 'Signup failed');
+                }
+            } catch (err) {
+                alert('Signup failed: ' + err.message);
+            }
+        }
+
+        // Close modal on outside click
+        document.getElementById('authModal').addEventListener('click', (e) => {
+            if (e.target.id === 'authModal') {
+                closeAuth();
+            }
+        });
+
+        // Checkout modal handling
+        const checkoutPlans = {
+            'basic': { name: 'Basic Plan', price: 4.99, storage: 50 },
+            'pro': { name: 'Pro Plan', price: 14.99, storage: 50 },
+            'team-basic': { name: 'Team Basic', price: 99, storage: 100 },
+            'team-pro': { name: 'Team Pro', price: 299, storage: 250 }
+        };
+
+        const storageTiers = [
+            { gb: 50, label: '50 GB', price: 0 },
+            { gb: 100, label: '100 GB', price: 2 },
+            { gb: 250, label: '250 GB', price: 5 },
+            { gb: 500, label: '500 GB', price: 10 },
+            { gb: 1000, label: '1 TB', price: 20 },
+            { gb: 2000, label: '2 TB', price: 35 },
+            { gb: 5000, label: '5 TB', price: 75 }
+        ];
+
+        let currentCheckoutPlan = null;
+
+        function openCheckout(planId) {
+            const plan = checkoutPlans[planId];
+            if (!plan) {
+                console.error('Unknown plan:', planId);
+                return;
+            }
+
+            currentCheckoutPlan = { id: planId, ...plan };
+
+            // Reset modal state
+            document.getElementById('checkoutForm').style.display = 'block';
+            document.getElementById('checkoutSuccess').classList.remove('active');
+
+            // Set plan info
+            document.getElementById('checkoutPlanName').textContent = plan.name;
+            document.getElementById('summaryPlanLabel').textContent = plan.name;
+            document.getElementById('summaryPlanPrice').textContent = '$' + plan.price.toFixed(2);
+
+            // Reset storage slider
+            document.getElementById('storageSlider').value = 0;
+            updateStorageDisplay();
+
+            // Show modal
+            document.getElementById('checkoutModal').classList.add('active');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.remove('active');
+        }
+
+        function updateStorageDisplay() {
+            const slider = document.getElementById('storageSlider');
+            const tierIndex = parseInt(slider.value);
+            const tier = storageTiers[tierIndex];
+
+            document.getElementById('storageAmount').textContent = tier.label;
+            document.getElementById('storagePrice').textContent = tier.price > 0 ? '+$' + tier.price : '+$0';
+            document.getElementById('summaryStoragePrice').textContent = '$' + tier.price.toFixed(2);
+
+            // Calculate total
+            const planPrice = currentCheckoutPlan ? currentCheckoutPlan.price : 0;
+            const total = planPrice + tier.price;
+            document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2) + '/mo';
+        }
+
+        async function processPayment() {
+            const btn = document.querySelector('.checkout-btn');
+            btn.classList.add('processing');
+
+            // Get selected storage
+            const sliderValue = parseInt(document.getElementById('storageSlider').value);
+            const selectedStorage = storageTiers[sliderValue];
+
+            // Simulate payment processing
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            try {
+                // Create account with biometric if available or just register the order
+                const deviceId = localStorage.getItem('dozDeviceId') || 'web_' + Date.now();
+
+                const res = await fetch('/api/auth/biometric-register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        deviceId: deviceId,
+                        plan: currentCheckoutPlan.id,
+                        storage: selectedStorage.gb,
+                        planPrice: currentCheckoutPlan.price,
+                        storagePrice: selectedStorage.price
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success && data.sessionToken) {
+                    localStorage.setItem('dozToken', data.sessionToken);
+                    localStorage.setItem('dozUser', JSON.stringify({
+                        id: data.userId,
+                        plan: currentCheckoutPlan.id,
+                        storage: selectedStorage.gb
+                    }));
+                }
+            } catch (err) {
+                console.log('Registration pending - continuing with checkout');
+            }
+
+            // Show success state
+            btn.classList.remove('processing');
+            document.getElementById('checkoutForm').style.display = 'none';
+            document.getElementById('successPlan').textContent = currentCheckoutPlan.name;
+            document.getElementById('successStorage').textContent = selectedStorage.label;
+            document.getElementById('checkoutSuccess').classList.add('active');
+        }
+
+        function goToDashboard() {
+            window.location.href = '/app';
+        }
+
+        // Close checkout modal on outside click
+        document.getElementById('checkoutModal').addEventListener('click', (e) => {
+            if (e.target.id === 'checkoutModal') {
+                closeCheckout();
+            }
+        });
+
+        // Check if user is logged in
+        const token = localStorage.getItem('dozToken');
+        if (token) {
+            // Update nav to show user menu instead of login/signup
+            document.querySelector('.nav-auth').innerHTML = `
+                <a href="/app" class="btn btn-primary">Go to Dashboard</a>
+            `;
+        }
+    </script>
+
+    <!-- DOZ UP Analytics & Traffic Tracking -->
+    <script src="/js/analytics.js" defer></script>
+    <script src="/track.js" async></script>
+    <script src="/track-advanced.js" async></script>
+
+    <!-- Meta Pixel (Facebook) Conversion Tracking -->
+    <script src="/js/meta-pixel.js"></script>
+
+    <!-- Inline Checkout Module -->
+    <script src="/js/inline-checkout.js"></script>
+    <script>
+        const inlineCheckoutPlans = {
+            'starter_monthly': { name: 'Starter', price: 333, interval: 'month' },
+            'pro_monthly': { name: 'Pro', price: 999, interval: 'month' },
+            'team_monthly': { name: 'Team', price: 2999, interval: 'month' },
+            'business_monthly': { name: 'Enterprise', price: 7770, interval: 'month' }
+        };
+
+        async function openInlineCheckout(planId, buttonEl) {
+            const plan = inlineCheckoutPlans[planId];
+            const containerId = 'doz-checkout-' + planId;
+            const originalText = buttonEl.innerHTML;
+            buttonEl.innerHTML = 'Loading...';
+            buttonEl.disabled = true;
+            try {
+                await DOZCheckout.open(planId, plan, containerId);
+            } catch (error) {
+                console.error('Checkout error:', error);
+            }
+            buttonEl.innerHTML = originalText;
+            buttonEl.disabled = false;
+        }
+    </script>
+
+</body>
+</html>

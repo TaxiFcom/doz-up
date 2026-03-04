@@ -1,0 +1,573 @@
+/**
+ * DOZ UP - Onboarding Tour Styles
+ * Interactive guided tour with spotlight and tooltips
+ */
+
+/* ==========================================================================
+   Overlay & Spotlight
+   ========================================================================== */
+
+.onboarding-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 99998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: all;
+}
+
+.onboarding-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.onboarding-spotlight {
+    position: absolute;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+    border-radius: 12px;
+    z-index: 99999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.onboarding-spotlight.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Animated pulse effect on spotlight */
+.onboarding-spotlight::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid #10b981;
+    border-radius: 14px;
+    animation: spotlight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes spotlight-pulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+}
+
+/* ==========================================================================
+   Tooltip
+   ========================================================================== */
+
+.onboarding-tooltip {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 360px;
+    min-width: 280px;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.onboarding-tooltip.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Tooltip arrow */
+.onboarding-tooltip::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    transform: rotate(45deg);
+    border-radius: 3px;
+}
+
+/* Arrow positions */
+.onboarding-tooltip.position-bottom::before {
+    top: -8px;
+    left: 50%;
+    margin-left: -8px;
+    box-shadow: -3px -3px 5px rgba(0, 0, 0, 0.08);
+}
+
+.onboarding-tooltip.position-top::before {
+    bottom: -8px;
+    left: 50%;
+    margin-left: -8px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.08);
+}
+
+.onboarding-tooltip.position-left::before {
+    right: -8px;
+    top: 50%;
+    margin-top: -8px;
+    box-shadow: 3px -3px 5px rgba(0, 0, 0, 0.08);
+}
+
+.onboarding-tooltip.position-right::before {
+    left: -8px;
+    top: 50%;
+    margin-top: -8px;
+    box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* Close button */
+.onboarding-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    transition: all 0.2s ease;
+}
+
+.onboarding-close:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* Title */
+.onboarding-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 12px 0;
+    padding-right: 32px;
+    line-height: 1.3;
+}
+
+/* Content */
+.onboarding-content {
+    font-size: 0.95rem;
+    color: #4b5563;
+    margin: 0 0 20px 0;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   Progress Dots
+   ========================================================================== */
+
+.onboarding-progress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d1d5db;
+    transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+    background: #10b981;
+    transform: scale(1.25);
+}
+
+.progress-dot.completed {
+    background: #6ee7b7;
+}
+
+/* ==========================================================================
+   Navigation Buttons
+   ========================================================================== */
+
+.onboarding-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.onboarding-nav-right {
+    display: flex;
+    gap: 8px;
+}
+
+.onboarding-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.onboarding-skip {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+}
+
+.onboarding-skip:hover {
+    background: #f3f4f6;
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.onboarding-prev {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+}
+
+.onboarding-prev:hover {
+    background: #e5e7eb;
+}
+
+.onboarding-next {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.onboarding-next:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* ==========================================================================
+   Dark Mode Support
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+    .onboarding-tooltip {
+        background: #1f2937;
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.5),
+            0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .onboarding-tooltip::before {
+        background: #1f2937;
+    }
+
+    .onboarding-close {
+        background: #374151;
+        color: #9ca3af;
+    }
+
+    .onboarding-close:hover {
+        background: #4b5563;
+        color: #f3f4f6;
+    }
+
+    .onboarding-title {
+        color: #f9fafb;
+    }
+
+    .onboarding-content {
+        color: #d1d5db;
+    }
+
+    .progress-dot {
+        background: #4b5563;
+    }
+
+    .onboarding-skip {
+        border-color: #374151;
+        color: #9ca3af;
+    }
+
+    .onboarding-skip:hover {
+        background: #374151;
+        color: #f3f4f6;
+        border-color: #4b5563;
+    }
+
+    .onboarding-prev {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f3f4f6;
+    }
+
+    .onboarding-prev:hover {
+        background: #4b5563;
+    }
+}
+
+/* Explicit dark theme class */
+[data-theme="dark"] .onboarding-tooltip,
+.dark .onboarding-tooltip {
+    background: #1f2937;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .onboarding-tooltip::before,
+.dark .onboarding-tooltip::before {
+    background: #1f2937;
+}
+
+[data-theme="dark"] .onboarding-close,
+.dark .onboarding-close {
+    background: #374151;
+    color: #9ca3af;
+}
+
+[data-theme="dark"] .onboarding-close:hover,
+.dark .onboarding-close:hover {
+    background: #4b5563;
+    color: #f3f4f6;
+}
+
+[data-theme="dark"] .onboarding-title,
+.dark .onboarding-title {
+    color: #f9fafb;
+}
+
+[data-theme="dark"] .onboarding-content,
+.dark .onboarding-content {
+    color: #d1d5db;
+}
+
+[data-theme="dark"] .progress-dot,
+.dark .progress-dot {
+    background: #4b5563;
+}
+
+[data-theme="dark"] .onboarding-skip,
+.dark .onboarding-skip {
+    border-color: #374151;
+    color: #9ca3af;
+}
+
+[data-theme="dark"] .onboarding-skip:hover,
+.dark .onboarding-skip:hover {
+    background: #374151;
+    color: #f3f4f6;
+    border-color: #4b5563;
+}
+
+[data-theme="dark"] .onboarding-prev,
+.dark .onboarding-prev {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+[data-theme="dark"] .onboarding-prev:hover,
+.dark .onboarding-prev:hover {
+    background: #4b5563;
+}
+
+/* ==========================================================================
+   Responsive Styles
+   ========================================================================== */
+
+@media (max-width: 640px) {
+    .onboarding-tooltip {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto !important;
+        max-width: none;
+        border-radius: 24px 24px 0 0;
+        padding: 28px 20px 32px;
+        transform: translateY(100%);
+    }
+
+    .onboarding-tooltip.active {
+        transform: translateY(0);
+    }
+
+    .onboarding-tooltip::before {
+        display: none;
+    }
+
+    .onboarding-spotlight {
+        position: fixed;
+    }
+
+    .onboarding-nav {
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+
+    .onboarding-nav-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .onboarding-skip {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .onboarding-prev,
+    .onboarding-next {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* ==========================================================================
+   Welcome Screen (Optional)
+   ========================================================================== */
+
+.onboarding-welcome {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 100001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.onboarding-welcome.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.onboarding-welcome-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 48px;
+    max-width: 480px;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.onboarding-welcome.active .onboarding-welcome-card {
+    transform: scale(1);
+}
+
+.onboarding-welcome-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+}
+
+.onboarding-welcome-icon svg {
+    width: 40px;
+    height: 40px;
+    color: white;
+}
+
+.onboarding-welcome-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.onboarding-welcome-desc {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.onboarding-welcome-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    color: white;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.onboarding-welcome-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes tooltip-enter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spotlight-move {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.onboarding-hidden {
+    display: none !important;
+}
+
+/* Disable scrolling when tour is active */
+body.onboarding-active {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .onboarding-overlay,
+    .onboarding-spotlight,
+    .onboarding-tooltip,
+    .onboarding-welcome {
+        display: none !important;
+    }
+}

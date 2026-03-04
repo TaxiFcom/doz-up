@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Calculator - DOZ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-gradient">DOZ</div>
+            <div class="subtitle">AI-Powered Calculator</div>
+        </header>
+
+        <main class="calculator-main">
+            <div class="display-glass">
+                <div class="display-content">
+                    <div class="expression-line" id="expression"></div>
+                    <div class="result-line" id="display">0</div>
+                </div>
+            </div>
+
+            <div class="ai-input-glass">
+                <div class="ai-input-wrapper">
+                    <input type="text" id="aiInput" placeholder="Ask AI to calculate... (e.g., 'What's 15% of 240?')">
+                    <button class="ai-submit-btn" id="aiSubmit">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14m-7-7v14"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="buttons-grid">
+                <button class="btn func" data-action="clear">AC</button>
+                <button class="btn func" data-action="clear-entry">CE</button>
+                <button class="btn operator" data-operator="/">÷</button>
+                <button class="btn operator" data-operator="*">×</button>
+
+                <button class="btn number" data-number="7">7</button>
+                <button class="btn number" data-number="8">8</button>
+                <button class="btn number" data-number="9">9</button>
+                <button class="btn operator" data-operator="-">−</button>
+
+                <button class="btn number" data-number="4">4</button>
+                <button class="btn number" data-number="5">5</button>
+                <button class="btn number" data-number="6">6</button>
+                <button class="btn operator" data-operator="+">+</button>
+
+                <button class="btn number" data-number="1">1</button>
+                <button class="btn number" data-number="2">2</button>
+                <button class="btn number" data-number="3">3</button>
+                <button class="btn equals" data-action="equals" rowspan="2">=</button>
+
+                <button class="btn number zero" data-number="0">0</button>
+                <button class="btn number" data-number=".">.</button>
+            </div>
+
+            <div class="advanced-section">
+                <button class="btn func" data-function="sin">sin</button>
+                <button class="btn func" data-function="cos">cos</button>
+                <button class="btn func" data-function="tan">tan</button>
+                <button class="btn func" data-function="sqrt">√</button>
+                <button class="btn func" data-function="log">log</button>
+                <button class="btn func" data-function="ln">ln</button>
+                <button class="btn func" data-function="pow">x²</button>
+                <button class="btn func" data-function="factorial">x!</button>
+                <button class="btn func" data-function="pi">π</button>
+                <button class="btn func" data-function="e">e</button>
+                <button class="btn func" data-function="open-paren">(</button>
+                <button class="btn func" data-function="close-paren">)</button>
+            </div>
+        </main>
+
+        <div class="panels-container">
+            <div class="panel glass-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Calculation Steps</div>
+                </div>
+                <div class="panel-content" id="stepsList">
+                    <div class="empty-state">Enter a calculation to see AI-powered steps</div>
+                </div>
+            </div>
+
+            <div class="panel glass-panel">
+                <div class="panel-header">
+                    <div class="panel-title">History</div>
+                    <button class="clear-btn" id="clearHistory">Clear</button>
+                </div>
+                <div class="panel-content" id="historyList">
+                    <div class="empty-state">No calculations yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <div class="footer-text">Built with DOZ AI</div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

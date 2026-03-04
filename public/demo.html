@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ UP - Free Demo | Screenshot & Upload in 1 Click</title>
+    <meta name="description" content="Try DOZ UP free for 1 hour. Screenshot anything, get instant shareable link. No signup required.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 40px 20px 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .demo-box {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 450px;
+            margin: 0 auto 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-timer {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #10b981;
+            margin-bottom: 8px;
+        }
+
+        .demo-label {
+            font-size: 1rem;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            padding: 18px 45px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
+        }
+
+        .download-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .feature {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px 15px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #10b981;
+        }
+
+        .feature h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .feature p {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* PRICING SECTION */
+        .pricing-section {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.05));
+            border-top: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 50px 20px;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .pricing-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .pricing-header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.recommended {
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            transform: scale(1.05);
+        }
+
+        .pricing-card.recommended:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .best-value {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .plan-name {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .plan-price {
+            margin-bottom: 5px;
+        }
+
+        .plan-price .amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .plan-price .period {
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+        .plan-monthly {
+            font-size: 1rem;
+            color: #10b981;
+            margin-bottom: 15px;
+        }
+
+        .plan-savings {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .plan-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .plan-features li svg {
+            width: 18px;
+            height: 18px;
+            color: #10b981;
+            flex-shrink: 0;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .plan-btn.primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .plan-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
+        }
+
+        .plan-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .plan-btn.secondary:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Trust Section */
+        .trust-section {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .guarantee-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            padding: 20px 35px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+        }
+
+        .guarantee-badge svg {
+            width: 40px;
+            height: 40px;
+            color: #10b981;
+        }
+
+        .guarantee-badge .text h4 {
+            font-size: 1.1rem;
+            color: #10b981;
+            margin-bottom: 3px;
+            text-align: left;
+        }
+
+        .guarantee-badge .text p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-align: left;
+        }
+
+        .trust-items {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .trust-item svg {
+            width: 18px;
+            height: 18px;
+            color: #10b981;
+        }
+
+        /* Demo expired overlay */
+        .demo-expired {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .demo-expired.active {
+            display: flex;
+        }
+
+        .expired-content {
+            background: linear-gradient(135deg, #1a1a3e 0%, #0a0a1a 100%);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .expired-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .expired-content > p {
+            color: #94a3b8;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .expired-pricing {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .expired-plan {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .expired-plan:hover {
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .expired-plan.selected {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .expired-plan h4 {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .expired-plan .price {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .expired-plan .period {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .expired-plan .note {
+            font-size: 0.8rem;
+            color: #10b981;
+            margin-top: 5px;
+        }
+
+        .payment-form {
+            margin-top: 20px;
+        }
+
+        .payment-form input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .payment-form input:focus {
+            border-color: #10b981;
+        }
+
+        .payment-form input::placeholder {
+            color: #64748b;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .device-id {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #4a5568;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .features { grid-template-columns: 1fr; }
+            .pricing-cards { grid-template-columns: 1fr; }
+            .pricing-card.recommended { transform: scale(1); }
+            .expired-pricing { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="badge">FREE 1-HOUR DEMO</div>
+        <h1>Screenshot. Upload. Share.</h1>
+        <p class="subtitle">Press Ctrl+Shift+S, select any area, get instant link.<br>That's it. No account needed to try.</p>
+
+        <div class="demo-box">
+            <div class="demo-timer" id="timer">60:00</div>
+            <div class="demo-label">Free demo time remaining</div>
+            <a href="/download/DOZ-UP-v2.6.5.exe" class="download-btn" id="downloadBtn" onclick="startDemo()">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/></svg>
+                Download Demo
+            </a>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">1</div>
+            <h3>One Hotkey</h3>
+            <p>Ctrl+Shift+S captures instantly</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">2</div>
+            <h3>Auto Upload</h3>
+            <p>Link copied to clipboard</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">3</div>
+            <h3>Share Anywhere</h3>
+            <p>Paste and send to anyone</p>
+        </div>
+    </div>
+
+    <!-- PRICING SECTION -->
+    <div class="pricing-section">
+        <div class="pricing-header">
+            <h2>Simple Pricing</h2>
+            <p>Choose yearly and get 1 month FREE</p>
+        </div>
+
+        <div class="pricing-cards">
+            <!-- Monthly Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Monthly</div>
+                <div class="plan-price">
+                    <span class="amount">$4.99</span>
+                    <span class="period">/month</span>
+                </div>
+                <div class="plan-monthly">Billed monthly</div>
+                <ul class="plan-features">
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> Unlimited screenshots</li>
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> Instant shareable links</li>
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> Auto clipboard copy</li>
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> Email support</li>
+                </ul>
+                <button class="plan-btn secondary" onclick="selectPlan('monthly')">Choose Monthly</button>
+            </div>
+
+            <!-- Yearly Plan - RECOMMENDED -->
+            <div class="pricing-card recommended">
+                <div class="best-value">BEST VALUE</div>
+                <div class="plan-name">Yearly</div>
+                <div class="plan-price">
+                    <span class="amount">$37.70</span>
+                    <span class="period">/year</span>
+                </div>
+                <div class="plan-monthly">Just $3.14/month</div>
+                <div class="plan-savings">SAVE 37% + 1 Month FREE</div>
+                <ul class="plan-features">
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> Unlimited screenshots</li>
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> Instant shareable links</li>
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> Auto clipboard copy</li>
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> <strong>24/7 Priority Support</strong></li>
+                    <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> <strong>1 Month FREE</strong></li>
+                </ul>
+                <button class="plan-btn primary" onclick="selectPlan('yearly')">Get Yearly - Save 37%</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trust Section -->
+    <div class="trust-section">
+        <div class="guarantee-badge">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <div class="text">
+                <h4>30-Day Money-Back Guarantee</h4>
+                <p>Not happy? Full refund, no questions asked</p>
+            </div>
+        </div>
+
+        <div class="trust-items">
+            <div class="trust-item">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/></svg>
+                Secure Payment
+            </div>
+            <div class="trust-item">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+                24/7 Support
+            </div>
+            <div class="trust-item">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 12a1 1 0 100-2 1 1 0 000 2zm4 0a1 1 0 100-2 1 1 0 000 2z"/></svg>
+                10,000+ Happy Users
+            </div>
+            <div class="trust-item">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                Instant Activation
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo Expired Overlay -->
+    <div class="demo-expired" id="expiredOverlay">
+        <div class="expired-content">
+            <h2>Demo Expired</h2>
+            <p>Your 1-hour free trial has ended.<br>Unlock unlimited access now!</p>
+
+            <div class="expired-pricing">
+                <div class="expired-plan" id="monthlyPlan" onclick="selectExpiredPlan('monthly')">
+                    <h4>MONTHLY</h4>
+                    <div class="price">$4.99</div>
+                    <div class="period">/month</div>
+                </div>
+                <div class="expired-plan selected" id="yearlyPlan" onclick="selectExpiredPlan('yearly')">
+                    <h4>YEARLY</h4>
+                    <div class="price">$37.70</div>
+                    <div class="period">/year</div>
+                    <div class="note">Save 37% + 1 Month FREE</div>
+                </div>
+            </div>
+
+            <div class="payment-form">
+                <input type="email" id="email" placeholder="Email address" required>
+                <button class="pay-btn" onclick="startPayment()">
+                    Unlock Now
+                </button>
+            </div>
+
+            <div class="device-id">Device: <span id="deviceDisplay">Loading...</span></div>
+        </div>
+    </div>
+
+    <script>
+        // Device fingerprint
+        function generateFingerprint() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('DOZ-FP', 2, 2);
+
+            const nav = [
+                navigator.userAgent, navigator.language,
+                screen.width + 'x' + screen.height, screen.colorDepth,
+                new Date().getTimezoneOffset(),
+                navigator.hardwareConcurrency || 'unknown', navigator.platform
+            ].join('|');
+
+            const combined = nav + canvas.toDataURL();
+            let hash = 0;
+            for (let i = 0; i < combined.length; i++) {
+                hash = ((hash << 5) - hash) + combined.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return 'DOZ-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+        }
+
+        const DEVICE_ID = generateFingerprint();
+        const DEMO_DURATION = 60 * 60 * 1000;
+        const STORAGE_KEY = 'doz_demo_' + DEVICE_ID;
+        let selectedPlan = 'yearly';
+
+        function checkDemoStatus() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const data = JSON.parse(stored);
+                if (data.paid) { window.location.href = '/download/DOZ-UP-v2.6.5.exe'; return; }
+                const elapsed = Date.now() - data.startTime;
+                if (elapsed >= DEMO_DURATION) { showExpired(); return; }
+                startTimer(DEMO_DURATION - elapsed);
+            }
+            document.getElementById('deviceDisplay').textContent = DEVICE_ID;
+        }
+
+        function startDemo() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (!stored) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ startTime: Date.now(), deviceId: DEVICE_ID, paid: false }));
+                startTimer(DEMO_DURATION);
+                fetch('/api/demo/start', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deviceId: DEVICE_ID }) }).catch(() => {});
+            } else {
+                const data = JSON.parse(stored);
+                if (Date.now() - data.startTime >= DEMO_DURATION && !data.paid) { showExpired(); return false; }
+            }
+            return true;
+        }
+
+        function startTimer(remaining) {
+            const timerEl = document.getElementById('timer');
+            const update = () => {
+                const mins = Math.floor(remaining / 60000);
+                const secs = Math.floor((remaining % 60000) / 1000);
+                timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                remaining -= 1000;
+                if (remaining <= 0) showExpired();
+                else setTimeout(update, 1000);
+            };
+            update();
+        }
+
+        function showExpired() {
+            document.getElementById('expiredOverlay').classList.add('active');
+            document.getElementById('timer').textContent = '0:00';
+            document.getElementById('timer').style.color = '#ef4444';
+        }
+
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            const email = prompt('Enter your email to continue:');
+            if (email && email.includes('@')) {
+                const price = plan === 'yearly' ? 3770 : 499;
+                window.location.href = `/api/checkout/subscribe?email=${encodeURIComponent(email)}&device=${DEVICE_ID}&plan=${plan}&amount=${price}`;
+            }
+        }
+
+        function selectExpiredPlan(plan) {
+            selectedPlan = plan;
+            document.getElementById('monthlyPlan').classList.remove('selected');
+            document.getElementById('yearlyPlan').classList.remove('selected');
+            document.getElementById(plan + 'Plan').classList.add('selected');
+        }
+
+        function startPayment() {
+            const email = document.getElementById('email').value;
+            if (!email || !email.includes('@')) { alert('Please enter a valid email'); return; }
+            const price = selectedPlan === 'yearly' ? 3770 : 499;
+            window.location.href = `/api/checkout/subscribe?email=${encodeURIComponent(email)}&device=${DEVICE_ID}&plan=${selectedPlan}&amount=${price}`;
+        }
+
+        // Track source
+        const params = new URLSearchParams(window.location.search);
+        fetch('/api/traffic/track', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ source: params.get('utm_source') || 'direct', campaign: params.get('utm_campaign') || '', deviceId: DEVICE_ID })
+        }).catch(() => {});
+
+        checkDemoStatus();
+    </script>
+    <!-- DOZ UP Traffic Tracking -->
+    <script src="/track.js" async></script>
+    <script src="/track-advanced.js" async></script>
+
+</body>
+</html>

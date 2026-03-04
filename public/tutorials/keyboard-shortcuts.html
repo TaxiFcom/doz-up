@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard Shortcuts - DOZ UP Tutorial</title>
+    <meta name="description" content="Complete reference of all DOZ UP keyboard shortcuts for screenshot capture, editing, and navigation.">
+    <link rel="icon" type="image/svg+xml" href="/logo.png">
+    <link rel="stylesheet" href="/css/i18n.css">
+    <link rel="stylesheet" href="/css/onboarding.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        .header {
+            background: rgba(10, 10, 26, 0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .logo img { height: 32px; }
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        .breadcrumb a { color: #94a3b8; text-decoration: none; }
+        .breadcrumb a:hover { color: #10b981; }
+
+        .tutorial-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+        .tutorial-header {
+            margin-bottom: 40px;
+        }
+        .tutorial-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .tutorial-meta {
+            display: flex;
+            gap: 20px;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        .tutorial-meta span { display: flex; align-items: center; gap: 6px; }
+        .tutorial-meta svg { width: 18px; height: 18px; }
+        .difficulty-beginner { color: #10b981 !important; }
+
+        .tutorial-content h2 {
+            font-size: 1.5rem;
+            margin: 40px 0 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .tutorial-content h2:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+        .tutorial-content p { color: #cbd5e1; margin-bottom: 20px; }
+
+        .shortcut-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .shortcut-table th,
+        .shortcut-table td {
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .shortcut-table th {
+            background: rgba(255,255,255,0.05);
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .shortcut-table td { color: #cbd5e1; }
+        .shortcut-table tr:last-child td { border-bottom: none; }
+        .shortcut-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .key {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            display: inline-block;
+            margin-right: 4px;
+        }
+
+        .tip-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .tip-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        .tip-box p { color: #94a3b8; margin: 0; }
+
+        .platform-note {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .platform-note h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #a78bfa;
+            margin-bottom: 10px;
+        }
+        .platform-note p { color: #94a3b8; margin: 0; }
+
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.1); color: #10b981; }
+        .nav-link svg { width: 20px; height: 20px; }
+
+        @media (max-width: 640px) {
+            .tutorial-header h1 { font-size: 1.8rem; }
+            .nav-links { flex-direction: column; gap: 12px; }
+            .shortcut-table { font-size: 0.9rem; }
+            .shortcut-table th, .shortcut-table td { padding: 12px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <img src="/logo.png" alt="DOZ UP">
+                <span>DOZ UP</span>
+            </a>
+            <nav class="breadcrumb">
+                <a href="/tutorials/" data-i18n="nav.tutorials">Tutorials</a>
+                <span>/</span>
+                <span data-i18n="tutorial.shortcuts.title">Keyboard Shortcuts</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="tutorial-container">
+        <header class="tutorial-header">
+            <h1 data-i18n="tutorial.shortcuts.title">Keyboard Shortcuts</h1>
+            <div class="tutorial-meta">
+                <span class="difficulty-beginner">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                    <span data-i18n="difficulty.beginner">Beginner</span>
+                </span>
+                <span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    3 min read
+                </span>
+            </div>
+        </header>
+
+        <article class="tutorial-content">
+            <h2 data-i18n="tutorial.shortcuts.capture.title">Screenshot Capture</h2>
+            <p data-i18n="tutorial.shortcuts.capture.desc">These shortcuts work globally when the DOZ UP desktop app is running:</p>
+
+            <table class="shortcut-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="tutorial.shortcuts.action">Action</th>
+                        <th data-i18n="tutorial.shortcuts.shortcut">Shortcut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.quick">Quick Capture (Region)</td>
+                        <td><span class="key">Ctrl</span><span class="key">Shift</span><span class="key">S</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.fullscreen">Full Screen Capture</td>
+                        <td><span class="key">Ctrl</span><span class="key">Shift</span><span class="key">F</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.window">Active Window</td>
+                        <td><span class="key">Ctrl</span><span class="key">Shift</span><span class="key">W</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.delayed">Delayed Capture (3s)</td>
+                        <td><span class="key">Ctrl</span><span class="key">Shift</span><span class="key">D</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 data-i18n="tutorial.shortcuts.studio.title">Studio Editor</h2>
+            <p data-i18n="tutorial.shortcuts.studio.desc">When editing images in Studio:</p>
+
+            <table class="shortcut-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="tutorial.shortcuts.action">Action</th>
+                        <th data-i18n="tutorial.shortcuts.shortcut">Shortcut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.undo">Undo</td>
+                        <td><span class="key">Ctrl</span><span class="key">Z</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.redo">Redo</td>
+                        <td><span class="key">Ctrl</span><span class="key">Y</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.save">Save</td>
+                        <td><span class="key">Ctrl</span><span class="key">S</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.copy">Copy</td>
+                        <td><span class="key">Ctrl</span><span class="key">C</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.delete">Delete Selection</td>
+                        <td><span class="key">Delete</span> or <span class="key">Backspace</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.selectall">Select All</td>
+                        <td><span class="key">Ctrl</span><span class="key">A</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 data-i18n="tutorial.shortcuts.upload.title">Upload Page</h2>
+            <table class="shortcut-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="tutorial.shortcuts.action">Action</th>
+                        <th data-i18n="tutorial.shortcuts.shortcut">Shortcut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.paste">Paste from Clipboard</td>
+                        <td><span class="key">Ctrl</span><span class="key">V</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.browse">Browse Files</td>
+                        <td><span class="key">Ctrl</span><span class="key">O</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 data-i18n="tutorial.shortcuts.gallery.title">Gallery Navigation</h2>
+            <table class="shortcut-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="tutorial.shortcuts.action">Action</th>
+                        <th data-i18n="tutorial.shortcuts.shortcut">Shortcut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.next">Next Image</td>
+                        <td><span class="key">&rarr;</span> or <span class="key">J</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.prev">Previous Image</td>
+                        <td><span class="key">&larr;</span> or <span class="key">K</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.close">Close Preview</td>
+                        <td><span class="key">Esc</span></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="tutorial.shortcuts.search">Focus Search</td>
+                        <td><span class="key">/</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="platform-note">
+                <h4>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    <span data-i18n="tutorial.shortcuts.mac">Mac Users</span>
+                </h4>
+                <p data-i18n="tutorial.shortcuts.mac.desc">Replace <span class="key">Ctrl</span> with <span class="key">Cmd</span> for all shortcuts on macOS.</p>
+            </div>
+
+            <div class="tip-box">
+                <h4>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span data-i18n="common.tip">Pro Tip</span>
+                </h4>
+                <p data-i18n="tutorial.shortcuts.tip">You can customize all shortcuts in Settings > Keyboard. Set up shortcuts that don't conflict with your other applications.</p>
+            </div>
+        </article>
+
+        <nav class="nav-links">
+            <a href="/tutorials/team-collaboration.html" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span data-i18n="tutorial.team.title">Team Collaboration</span>
+            </a>
+            <a href="/tutorials/" class="nav-link">
+                <span data-i18n="tutorial.nav.all">All Tutorials</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+        </nav>
+    </main>
+
+    <script src="/js/onboarding.js"></script>
+</body>
+</html>

@@ -1,0 +1,1647 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String               @id @default(cuid())
+  email          String               @unique
+  emailVerified  Boolean              @default(false)
+  name           String?
+  passwordHash   String?
+  avatarUrl      String?
+  settings       Json                 @default("{\"theme\": \"system\", \"requireTOTP\": false, \"notifications\": true, \"requireBiometric\": false, \"requireDeviceConfirmation\": true}")
+  planId         String?
+  storageLimitMb BigInt               @default(512)
+  storageUsedMb  BigInt               @default(0)
+  status         UserStatus           @default(PENDING_VERIFICATION)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  lastLoginAt    DateTime?
+  deletedAt      DateTime?
+  metadata       Json                 @default("{}")
+  devices        Device[]
+  loginRequests  LoginRequest[]
+  sessions       Session[]
+  stripeCustomer StripeCustomer?
+  subscription   Subscription?
+  totpSecret     TotpSecret?
+  uploads        Upload[]
+  deviceLinks    UserDeviceLink[]
+  adminNotes     UserNote[]
+  notifications  UserNotification[]
+  warnings       UserWarning[]
+  credentials    WebAuthnCredential[]
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Device {
+  id          String         @id @default(cuid())
+  userId      String
+  name        String         @default("Unknown Device")
+  fingerprint String
+  platform    DevicePlatform @default(UNKNOWN)
+  browser     String?
+  os          String?
+  trusted     Boolean        @default(false)
+  trustedAt   DateTime?
+  userAgent   String?
+  ipAddress   String?
+  location    String?
+  createdAt   DateTime       @default(now())
+  lastUsedAt  DateTime       @default(now())
+  metadata    Json           @default("{}")
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions    Session[]
+  uploads     Upload[]
+
+  @@unique([userId, fingerprint])
+  @@index([userId])
+  @@index([fingerprint])
+}
+
+model Session {
+  id           String        @id @default(cuid())
+  tokenHash    String        @unique
+  userId       String
+  deviceId     String?
+  deviceName   String?
+  status       SessionStatus @default(ACTIVE)
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime      @default(now())
+  expiresAt    DateTime
+  lastActiveAt DateTime      @default(now())
+  revokedAt    DateTime?
+  device       Device?       @relation(fields: [deviceId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+}
+
+model WebAuthnCredential {
+  id           String    @id @default(cuid())
+  userId       String
+  credentialId String    @unique
+  publicKey    String
+  counter      BigInt    @default(0)
+  deviceType   String?
+  transports   String[]  @default(["internal"])
+  name         String    @default("Biometric")
+  createdAt    DateTime  @default(now())
+  lastUsedAt   DateTime?
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([credentialId])
+}
+
+model TotpSecret {
+  id                     String    @id @default(cuid())
+  userId                 String    @unique
+  secretEncrypted        String
+  algorithm              String    @default("SHA1")
+  digits                 Int       @default(6)
+  period                 Int       @default(30)
+  verified               Boolean   @default(false)
+  enabled                Boolean   @default(false)
+  recoveryCodesEncrypted String?
+  createdAt              DateTime  @default(now())
+  verifiedAt             DateTime?
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LoginRequest {
+  id                          String             @id @default(cuid())
+  userId                      String
+  requestCode                 String?
+  requestingDeviceFingerprint String?
+  requestingIp                String?
+  requestingUserAgent         String?
+  status                      LoginRequestStatus @default(PENDING)
+  approvedByDeviceId          String?
+  createdAt                   DateTime           @default(now())
+  expiresAt                   DateTime
+  resolvedAt                  DateTime?
+  user                        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model UserDeviceLink {
+  id              String    @id @default(cuid())
+  userId          String
+  browserDeviceId String    @unique
+  isPrimary       Boolean   @default(false)
+  syncEnabled     Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  lastSyncAt      DateTime?
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model EnterpriseLead {
+  id           String       @id @default(uuid())
+  company      String
+  industry     String?
+  companySize  String?
+  contactName  String
+  contactEmail String
+  contactPhone String?
+  contactTitle String?
+  useCase      String?
+  budget       String?
+  timeline     String?
+  source       LeadSource   @default(WEBSITE)
+  referralCode String?
+  affiliateId  String?
+  utmSource    String?
+  utmMedium    String?
+  utmCampaign  String?
+  score        Int          @default(0)
+  tier         LeadTier     @default(STARTUP)
+  priority     LeadPriority @default(COLD)
+  status       LeadStatus   @default(NEW)
+  notes        Json         @default("[]")
+  activities   Json         @default("[]")
+  assignedTo   String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  contactedAt  DateTime?
+  qualifiedAt  DateTime?
+  convertedAt  DateTime?
+  deletedAt    DateTime?
+  deals        Deal[]
+  demos        Demo[]
+  affiliate    Affiliate?   @relation(fields: [affiliateId], references: [id])
+  proposals    Proposal[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([score])
+  @@index([contactEmail])
+  @@index([company])
+  @@index([affiliateId])
+  @@index([createdAt])
+}
+
+model Deal {
+  id                String         @id @default(uuid())
+  leadId            String
+  company           String
+  contactName       String?
+  contactEmail      String?
+  tier              LeadTier?
+  tierName          String?
+  seats             String?
+  amount            Int
+  discount          Int            @default(0)
+  finalAmount       Int
+  currency          String         @default("USD")
+  term              Int            @default(12)
+  status            DealStatus     @default(DISCOVERY)
+  probability       Int            @default(0)
+  expectedCloseDate DateTime?
+  affiliateId       String?
+  referralCode      String?
+  notes             String?
+  internalNotes     String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  closedAt          DateTime?
+  lead              EnterpriseLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([status])
+  @@index([expectedCloseDate])
+}
+
+model Proposal {
+  id             String         @id @default(uuid())
+  proposalNumber String         @unique
+  leadId         String
+  dealId         String?
+  company        String
+  contactName    String?
+  contactEmail   String?
+  contactTitle   String?
+  tier           LeadTier?
+  tierName       String?
+  seats          Int?
+  storageGb      Int?
+  originalPrice  Int
+  discount       Int            @default(0)
+  finalPrice     Int
+  savings        Int            @default(0)
+  term           Int            @default(12)
+  paymentTerms   String         @default("annual")
+  features       String[]       @default([])
+  customFeatures String[]       @default([])
+  bonuses        String[]       @default([])
+  validUntil     DateTime?
+  expiresInDays  Int?
+  status         ProposalStatus @default(DRAFT)
+  viewCount      Int            @default(0)
+  notes          String?
+  internalNotes  String?
+  createdAt      DateTime       @default(now())
+  createdBy      String?
+  sentAt         DateTime?
+  viewedAt       DateTime?
+  lastViewedAt   DateTime?
+  respondedAt    DateTime?
+  lead           EnterpriseLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([proposalNumber])
+  @@index([status])
+}
+
+model Demo {
+  id            String         @id @default(uuid())
+  leadId        String
+  company       String?
+  contactName   String?
+  contactEmail  String?
+  contactPhone  String?
+  scheduledDate DateTime
+  duration      Int            @default(30)
+  timezone      String         @default("UTC")
+  meetingLink   String?
+  meetingType   String         @default("video_call")
+  status        DemoStatus     @default(SCHEDULED)
+  tier          LeadTier?
+  source        LeadSource?
+  notes         String?
+  reminders     Json           @default("{\"1h\": false, \"24h\": false}")
+  outcome       String?
+  followUpDate  DateTime?
+  createdAt     DateTime       @default(now())
+  completedAt   DateTime?
+  cancelledAt   DateTime?
+  lead          EnterpriseLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([scheduledDate])
+  @@index([status])
+}
+
+model SubscriptionPlan {
+  id                   String         @id
+  name                 String
+  priceMonthly         Int?
+  priceYearly          Int?
+  currency             String         @default("USD")
+  storageMb            BigInt?
+  accounts             Int            @default(1)
+  features             Json           @default("[]")
+  isActive             Boolean        @default(true)
+  isVisible            Boolean        @default(true)
+  stripePriceMonthlyId String?
+  stripePriceYearlyId  String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  subscriptions        Subscription[]
+}
+
+model StripeCustomer {
+  id                     String         @id @default(cuid())
+  userId                 String         @unique
+  stripeCustomerId       String         @unique
+  email                  String?
+  name                   String?
+  defaultPaymentMethodId String?
+  metadata               Json           @default("{}")
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  user                   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptions          Subscription[]
+
+  @@index([stripeCustomerId])
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  stripeCustomerId     String?
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+  planId               String?
+  planName             String?
+  amount               Int?
+  currency             String             @default("USD")
+  interval             String?
+  status               SubscriptionStatus @default(TRIAL)
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAt             DateTime?
+  cancelledAt          DateTime?
+  cancelReason         String?
+  cancelFeedback       String?
+  promoCode            String?
+  discountPercent      Int?
+  metadata             Json               @default("{}")
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  plan                 SubscriptionPlan?  @relation(fields: [planId], references: [id])
+  stripeCustomer       StripeCustomer?    @relation(fields: [stripeCustomerId], references: [id])
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions         Transaction[]
+
+  @@index([status])
+  @@index([stripeSubscriptionId])
+}
+
+model Transaction {
+  id                      String             @id @default(uuid())
+  stripePaymentIntentId   String?
+  stripeCheckoutSessionId String?
+  stripeInvoiceId         String?
+  userId                  String?
+  subscriptionId          String?
+  type                    TransactionType
+  status                  TransactionStatus  @default(PENDING)
+  amount                  Int
+  currency                String             @default("USD")
+  fee                     Int                @default(0)
+  netAmount               Int?
+  planId                  String?
+  description             String?
+  paymentMethodType       PaymentMethodType?
+  paymentMethodLast4      String?
+  paymentMethodBrand      String?
+  metadata                Json               @default("{}")
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  completedAt             DateTime?
+  subscription            Subscription?      @relation(fields: [subscriptionId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([stripePaymentIntentId])
+  @@index([createdAt])
+}
+
+model PromoCode {
+  id              String           @id @default(uuid())
+  code            String           @unique
+  discountPercent Int
+  description     String?
+  maxUses         Int?
+  usedCount       Int              @default(0)
+  maxUsesPerUser  Int              @default(1)
+  validFrom       DateTime         @default(now())
+  validUntil      DateTime?
+  applicablePlans String[]         @default([])
+  minAmount       Int?
+  isActive        Boolean          @default(true)
+  metadata        Json             @default("{}")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  usages          PromoCodeUsage[]
+
+  @@index([code])
+  @@index([isActive])
+}
+
+model PromoCodeUsage {
+  id              String    @id @default(uuid())
+  promoCodeId     String
+  userId          String?
+  transactionId   String?
+  usedAt          DateTime  @default(now())
+  discountApplied Int?
+  promoCode       PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+
+  @@index([promoCodeId])
+  @@index([userId])
+}
+
+model Affiliate {
+  id                String            @id @default(uuid())
+  name              String
+  email             String            @unique
+  company           String?
+  website           String?
+  type              AffiliateType     @default(INDIVIDUAL)
+  tier              AffiliateTier     @default(STANDARD)
+  status            AffiliateStatus   @default(PENDING)
+  code              String            @unique
+  customCode        String?
+  commissionRate    Int               @default(20)
+  cookieDays        Int               @default(30)
+  paymentMethod     PaymentMethodType @default(PAYPAL)
+  paymentDetails    Json?
+  minimumPayout     Int               @default(5000)
+  totalClicks       BigInt            @default(0)
+  totalLeads        Int               @default(0)
+  totalConversions  Int               @default(0)
+  totalRevenue      BigInt            @default(0)
+  totalCommission   BigInt            @default(0)
+  totalPaid         BigInt            @default(0)
+  pendingCommission BigInt            @default(0)
+  createdAt         DateTime          @default(now())
+  approvedAt        DateTime?
+  updatedAt         DateTime          @updatedAt
+  lastPayoutAt      DateTime?
+  metadata          Json              @default("{}")
+  payouts           AffiliatePayout[]
+  leads             EnterpriseLead[]
+  referrals         Referral[]
+  referralClicks    ReferralClick[]
+
+  @@index([code])
+  @@index([email])
+  @@index([status])
+}
+
+model ReferralClick {
+  id              String    @id @default(uuid())
+  affiliateId     String
+  ipAddress       String?
+  userAgent       String?
+  referrer        String?
+  landingPage     String?
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  fingerprint     String?
+  cookieId        String?
+  cookieExpiresAt DateTime?
+  createdAt       DateTime  @default(now())
+  referral        Referral?
+  affiliate       Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@index([affiliateId])
+  @@index([createdAt])
+}
+
+model Referral {
+  id               String         @id @default(uuid())
+  affiliateId      String
+  clickId          String?        @unique
+  userId           String?
+  leadId           String?
+  status           ReferralStatus @default(CLICKED)
+  orderAmount      Int?
+  commissionRate   Int?
+  commissionAmount Int?
+  clickedAt        DateTime?
+  signedUpAt       DateTime?
+  convertedAt      DateTime?
+  paidAt           DateTime?
+  createdAt        DateTime       @default(now())
+  affiliate        Affiliate      @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  click            ReferralClick? @relation(fields: [clickId], references: [id])
+
+  @@index([affiliateId])
+  @@index([status])
+  @@index([userId])
+}
+
+model AffiliatePayout {
+  id               String             @id @default(uuid())
+  affiliateId      String
+  amount           Int
+  currency         String             @default("USD")
+  paymentMethod    PaymentMethodType?
+  paymentReference String?
+  status           PayoutStatus       @default(PENDING)
+  periodStart      DateTime?
+  periodEnd        DateTime?
+  referralIds      String[]           @default([])
+  referralCount    Int?
+  notes            String?
+  createdAt        DateTime           @default(now())
+  processedAt      DateTime?
+  completedAt      DateTime?
+  failedAt         DateTime?
+  failureReason    String?
+  affiliate        Affiliate          @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@index([affiliateId])
+  @@index([status])
+}
+
+model Upload {
+  id               String       @id @default(uuid())
+  userId           String?
+  deviceId         String?
+  filename         String       @unique
+  originalFilename String?
+  mimeType         String?
+  fileType         FileType     @default(IMAGE)
+  sizeBytes        BigInt
+  storagePath      String
+  url              String
+  cdnUrl           String?
+  thumbnailUrl     String?
+  status           UploadStatus @default(READY)
+  expiresAt        DateTime?
+  isPermanent      Boolean      @default(false)
+  isPublic         Boolean      @default(true)
+  passwordHash     String?
+  viewCount        Int          @default(0)
+  downloadCount    Int          @default(0)
+  metadata         Json         @default("{}")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  lastAccessedAt   DateTime?
+  deletedAt        DateTime?
+  downloads        Download[]
+  device           Device?      @relation(fields: [deviceId], references: [id])
+  user             User?        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([deviceId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([createdAt])
+}
+
+model Download {
+  id        String   @id @default(uuid())
+  uploadId  String
+  userId    String?
+  ipAddress String?
+  userAgent String?
+  referrer  String?
+  createdAt DateTime @default(now())
+  upload    Upload   @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+
+  @@index([uploadId])
+  @@index([createdAt])
+}
+
+model Feedback {
+  id          String    @id @default(uuid())
+  userId      String?
+  deviceId    String?
+  rating      Int?
+  comment     String?
+  category    String?
+  appVersion  String?
+  pageUrl     String?
+  responded   Boolean   @default(false)
+  response    String?
+  respondedAt DateTime?
+  respondedBy String?
+  ipAddress   String?
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+
+  @@index([rating])
+  @@index([createdAt])
+}
+
+model PageView {
+  id             String                @id @default(uuid())
+  timestamp      DateTime              @default(now())
+  visitorId      String
+  sessionId      String
+  userId         String?
+  path           String
+  title          String?
+  referrer       String?
+  source         String?
+  medium         String?
+  campaign       String?
+  sourceCategory TrafficSourceCategory @default(DIRECT)
+  deviceType     DeviceAnalyticsType   @default(DESKTOP)
+  browser        String?
+  browserVersion String?
+  os             String?
+  osVersion      String?
+  isMobile       Boolean               @default(false)
+  userAgent      String?
+  ipHash         String?
+  country        String?
+  city           String?
+  timezone       String?
+  language       String?
+  screenWidth    Int?
+  screenHeight   Int?
+  colorDepth     Int?
+  pixelRatio     Float?
+  loadTimeMs     Int?
+  domReadyMs     Int?
+  connectionType String?
+  botScore       Int                   @default(0)
+
+  @@index([visitorId, timestamp])
+  @@index([sessionId, timestamp])
+  @@index([userId, timestamp])
+  @@index([path, timestamp])
+  @@index([sourceCategory, timestamp])
+  @@index([timestamp])
+}
+
+model VisitorSession {
+  id               String                @id
+  visitorId        String
+  userId           String?
+  startTime        DateTime
+  endTime          DateTime?
+  durationSeconds  Int?
+  pageViews        Int                   @default(0)
+  events           Int                   @default(0)
+  pages            String[]              @default([])
+  entryPage        String?
+  exitPage         String?
+  deviceType       DeviceAnalyticsType?
+  browser          String?
+  os               String?
+  referrerSource   String?
+  referrerMedium   String?
+  referrerCampaign String?
+  sourceCategory   TrafficSourceCategory @default(DIRECT)
+  country          String?
+  city             String?
+  bounce           Boolean               @default(false)
+  converted        Boolean               @default(false)
+  conversionValue  Int?
+  engagementScore  Int                   @default(0)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  @@index([visitorId])
+  @@index([userId])
+  @@index([startTime])
+}
+
+model Visitor {
+  id              String               @id
+  userId          String?
+  firstSeen       DateTime
+  lastSeen        DateTime
+  totalPageViews  Int                  @default(0)
+  totalSessions   Int                  @default(0)
+  totalEvents     Int                  @default(0)
+  deviceType      DeviceAnalyticsType?
+  browser         String?
+  os              String?
+  firstReferrer   Json?
+  lastReferrer    Json?
+  touchpoints     Int                  @default(0)
+  country         String?
+  converted       Boolean              @default(false)
+  conversionDate  DateTime?
+  lifetimeValue   Int                  @default(0)
+  engagementScore Int                  @default(0)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([lastSeen])
+  @@index([converted])
+}
+
+model AnalyticsEvent {
+  id            String    @id @default(uuid())
+  timestamp     DateTime  @default(now())
+  visitorId     String
+  sessionId     String?
+  userId        String?
+  pageViewId    String?
+  eventType     EventType
+  eventName     String
+  eventCategory String?
+  data          Json      @default("{}")
+  value         Int?
+
+  @@index([visitorId, timestamp])
+  @@index([eventType, timestamp])
+  @@index([eventName, timestamp])
+  @@index([timestamp])
+}
+
+model DailyAnalytics {
+  id                   String   @id @default(cuid())
+  date                 DateTime @unique @db.Date
+  pageViews            BigInt   @default(0)
+  uniqueVisitors       Int      @default(0)
+  newVisitors          Int      @default(0)
+  returningVisitors    Int      @default(0)
+  sessions             Int      @default(0)
+  bounces              Int      @default(0)
+  totalSessionDuration BigInt   @default(0)
+  avgSessionDuration   Int      @default(0)
+  avgPagesPerSession   Float    @default(0)
+  devices              Json     @default("{}")
+  browsers             Json     @default("{}")
+  osBreakdown          Json     @default("{}")
+  countries            Json     @default("{}")
+  topPages             Json     @default("{}")
+  entryPages           Json     @default("{}")
+  exitPages            Json     @default("{}")
+  sources              Json     @default("{}")
+  referrers            Json     @default("{}")
+  conversions          Int      @default(0)
+  conversionRate       Float    @default(0)
+  revenue              BigInt   @default(0)
+  hourlyDistribution   Int[]    @default([])
+  peakHour             Int?
+  avgEngagementScore   Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([date])
+}
+
+model TelemetryEvent {
+  id            String   @id @default(uuid())
+  timestamp     DateTime @default(now())
+  receivedAt    DateTime @default(now())
+  deviceId      String
+  sessionId     String?
+  userId        String?
+  appVersion    String?
+  platform      String?
+  os            String?
+  osVersion     String?
+  arch          String?
+  nodeVersion   String?
+  eventName     String
+  eventData     Json     @default("{}")
+  memoryUsageMb Int?
+  cpuPercent    Float?
+  uptime        Int?
+  status        String?
+  trayStatus    String?
+  isError       Boolean  @default(false)
+  errorMessage  String?
+  errorStack    String?
+  ipAddress     String?
+
+  @@index([deviceId, timestamp])
+  @@index([eventName, timestamp])
+  @@index([timestamp])
+}
+
+model ViralStats {
+  id                    String   @id @default("current")
+  startedAt             DateTime
+  totalCycles           Int      @default(0)
+  totalSubmissions      Int      @default(0)
+  totalSuccess          Int      @default(0)
+  totalFailed           Int      @default(0)
+  totalTrafficGenerated Int      @default(0)
+  categories            Json     @default("{}")
+  hourlyStats           Json     @default("[]")
+  dailyStats            Json     @default("[]")
+  topReferrers          Json     @default("{}")
+  recentCycles          Json     @default("[]")
+  updatedAt             DateTime @updatedAt
+}
+
+model Admin {
+  id               String            @id @default(uuid())
+  username         String            @unique
+  email            String            @unique
+  passwordHash     String
+  passwordSalt     String?
+  role             AdminRole         @default(VIEWER)
+  status           AdminStatus       @default(ACTIVE)
+  twoFactorEnabled Boolean           @default(false)
+  twoFactorSecret  String?
+  loginCount       Int               @default(0)
+  failedLoginCount Int               @default(0)
+  lockedUntil      DateTime?
+  createdAt        DateTime          @default(now())
+  lastLoginAt      DateTime?
+  updatedAt        DateTime          @updatedAt
+  metadata         Json              @default("{}")
+  activities       ActivityLog[]
+  permissions      AdminPermission[]
+  adminSettings    AdminSettings?
+
+  @@index([username])
+  @@index([email])
+}
+
+model Permission {
+  id               String            @id @default(uuid())
+  name             String
+  description      String?
+  resource         String
+  action           String
+  createdAt        DateTime          @default(now())
+  adminPermissions AdminPermission[]
+  rolePermissions  RolePermission[]
+
+  @@unique([resource, action])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  role         AdminRole
+  permissionId String
+  createdAt    DateTime   @default(now())
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([role, permissionId])
+}
+
+model AdminPermission {
+  id           String     @id @default(uuid())
+  adminId      String
+  permissionId String
+  granted      Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  grantedBy    String?
+  admin        Admin      @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([adminId, permissionId])
+}
+
+model Notification {
+  id          String               @id @default(uuid())
+  type        NotificationType
+  priority    NotificationPriority @default(NORMAL)
+  title       String
+  message     String
+  icon        String?
+  color       String?
+  link        String?
+  entityType  String?
+  entityId    String?
+  playSound   Boolean              @default(false)
+  targetUsers String[]             @default([])
+  read        Boolean              @default(false)
+  readBy      String[]             @default([])
+  createdAt   DateTime             @default(now())
+  readAt      DateTime?
+
+  @@index([type])
+  @@index([read, createdAt])
+}
+
+model UserNotification {
+  id        String    @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  link      String?
+  read      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+model ActivityLog {
+  id          String           @id @default(uuid())
+  timestamp   DateTime         @default(now())
+  type        String
+  category    ActivityCategory
+  action      String
+  description String?
+  entityType  String?
+  entityId    String?
+  entityName  String?
+  userId      String?
+  userName    String?
+  adminId     String?
+  ipAddress   String?
+  userAgent   String?
+  oldValues   Json?
+  newValues   Json?
+  metadata    Json             @default("{}")
+  admin       Admin?           @relation(fields: [adminId], references: [id])
+
+  @@index([type, timestamp])
+  @@index([category, timestamp])
+  @@index([userId, timestamp])
+  @@index([adminId, timestamp])
+  @@index([entityType, entityId])
+  @@index([timestamp])
+}
+
+model SystemSettings {
+  key         String   @id
+  value       Json
+  description String?
+  category    String?
+  isSensitive Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+}
+
+model AdminSettings {
+  id                   String    @id @default(cuid())
+  adminId              String    @unique
+  deviceBindingEnabled Boolean   @default(false)
+  boundDeviceId        String?
+  boundAt              DateTime?
+  googleAuthEnabled    Boolean   @default(false)
+  allowedGoogleEmail   String?
+  preferences          Json      @default("{}")
+  updatedAt            DateTime  @updatedAt
+  admin                Admin     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+}
+
+model SupportConversation {
+  id               String             @id @default(uuid())
+  visitorId        String
+  userId           String?
+  deviceId         String?
+  sessionId        String
+  status           ConversationStatus @default(ACTIVE)
+  channel          SupportChannel     @default(WIDGET)
+  aiHandled        Boolean            @default(true)
+  aiConfidence     Float?
+  escalatedAt      DateTime?
+  escalatedTo      String?
+  escalationReason String?
+  pageUrl          String?
+  userAgent        String?
+  ipAddress        String?
+  timezone         String?
+  language         String             @default("en")
+  rating           Int?
+  feedback         String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  closedAt         DateTime?
+  lastMessageAt    DateTime           @default(now())
+  messages         SupportMessage[]
+  ticket           SupportTicket?
+  triggers         TriggerEvent[]
+
+  @@index([visitorId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([escalatedTo])
+}
+
+model SupportMessage {
+  id               String              @id @default(uuid())
+  conversationId   String
+  role             MessageRole
+  content          String
+  contentType      MessageContentType  @default(TEXT)
+  aiGenerated      Boolean             @default(false)
+  aiModel          String?
+  aiConfidence     Float?
+  tokensUsed       Int?
+  attachments      Json                @default("[]")
+  suggestedActions Json                @default("[]")
+  relatedArticles  Json                @default("[]")
+  createdAt        DateTime            @default(now())
+  readAt           DateTime?
+  conversation     SupportConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model SupportTicket {
+  id                  String               @id @default(uuid())
+  ticketNumber        String               @unique
+  conversationId      String?              @unique
+  email               String
+  name                String?
+  userId              String?
+  deviceId            String?
+  subject             String
+  description         String
+  category            TicketCategory       @default(GENERAL)
+  priority            TicketPriority       @default(MEDIUM)
+  status              TicketStatus         @default(OPEN)
+  assignedTo          String?
+  assignedAt          DateTime?
+  tags                String[]             @default([])
+  firstResponseAt     DateTime?
+  resolvedAt          DateTime?
+  slaDeadline         DateTime?
+  slaBreach           Boolean              @default(false)
+  aiSummary           String?
+  aiSuggestedPriority TicketPriority?
+  aiSuggestedCategory TicketCategory?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  closedAt            DateTime?
+  conversation        SupportConversation? @relation(fields: [conversationId], references: [id])
+  replies             TicketReply[]
+
+  @@index([email])
+  @@index([status])
+  @@index([priority])
+  @@index([assignedTo])
+  @@index([createdAt])
+}
+
+model TicketReply {
+  id          String          @id @default(uuid())
+  ticketId    String
+  authorType  ReplyAuthorType
+  authorId    String?
+  authorName  String
+  authorEmail String?
+  content     String
+  isInternal  Boolean         @default(false)
+  attachments Json            @default("[]")
+  createdAt   DateTime        @default(now())
+  ticket      SupportTicket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model TriggerEvent {
+  id              String               @id @default(uuid())
+  visitorId       String
+  sessionId       String
+  conversationId  String?
+  triggerType     TriggerType
+  triggerName     String
+  confidence      Float                @default(0.5)
+  pageUrl         String?
+  pageTitle       String?
+  timeOnPage      Int?
+  scrollDepth     Int?
+  behaviorData    Json                 @default("{}")
+  widgetOpened    Boolean              @default(false)
+  dismissed       Boolean              @default(false)
+  convertedToChat Boolean              @default(false)
+  createdAt       DateTime             @default(now())
+  conversation    SupportConversation? @relation(fields: [conversationId], references: [id])
+
+  @@index([visitorId])
+  @@index([triggerType])
+  @@index([createdAt])
+}
+
+model SupportAgentStatus {
+  id                 String      @id @default(uuid())
+  adminId            String      @unique
+  status             AgentStatus @default(OFFLINE)
+  maxConcurrentChats Int         @default(5)
+  currentChats       Int         @default(0)
+  totalChatsHandled  Int         @default(0)
+  avgResponseTime    Int?
+  avgRating          Float?
+  lastActiveAt       DateTime?
+  statusChangedAt    DateTime    @default(now())
+
+  @@index([status])
+}
+
+model UserWarning {
+  id        String    @id @default(uuid())
+  userId    String
+  adminId   String
+  reason    String
+  severity  Int       @default(1)
+  expiresAt DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([adminId])
+  @@index([isActive])
+}
+
+model UserNote {
+  id        String   @id @default(uuid())
+  userId    String
+  adminId   String
+  adminName String?
+  note      String
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([adminId])
+}
+
+model UserGroup {
+  id          String            @id @default(uuid())
+  name        String            @unique
+  description String?
+  color       String            @default("#3b82f6")
+  icon        String?
+  permissions Json              @default("[]")
+  priority    Int               @default(0)
+  isSystem    Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  members     UserGroupMember[]
+
+  @@index([name])
+  @@index([priority])
+}
+
+model UserGroupMember {
+  id        String    @id @default(uuid())
+  userId    String
+  groupId   String
+  addedBy   String
+  addedAt   DateTime  @default(now())
+  expiresAt DateTime?
+  group     UserGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@index([userId])
+  @@index([groupId])
+}
+
+model ContentReport {
+  id          String       @id @default(uuid())
+  contentId   String
+  contentType ContentType
+  reporterId  String?
+  reporterIp  String?
+  reason      ReportReason
+  description String?
+  status      ReportStatus @default(PENDING)
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  reviewNote  String?
+  action      ModAction?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([contentId])
+  @@index([status])
+  @@index([contentType])
+  @@index([createdAt])
+}
+
+model ModerationRule {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  ruleType    String
+  pattern     String
+  action      ModAction @default(REMOVED)
+  severity    Int       @default(1)
+  isActive    Boolean   @default(true)
+  hitCount    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdBy   String?
+
+  @@index([ruleType])
+  @@index([isActive])
+}
+
+model ModerationLog {
+  id          String      @id @default(uuid())
+  contentId   String
+  contentType ContentType
+  action      ModAction
+  reason      String?
+  adminId     String?
+  adminName   String?
+  ruleId      String?
+  isAutomatic Boolean     @default(false)
+  metadata    Json        @default("{}")
+  createdAt   DateTime    @default(now())
+
+  @@index([contentId])
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model Invoice {
+  id              String        @id @default(uuid())
+  invoiceNumber   String        @unique
+  userId          String?
+  stripeInvoiceId String?       @unique
+  customerName    String?
+  customerEmail   String?
+  customerAddress Json?
+  status          InvoiceStatus @default(DRAFT)
+  currency        String        @default("USD")
+  subtotal        Int           @default(0)
+  taxAmount       Int           @default(0)
+  discountAmount  Int           @default(0)
+  total           Int           @default(0)
+  amountPaid      Int           @default(0)
+  amountDue       Int           @default(0)
+  issueDate       DateTime      @default(now())
+  dueDate         DateTime?
+  paidAt          DateTime?
+  notes           String?
+  internalNotes   String?
+  metadata        Json          @default("{}")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  items           InvoiceItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([invoiceNumber])
+  @@index([createdAt])
+}
+
+model InvoiceItem {
+  id          String    @id @default(uuid())
+  invoiceId   String
+  description String
+  quantity    Int       @default(1)
+  unitPrice   Int
+  amount      Int
+  planId      String?
+  periodStart DateTime?
+  periodEnd   DateTime?
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+  PENDING_VERIFICATION
+}
+
+enum DevicePlatform {
+  WEB
+  DESKTOP
+  MOBILE
+  TABLET
+  UNKNOWN
+}
+
+enum SessionStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum LoginRequestStatus {
+  PENDING
+  APPROVED
+  DENIED
+  EXPIRED
+}
+
+enum LeadSource {
+  WEBSITE
+  OUTBOUND
+  REFERRAL
+  PARTNER
+  ORGANIC
+  PAID
+  SOCIAL
+  EMAIL
+  OTHER
+}
+
+enum LeadTier {
+  STARTUP
+  BUSINESS
+  ENTERPRISE
+  WHALE
+}
+
+enum LeadPriority {
+  COLD
+  WARM
+  HOT
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+  CHURNED
+}
+
+enum DealStatus {
+  DISCOVERY
+  PROPOSAL
+  NEGOTIATION
+  CONTRACT
+  WON
+  LOST
+}
+
+enum ProposalStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum DemoStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+  PAUSED
+}
+
+enum TransactionType {
+  CHECKOUT_CREATED
+  PAYMENT
+  REFUND
+  CHARGEBACK
+  SUBSCRIPTION_RENEWAL
+  UPGRADE
+  DOWNGRADE
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethodType {
+  CARD
+  PAYPAL
+  BANK_TRANSFER
+  CRYPTO
+  WIRE
+}
+
+enum AffiliateType {
+  INDIVIDUAL
+  AGENCY
+  PARTNER
+  INFLUENCER
+}
+
+enum AffiliateTier {
+  STANDARD
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+enum AffiliateStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+}
+
+enum ReferralStatus {
+  CLICKED
+  SIGNED_UP
+  CONVERTED
+  PAID
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum FileType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  ARCHIVE
+  OTHER
+}
+
+enum UploadStatus {
+  UPLOADING
+  PROCESSING
+  READY
+  EXPIRED
+  DELETED
+}
+
+enum TrafficSourceCategory {
+  DIRECT
+  ORGANIC
+  PAID
+  SOCIAL
+  REFERRAL
+  EMAIL
+  AFFILIATE
+}
+
+enum DeviceAnalyticsType {
+  DESKTOP
+  MOBILE
+  TABLET
+  TV
+  UNKNOWN
+}
+
+enum EventType {
+  PAGEVIEW
+  CLICK
+  SCROLL
+  FORM_SUBMIT
+  DOWNLOAD
+  SIGNUP
+  PURCHASE
+  CUSTOM
+}
+
+enum AdminRole {
+  SUPERADMIN
+  ADMIN
+  MODERATOR
+  SUPPORT
+  VIEWER
+}
+
+enum AdminStatus {
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+enum NotificationType {
+  NEW_LEAD
+  NEW_DEAL
+  PAYMENT_RECEIVED
+  SUBSCRIPTION_CANCELLED
+  SYSTEM_ALERT
+  SECURITY_ALERT
+  NEW_USER
+  NEW_AFFILIATE
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ActivityCategory {
+  ADMIN
+  LEADS
+  DEALS
+  PAYMENTS
+  USERS
+  AFFILIATES
+  SYSTEM
+  SECURITY
+}
+
+enum ConversationStatus {
+  ACTIVE
+  WAITING_USER
+  WAITING_AGENT
+  ESCALATED
+  RESOLVED
+  CLOSED
+}
+
+enum SupportChannel {
+  WIDGET
+  EMAIL
+  TICKET
+  MOBILE
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+  AGENT
+}
+
+enum MessageContentType {
+  TEXT
+  IMAGE
+  FILE
+  ARTICLE_SUGGESTION
+  ACTION_BUTTON
+  TYPING_INDICATOR
+}
+
+enum TicketCategory {
+  GENERAL
+  TECHNICAL
+  BILLING
+  FEATURE_REQUEST
+  BUG_REPORT
+  ACCOUNT
+  ENTERPRISE
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  WAITING_INTERNAL
+  RESOLVED
+  CLOSED
+}
+
+enum ReplyAuthorType {
+  CUSTOMER
+  AGENT
+  AI
+  SYSTEM
+}
+
+enum TriggerType {
+  IDLE_TIME
+  ERROR_PAGE
+  EXIT_INTENT
+  RAGE_CLICK
+  SCROLL_STUCK
+  REPEATED_VISIT
+  PRICING_PAGE
+  CHECKOUT_ABANDON
+  HELP_SEARCH
+  LONG_FORM_TIME
+  MANUAL
+}
+
+enum AgentStatus {
+  ONLINE
+  AWAY
+  BUSY
+  OFFLINE
+}
+
+enum ContentType {
+  UPLOAD
+  COMMENT
+  PROFILE
+  MESSAGE
+}
+
+enum ReportReason {
+  SPAM
+  INAPPROPRIATE
+  COPYRIGHT
+  HARASSMENT
+  MALWARE
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+enum ModAction {
+  APPROVED
+  REMOVED
+  WARNING_SENT
+  USER_BANNED
+  NO_ACTION
+}
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PAID
+  VOID
+  UNCOLLECTIBLE
+  REFUNDED
+}

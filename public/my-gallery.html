@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>My Photos - DOZ UP</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            padding-top: env(safe-area-inset-top);
+            background: linear-gradient(180deg, rgba(10,10,26,0.98) 0%, rgba(10,10,26,0.9) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 16px;
+            padding-right: 16px;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .back-btn:active {
+            transform: scale(0.9);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .photo-count {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: calc(56px + env(safe-area-inset-top));
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* Pull to Refresh */
+        .pull-indicator {
+            position: fixed;
+            top: calc(56px + env(safe-area-inset-top));
+            left: 0;
+            right: 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            transform: translateY(-60px);
+            transition: transform 0.2s ease;
+            z-index: 50;
+        }
+
+        .pull-indicator.visible {
+            transform: translateY(0);
+        }
+
+        .pull-indicator.refreshing::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 2px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 4px;
+            position: relative;
+            background: #1a1a2e;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .gallery-item:active {
+            transform: scale(0.95);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item.loaded img {
+            opacity: 1;
+        }
+
+        /* Shimmer Loading */
+        .shimmer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, #1a1a2e 25%, #2a2a4e 50%, #1a1a2e 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .gallery-item.loaded .shimmer {
+            display: none;
+        }
+
+        /* Loading Skeleton */
+        .loading-skeleton {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 2px;
+        }
+
+        .skeleton-item {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #1a1a2e 25%, #2a2a4e 50%, #1a1a2e 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .empty-state.visible {
+            display: flex;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 24px;
+        }
+
+        .upload-btn {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            border: none;
+            border-radius: 30px;
+            color: #000;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .upload-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Full Screen Viewer */
+        .viewer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.98);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .viewer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .viewer-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            padding-top: env(safe-area-inset-top);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            padding-top: env(safe-area-inset-top);
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            z-index: 10;
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .image-counter {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .viewer-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: pan-x pan-y;
+        }
+
+        .viewer-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+        }
+
+        .viewer-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+
+        .action-btn:active {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .action-btn .icon {
+            font-size: 24px;
+        }
+
+        .action-btn .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .action-btn.delete-btn {
+            color: #ff4757;
+        }
+
+        /* Delete Confirmation Modal */
+        .confirm-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-box {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 300px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .confirm-box h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .confirm-box p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .confirm-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .confirm-btn.cancel {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .confirm-btn.delete {
+            background: #ff4757;
+            color: #fff;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: calc(100px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(255,255,255,0.95);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Hide scrollbar */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+        <h1 class="header-title">My Photos</h1>
+        <span class="photo-count" id="photoCount"></span>
+    </header>
+
+    <!-- Pull to Refresh Indicator -->
+    <div class="pull-indicator" id="pullIndicator">
+        <span id="pullText">Pull to refresh</span>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Loading Skeleton -->
+        <div class="loading-skeleton" id="loadingSkeleton">
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+            <div class="skeleton-item"></div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="gallery-grid" id="galleryGrid" style="display: none;"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📷</div>
+            <h2>No photos yet</h2>
+            <p>Your uploaded photos will appear here</p>
+            <a href="mobile.html" class="upload-btn">Take a Photo</a>
+        </div>
+    </main>
+
+    <!-- Full Screen Viewer -->
+    <div class="viewer-overlay" id="viewer">
+        <div class="viewer-header">
+            <button class="close-btn" onclick="closeViewer()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <span class="image-counter" id="imageCounter">1 / 10</span>
+            <button class="menu-btn" onclick="toggleMenu()">⋮</button>
+        </div>
+        <div class="viewer-content" id="viewerContent">
+            <img id="viewerImage" src="" alt="">
+        </div>
+        <div class="viewer-actions">
+            <button class="action-btn" onclick="shareImage()">
+                <span class="icon">↗</span>
+                <span class="label">Share</span>
+            </button>
+            <button class="action-btn" onclick="downloadImage()">
+                <span class="icon">↓</span>
+                <span class="label">Save</span>
+            </button>
+            <button class="action-btn" onclick="copyLink()">
+                <span class="icon">🔗</span>
+                <span class="label">Copy</span>
+            </button>
+            <button class="action-btn delete-btn" onclick="confirmDelete()">
+                <span class="icon">🗑</span>
+                <span class="label">Delete</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-box">
+            <h3>Delete Photo?</h3>
+            <p>This action cannot be undone.</p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn cancel" onclick="cancelDelete()">Cancel</button>
+                <button class="confirm-btn delete" onclick="deleteImage()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // State
+        let images = [];
+        let currentIndex = 0;
+        let deviceId = null;
+        let isRefreshing = false;
+
+        // Multi-device tracking: remember ALL device IDs across sessions
+        function getAllDeviceIds() {
+            try {
+                return JSON.parse(localStorage.getItem('doz_all_device_ids') || '[]');
+            } catch (e) { return []; }
+        }
+        function addDeviceId(id) {
+            if (!id) return;
+            const ids = getAllDeviceIds();
+            if (!ids.includes(id)) {
+                ids.push(id);
+                localStorage.setItem('doz_all_device_ids', JSON.stringify(ids));
+            }
+        }
+        function getUploadsUrl() {
+            const allIds = getAllDeviceIds();
+            if (allIds.length > 1) {
+                return `/api/uploads?devices=${encodeURIComponent(allIds.join(','))}`;
+            }
+            return `/api/uploads?device=${encodeURIComponent(deviceId)}`;
+        }
+
+        // Elements
+        const loadingSkeleton = document.getElementById('loadingSkeleton');
+        const galleryGrid = document.getElementById('galleryGrid');
+        const emptyState = document.getElementById('emptyState');
+        const photoCount = document.getElementById('photoCount');
+        const viewer = document.getElementById('viewer');
+        const viewerImage = document.getElementById('viewerImage');
+        const viewerContent = document.getElementById('viewerContent');
+        const imageCounter = document.getElementById('imageCounter');
+        const pullIndicator = document.getElementById('pullIndicator');
+        const pullText = document.getElementById('pullText');
+        const confirmModal = document.getElementById('confirmModal');
+        const toast = document.getElementById('toast');
+        const mainContent = document.getElementById('mainContent');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // First check URL parameter (for links from desktop app)
+            const urlParams = new URLSearchParams(window.location.search);
+            deviceId = urlParams.get('device');
+
+            // If URL has device ID, save it to localStorage for future visits
+            if (deviceId) {
+                localStorage.setItem('doz_device_id', deviceId);
+                addDeviceId(deviceId); // Track alongside previous device IDs
+                console.log('[Gallery] Device ID from URL:', deviceId);
+            } else {
+                // Try all possible localStorage keys
+                deviceId = localStorage.getItem('doz_device_id')
+                        || localStorage.getItem('doz_browser_device_id')
+                        || localStorage.getItem('deviceId')
+                        || localStorage.getItem('device_id')
+                        || localStorage.getItem('DOZ_DEVICE_ID');
+                if (deviceId) addDeviceId(deviceId);
+                console.log('[Gallery] Device ID from localStorage:', deviceId);
+            }
+            console.log('[Gallery] All known device IDs:', getAllDeviceIds());
+
+            loadGallery();
+            setupPullToRefresh();
+            setupSwipeGestures();
+
+            // Start real-time sync polling (check for new uploads every 3 seconds)
+            if (deviceId) {
+                setInterval(checkForNewUploads, 3000);
+            }
+        });
+
+        // Real-time sync: known upload IDs for detecting new ones
+        let knownUploadIds = new Set();
+
+        // Check for new uploads and add them to gallery in real-time
+        async function checkForNewUploads() {
+            if (!deviceId) return;
+            try {
+                const response = await fetch(getUploadsUrl());
+                const data = await response.json();
+
+                if (!data.uploads || data.uploads.length === 0) return;
+
+                // Initialize known IDs on first run
+                if (knownUploadIds.size === 0) {
+                    knownUploadIds = new Set(data.uploads.map(u => u.id));
+                    return;
+                }
+
+                // Find new uploads
+                const newUploads = data.uploads.filter(u => !knownUploadIds.has(u.id));
+
+                if (newUploads.length > 0) {
+                    // Add new IDs to known set
+                    newUploads.forEach(u => knownUploadIds.add(u.id));
+
+                    // Map to gallery format and prepend to images array
+                    const newImages = newUploads.map(upload => ({
+                        id: upload.id,
+                        url: upload.url,
+                        filename: upload.filename,
+                        createdAt: upload.timestamp,
+                        size: upload.size
+                    }));
+
+                    images = [...newImages, ...images];
+
+                    // Re-render gallery with new images
+                    renderGallery();
+
+                    // Update photo count
+                    photoCount.textContent = `${images.length} photo${images.length !== 1 ? 's' : ''}`;
+                    console.log(`[Gallery] ${newUploads.length} new upload(s) synced in real-time`);
+                }
+            } catch (err) {
+                console.error('[Gallery] Sync error:', err);
+            }
+        }
+
+        // Load gallery from API (using uploads endpoint)
+        async function loadGallery() {
+            if (!deviceId) {
+                console.log('[Gallery] No device ID found');
+                showEmptyState();
+                return;
+            }
+
+            try {
+                // Use the uploads API which stores actual uploaded images
+                const response = await fetch(getUploadsUrl());
+                const data = await response.json();
+
+                console.log('[Gallery] API response:', data);
+
+                if (data.uploads && data.uploads.length > 0) {
+                    // Track known upload IDs for real-time sync
+                    knownUploadIds = new Set(data.uploads.map(u => u.id));
+
+                    // Map uploads to gallery format
+                    images = data.uploads.map(upload => ({
+                        id: upload.id,
+                        url: upload.url,
+                        filename: upload.filename,
+                        createdAt: upload.timestamp,
+                        size: upload.size
+                    })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    renderGallery();
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Failed to load gallery:', error);
+                showEmptyState();
+            }
+        }
+
+        // Render gallery grid
+        function renderGallery() {
+            loadingSkeleton.style.display = 'none';
+            emptyState.classList.remove('visible');
+            galleryGrid.style.display = 'grid';
+            photoCount.textContent = `${images.length} photo${images.length !== 1 ? 's' : ''}`;
+
+            galleryGrid.innerHTML = images.map((img, index) => `
+                <div class="gallery-item" data-index="${index}" onclick="openViewer(${index})">
+                    <div class="shimmer"></div>
+                    <img data-src="${img.url}?raw=1" alt="" loading="lazy">
+                </div>
+            `).join('');
+
+            // Setup lazy loading
+            observeImages();
+        }
+
+        // Lazy loading with IntersectionObserver
+        function observeImages() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const item = entry.target;
+                        const img = item.querySelector('img');
+                        if (img && img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.onload = () => {
+                                item.classList.add('loaded');
+                            };
+                            img.onerror = () => {
+                                item.classList.add('loaded');
+                            };
+                            observer.unobserve(item);
+                        }
+                    }
+                });
+            }, {
+                rootMargin: '200px',
+                threshold: 0.01
+            });
+
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                observer.observe(item);
+            });
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            loadingSkeleton.style.display = 'none';
+            galleryGrid.style.display = 'none';
+            emptyState.classList.add('visible');
+            photoCount.textContent = '';
+        }
+
+        // Pull to refresh
+        function setupPullToRefresh() {
+            let startY = 0;
+            let isPulling = false;
+            let pullDistance = 0;
+
+            mainContent.addEventListener('touchstart', (e) => {
+                if (window.scrollY === 0 && !isRefreshing) {
+                    startY = e.touches[0].clientY;
+                    isPulling = true;
+                }
+            }, { passive: true });
+
+            mainContent.addEventListener('touchmove', (e) => {
+                if (!isPulling || isRefreshing) return;
+
+                pullDistance = e.touches[0].clientY - startY;
+                if (pullDistance > 0 && pullDistance < 150) {
+                    pullIndicator.classList.add('visible');
+                    pullIndicator.style.transform = `translateY(${Math.min(pullDistance - 60, 20)}px)`;
+
+                    if (pullDistance > 80) {
+                        pullText.textContent = 'Release to refresh';
+                    } else {
+                        pullText.textContent = 'Pull to refresh';
+                    }
+                }
+            }, { passive: true });
+
+            mainContent.addEventListener('touchend', () => {
+                if (isPulling && pullDistance > 80 && !isRefreshing) {
+                    refresh();
+                } else {
+                    pullIndicator.classList.remove('visible');
+                    pullIndicator.style.transform = '';
+                }
+                isPulling = false;
+                pullDistance = 0;
+            });
+        }
+
+        async function refresh() {
+            isRefreshing = true;
+            pullIndicator.classList.add('refreshing');
+            pullText.textContent = 'Refreshing...';
+
+            await loadGallery();
+
+            setTimeout(() => {
+                isRefreshing = false;
+                pullIndicator.classList.remove('visible', 'refreshing');
+                pullIndicator.style.transform = '';
+                pullText.textContent = 'Pull to refresh';
+            }, 500);
+        }
+
+        // Viewer functions
+        function openViewer(index) {
+            currentIndex = index;
+            const img = images[index];
+            viewerImage.src = img.url + '?raw=1';
+            imageCounter.textContent = `${index + 1} / ${images.length}`;
+            viewer.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeViewer() {
+            viewer.classList.remove('active');
+            document.body.style.overflow = '';
+            viewerImage.src = '';
+        }
+
+        // Swipe gestures for viewer
+        function setupSwipeGestures() {
+            let startX = 0;
+            let startY = 0;
+            let isDragging = false;
+
+            viewerContent.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                isDragging = true;
+            });
+
+            viewerContent.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const diffX = e.touches[0].clientX - startX;
+                const diffY = e.touches[0].clientY - startY;
+
+                // Horizontal swipe preview
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    viewerImage.style.transform = `translateX(${diffX * 0.3}px)`;
+                }
+            });
+
+            viewerContent.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                const diffX = e.changedTouches[0].clientX - startX;
+                const diffY = e.changedTouches[0].clientY - startY;
+
+                viewerImage.style.transform = '';
+
+                // Swipe down to close
+                if (diffY > 100 && Math.abs(diffX) < 50) {
+                    closeViewer();
+                    return;
+                }
+
+                // Swipe left/right to navigate
+                if (Math.abs(diffX) > 50) {
+                    if (diffX < 0 && currentIndex < images.length - 1) {
+                        // Swipe left - next
+                        openViewer(currentIndex + 1);
+                    } else if (diffX > 0 && currentIndex > 0) {
+                        // Swipe right - previous
+                        openViewer(currentIndex - 1);
+                    }
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (!viewer.classList.contains('active')) return;
+
+                if (e.key === 'Escape') closeViewer();
+                if (e.key === 'ArrowLeft' && currentIndex > 0) openViewer(currentIndex - 1);
+                if (e.key === 'ArrowRight' && currentIndex < images.length - 1) openViewer(currentIndex + 1);
+            });
+        }
+
+        // Actions
+        async function shareImage() {
+            const img = images[currentIndex];
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'DOZ UP Photo',
+                        url: img.url
+                    });
+                } catch (e) {
+                    if (e.name !== 'AbortError') {
+                        copyLink();
+                    }
+                }
+            } else {
+                copyLink();
+            }
+        }
+
+        function downloadImage() {
+            const img = images[currentIndex];
+            const a = document.createElement('a');
+            a.href = img.url + '?raw=1';
+            a.download = img.filename || 'photo.png';
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('Download started');
+        }
+
+        function copyLink() {
+            const img = images[currentIndex];
+            navigator.clipboard.writeText(img.url).then(() => {
+                showToast('Link copied!');
+            }).catch(() => {
+                showToast('Failed to copy');
+            });
+        }
+
+        function confirmDelete() {
+            confirmModal.classList.add('active');
+        }
+
+        function cancelDelete() {
+            confirmModal.classList.remove('active');
+        }
+
+        async function deleteImage() {
+            const img = images[currentIndex];
+            confirmModal.classList.remove('active');
+
+            try {
+                const response = await fetch(`/api/uploads/${img.id}?device=${deviceId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    images.splice(currentIndex, 1);
+
+                    if (images.length === 0) {
+                        closeViewer();
+                        showEmptyState();
+                    } else {
+                        if (currentIndex >= images.length) {
+                            currentIndex = images.length - 1;
+                        }
+                        renderGallery();
+                        openViewer(currentIndex);
+                    }
+                    showToast('Photo deleted');
+                } else {
+                    showToast('Failed to delete');
+                }
+            } catch (error) {
+                console.error('Delete failed:', error);
+                showToast('Failed to delete');
+            }
+        }
+
+        function toggleMenu() {
+            // Could add more menu options here
+        }
+
+        // Navigation
+        function goBack() {
+            if (document.referrer && document.referrer.includes(location.host)) {
+                history.back();
+            } else {
+                location.href = 'mobile.html';
+            }
+        }
+
+        // Toast notification
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('visible');
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 2000);
+        }
+
+        // Handle back button
+        window.addEventListener('popstate', () => {
+            if (viewer.classList.contains('active')) {
+                closeViewer();
+            }
+        });
+    </script>
+</body>
+</html>

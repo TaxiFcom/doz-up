@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DOZ UP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #2E7D32;
+            --secondary: #8BC34A;
+            --bg-dark: #0a0a12;
+            --bg-card: rgba(255,255,255,0.03);
+            --text: #ffffff;
+            --text-muted: #888;
+            --border: rgba(255,255,255,0.08);
+            --danger: #f44336;
+            --warning: #FFC107;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(145deg, var(--bg-dark) 0%, #1a1a2e 50%, #0f0f1a 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        .stat-change.positive { color: var(--primary); }
+        .stat-change.negative { color: var(--danger); }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 1.2rem;
+        }
+
+        /* Subscription Card */
+        .subscription-card {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .subscription-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .subscription-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .subscription-status.active {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--primary);
+        }
+
+        .subscription-status.cancelled {
+            background: rgba(244, 67, 54, 0.2);
+            color: var(--danger);
+        }
+
+        .subscription-status.trial {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+
+        .subscription-details {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+
+        .subscription-details span {
+            display: block;
+            margin-top: 4px;
+        }
+
+        .subscription-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        /* Storage Usage */
+        .storage-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .storage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .storage-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Transactions Table */
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transactions-table th,
+        .transactions-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .transactions-table th {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .transactions-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .tx-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tx-status.completed {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--primary);
+        }
+
+        .tx-status.pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+
+        .tx-status.failed {
+            background: rgba(244, 67, 54, 0.2);
+            color: var(--danger);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .quick-action {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .quick-action:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .quick-action-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Login Form */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .subscription-card {
+                grid-template-columns: 1fr;
+            }
+
+            .subscription-actions {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login View -->
+    <div id="loginView" class="login-container">
+        <div class="login-card">
+            <h2>Sign In to Dashboard</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="john@example.com">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Access Dashboard
+                </button>
+            </form>
+            <p style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">
+                Don't have an account? <a href="/v2/pricing" style="color: var(--primary);">Subscribe now</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboardView" style="display: none;">
+        <nav class="navbar">
+            <a href="/up" class="logo" style="text-decoration: none;">DOZ UP</a>
+            <div class="nav-links">
+                <a href="#" class="active">Dashboard</a>
+                <a href="/v2/pricing">Pricing</a>
+                <a href="/my">My Uploads</a>
+                <a href="/">Home</a>
+            </div>
+            <div class="user-menu">
+                <div class="user-avatar" id="userAvatar">J</div>
+                <span id="userName">John</span>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="page-header">
+                <h1>Welcome back, <span id="welcomeName">John</span>!</h1>
+                <p>Manage your subscription and view your usage</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Uploads</div>
+                    <div class="stat-value" id="totalUploads">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Storage Used</div>
+                    <div class="stat-value" id="storageUsed">0 MB</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Plan Status</div>
+                    <div class="stat-value" id="planStatus" style="font-size: 1.2rem;">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Next Billing</div>
+                    <div class="stat-value" id="nextBilling" style="font-size: 1.2rem;">-</div>
+                </div>
+            </div>
+
+            <!-- Subscription -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Your Subscription</h2>
+                </div>
+                <div class="subscription-card">
+                    <div class="subscription-info">
+                        <h3 id="currentPlan">Free Plan</h3>
+                        <span class="subscription-status active" id="subscriptionStatus">
+                            <span>●</span> Active
+                        </span>
+                        <div class="subscription-details">
+                            <span id="subscriptionPrice">$0.00/month</span>
+                            <span id="subscriptionPeriod">Renews on: -</span>
+                        </div>
+                    </div>
+                    <div class="subscription-actions">
+                        <a href="/v2/pricing" class="btn btn-primary" id="upgradeBtn">Upgrade Plan</a>
+                        <button class="btn btn-danger" id="cancelBtn" style="display: none;">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Storage -->
+                <div style="margin-top: 30px;">
+                    <div class="card-header" style="margin-bottom: 0;">
+                        <h3 style="font-size: 1rem;">Storage Usage</h3>
+                    </div>
+                    <div class="storage-bar">
+                        <div class="storage-fill" id="storageFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="storage-info">
+                        <span id="storageText">0 MB used</span>
+                        <span id="storageLimit">0 MB available</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Quick Actions</h2>
+                </div>
+                <div class="quick-actions">
+                    <a href="/download/DOZ-UP-v2.0.0.exe" class="quick-action">
+                        <div class="quick-action-icon">⬇️</div>
+                        <div class="quick-action-label">Download App</div>
+                    </a>
+                    <a href="/my" class="quick-action">
+                        <div class="quick-action-icon">🖼️</div>
+                        <div class="quick-action-label">My Uploads</div>
+                    </a>
+                    <a href="/v2/pricing" class="quick-action">
+                        <div class="quick-action-icon">⭐</div>
+                        <div class="quick-action-label">Upgrade Plan</div>
+                    </a>
+                    <a href="#" class="quick-action" onclick="logout()">
+                        <div class="quick-action-icon">🚪</div>
+                        <div class="quick-action-label">Sign Out</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Transactions -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Recent Transactions</h2>
+                </div>
+                <div id="transactionsContainer">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody">
+                            <!-- Transactions loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="noTransactions" style="display: none;">
+                    <div class="empty-state-icon">📋</div>
+                    <p>No transactions yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // Check if user is logged in
+        function checkAuth() {
+            const userEmail = localStorage.getItem('doz_user_email');
+            if (userEmail) {
+                loadDashboard(userEmail);
+            }
+        }
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            localStorage.setItem('doz_user_email', email);
+            loadDashboard(email);
+        });
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('doz_user_email');
+            document.getElementById('loginView').style.display = 'block';
+            document.getElementById('dashboardView').style.display = 'none';
+        }
+
+        // Load dashboard data
+        async function loadDashboard(email) {
+            document.getElementById('loginView').style.display = 'none';
+            document.getElementById('dashboardView').style.display = 'block';
+
+            const userId = btoa(email).replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
+            const name = email.split('@')[0];
+            const initial = name.charAt(0).toUpperCase();
+
+            // Set user info
+            document.getElementById('userAvatar').textContent = initial;
+            document.getElementById('userName').textContent = name;
+            document.getElementById('welcomeName').textContent = name;
+
+            // Load subscription data
+            try {
+                const subResponse = await fetch(`/api/checkout/subscription/${userId}`);
+                const subData = await subResponse.json();
+
+                if (subData.subscription && subData.isActive) {
+                    const sub = subData.subscription;
+                    const plan = subData.plan;
+
+                    document.getElementById('currentPlan').textContent = sub.planName || plan?.name || 'Unknown Plan';
+                    document.getElementById('subscriptionPrice').textContent =
+                        `$${(sub.amount / 100).toFixed(2)}/${plan?.interval || 'month'}`;
+
+                    const endDate = new Date(sub.currentPeriodEnd);
+                    document.getElementById('subscriptionPeriod').textContent =
+                        `Renews on: ${endDate.toLocaleDateString()}`;
+                    document.getElementById('nextBilling').textContent = endDate.toLocaleDateString();
+
+                    document.getElementById('subscriptionStatus').innerHTML = '<span>●</span> Active';
+                    document.getElementById('subscriptionStatus').className = 'subscription-status active';
+
+                    document.getElementById('planStatus').textContent = 'Active';
+                    document.getElementById('upgradeBtn').textContent = 'Change Plan';
+                    document.getElementById('cancelBtn').style.display = 'block';
+
+                    // Storage
+                    if (plan) {
+                        const storageLimit = plan.storage || 512;
+                        const storageUsed = Math.floor(Math.random() * storageLimit * 0.6); // Mock
+                        const percentage = (storageUsed / storageLimit) * 100;
+
+                        document.getElementById('storageFill').style.width = percentage + '%';
+                        document.getElementById('storageText').textContent = `${storageUsed} MB used`;
+                        document.getElementById('storageLimit').textContent = `${storageLimit} MB total`;
+                        document.getElementById('storageUsed').textContent = `${storageUsed} MB`;
+                    }
+                } else {
+                    // No active subscription
+                    document.getElementById('currentPlan').textContent = 'Free Plan';
+                    document.getElementById('subscriptionStatus').innerHTML = '<span>●</span> No subscription';
+                    document.getElementById('subscriptionStatus').className = 'subscription-status trial';
+                    document.getElementById('planStatus').textContent = 'Free';
+                    document.getElementById('subscriptionPrice').textContent = 'Limited features';
+                    document.getElementById('nextBilling').textContent = '-';
+                }
+
+                // Load transactions
+                const txResponse = await fetch(`/api/checkout/transactions/${userId}`);
+                const txData = await txResponse.json();
+
+                if (txData.transactions && txData.transactions.length > 0) {
+                    const tbody = document.getElementById('transactionsBody');
+                    tbody.innerHTML = txData.transactions.map(tx => `
+                        <tr>
+                            <td>${new Date(tx.createdAt).toLocaleDateString()}</td>
+                            <td>${tx.planId ? 'Subscription - ' + tx.planId : tx.type}</td>
+                            <td>$${((tx.amount || 0) / 100).toFixed(2)}</td>
+                            <td><span class="tx-status ${tx.status}">${tx.status}</span></td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('noTransactions').style.display = 'none';
+                } else {
+                    document.getElementById('transactionsBody').innerHTML = '';
+                    document.getElementById('noTransactions').style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+            }
+
+            // Mock upload count
+            document.getElementById('totalUploads').textContent = Math.floor(Math.random() * 150);
+        }
+
+        // Cancel subscription
+        document.getElementById('cancelBtn').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to cancel your subscription? You will retain access until the end of your billing period.')) {
+                return;
+            }
+
+            const email = localStorage.getItem('doz_user_email');
+            const userId = btoa(email).replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
+
+            try {
+                const response = await fetch('/api/checkout/cancel-subscription', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Subscription cancelled. You will retain access until the end of your billing period.');
+                    loadDashboard(email);
+                } else {
+                    alert('Failed to cancel: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error cancelling subscription');
+            }
+        });
+
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security & Settings - DOZ UP Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .header-actions a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .header-actions a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 25px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #43A047;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+        }
+        .btn-outline:hover {
+            background: #4CAF50;
+            color: white;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            color: #666;
+        }
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+        .stat-value.success { color: #4CAF50; }
+        .stat-value.warning { color: #ff9800; }
+        .stat-value.danger { color: #f44336; }
+        .backup-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .backup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .backup-item:hover {
+            background: #f9f9f9;
+        }
+        .backup-info {
+            flex: 1;
+        }
+        .backup-name {
+            font-weight: 500;
+            color: #333;
+        }
+        .backup-meta {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+        .backup-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .activity-icon.login { background: #e3f2fd; color: #1976d2; }
+        .activity-icon.backup { background: #e8f5e9; color: #388e3c; }
+        .activity-icon.action { background: #fff3e0; color: #f57c00; }
+        .activity-icon.error { background: #ffebee; color: #d32f2f; }
+        .activity-content {
+            flex: 1;
+        }
+        .activity-title {
+            font-weight: 500;
+            color: #333;
+        }
+        .activity-time {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+        .webhook-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .webhook-item {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .webhook-url {
+            font-family: monospace;
+            font-size: 13px;
+            color: #666;
+            word-break: break-all;
+            margin-top: 5px;
+        }
+        .webhook-events {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .webhook-event {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-badge.active { background: #e8f5e9; color: #388e3c; }
+        .status-badge.paused { background: #fff3e0; color: #f57c00; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .modal-header {
+            margin-bottom: 20px;
+        }
+        .modal-header h3 {
+            font-size: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Security & Settings</h1>
+        <div class="header-actions">
+            <a href="/v2/admin">Dashboard</a>
+            <a href="/v2/admin/sales">Sales</a>
+            <a href="/v2/admin/security">Security</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+            <!-- Backup Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Backups</h2>
+                    <button class="btn btn-primary" onclick="createBackup()">Create Backup</button>
+                </div>
+                <div id="backupStats">
+                    <div class="stat-row">
+                        <span class="stat-label">Total Backups</span>
+                        <span class="stat-value" id="totalBackups">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Total Size</span>
+                        <span class="stat-value" id="totalSize">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Compression Ratio</span>
+                        <span class="stat-value success" id="compressionRatio">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Latest Backup</span>
+                        <span class="stat-value" id="latestBackup">-</span>
+                    </div>
+                </div>
+                <h3 style="margin: 20px 0 15px; font-size: 14px; color: #666;">Recent Backups</h3>
+                <div class="backup-list" id="backupList">
+                    <div class="loading">Loading backups...</div>
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Activity Log</h2>
+                    <button class="btn btn-outline btn-sm" onclick="loadActivities()">Refresh</button>
+                </div>
+                <div class="activity-list" id="activityList">
+                    <div class="loading">Loading activities...</div>
+                </div>
+            </div>
+
+            <!-- Webhooks -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Webhooks</h2>
+                    <button class="btn btn-primary" onclick="showWebhookModal()">Add Webhook</button>
+                </div>
+                <div class="webhook-list" id="webhookList">
+                    <div class="loading">Loading webhooks...</div>
+                </div>
+            </div>
+
+            <!-- API Keys -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>API Keys</h2>
+                    <button class="btn btn-primary" onclick="showAPIKeyModal()">Generate Key</button>
+                </div>
+                <p style="color: #666; margin-bottom: 15px;">
+                    API keys allow external applications to access your DOZ UP data securely.
+                </p>
+                <div id="apiKeysList">
+                    <p style="color: #888; text-align: center; padding: 20px;">No API keys generated yet</p>
+                </div>
+            </div>
+
+            <!-- Admin Users -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Admin Users</h2>
+                    <button class="btn btn-primary" onclick="showAdminModal()">Add Admin</button>
+                </div>
+                <div id="adminList">
+                    <div class="loading">Loading admins...</div>
+                </div>
+            </div>
+
+            <!-- Security Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Security Overview</h2>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Active Sessions</span>
+                    <span class="stat-value" id="activeSessions">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Login Attempts (24h)</span>
+                    <span class="stat-value" id="loginAttempts">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Failed Logins (24h)</span>
+                    <span class="stat-value danger" id="failedLogins">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Rate Limit Blocks</span>
+                    <span class="stat-value warning" id="rateLimitBlocks">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webhook Modal -->
+    <div class="modal" id="webhookModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Webhook</h3>
+            </div>
+            <form id="webhookForm">
+                <div class="form-group">
+                    <label>Webhook URL</label>
+                    <input type="url" name="url" required placeholder="https://your-server.com/webhook">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" name="description" placeholder="What is this webhook for?">
+                </div>
+                <div class="form-group">
+                    <label>Events</label>
+                    <select name="events" multiple style="height: 120px;">
+                        <option value="*">All Events</option>
+                        <option value="lead.created">Lead Created</option>
+                        <option value="deal.won">Deal Won</option>
+                        <option value="proposal.accepted">Proposal Accepted</option>
+                        <option value="payment.received">Payment Received</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('webhookModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Webhook</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div class="modal" id="apiKeyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Generate API Key</h3>
+            </div>
+            <form id="apiKeyForm">
+                <div class="form-group">
+                    <label>Key Name</label>
+                    <input type="text" name="name" required placeholder="e.g., Production API">
+                </div>
+                <div class="form-group">
+                    <label>Permissions</label>
+                    <select name="permissions" multiple style="height: 100px;">
+                        <option value="read" selected>Read</option>
+                        <option value="write">Write</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('apiKeyModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Generate Key</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/v2/admin/login.html';
+        }
+
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+
+        async function api(endpoint, options = {}) {
+            const response = await fetch(endpoint, {
+                ...options,
+                headers: { ...headers, ...options.headers }
+            });
+            return response.json();
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Never';
+            const date = new Date(dateStr);
+            return date.toLocaleString();
+        }
+
+        function formatRelativeTime(dateStr) {
+            if (!dateStr) return 'Never';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 24) return `${hours}h ago`;
+            return date.toLocaleDateString();
+        }
+
+        async function loadBackupStats() {
+            const data = await api('/api/admin/backups/stats');
+            if (data.success) {
+                document.getElementById('totalBackups').textContent = data.totalBackups;
+                document.getElementById('totalSize').textContent = data.totalCompressed;
+                document.getElementById('compressionRatio').textContent = data.compressionRatio;
+                document.getElementById('latestBackup').textContent = formatRelativeTime(data.latestBackup);
+            }
+        }
+
+        async function loadBackups() {
+            const data = await api('/api/admin/backups?limit=10');
+            const list = document.getElementById('backupList');
+
+            if (data.success && data.backups.length > 0) {
+                list.innerHTML = data.backups.map(b => `
+                    <div class="backup-item">
+                        <div class="backup-info">
+                            <div class="backup-name">${b.type} backup</div>
+                            <div class="backup-meta">${formatDate(b.createdAt)} - ${b.stats.totalFiles} files</div>
+                        </div>
+                        <div class="backup-actions">
+                            <a href="/api/admin/backups/${b.id}/download" class="btn btn-outline btn-sm">Download</a>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">No backups yet</p>';
+            }
+        }
+
+        async function createBackup() {
+            if (!confirm('Create a new backup?')) return;
+
+            const data = await api('/api/admin/backups', {
+                method: 'POST',
+                body: JSON.stringify({ description: 'Manual backup from admin panel' })
+            });
+
+            if (data.success) {
+                alert('Backup created successfully!');
+                loadBackupStats();
+                loadBackups();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        }
+
+        async function loadActivities() {
+            const data = await api('/api/admin/activities/recent?limit=20');
+            const list = document.getElementById('activityList');
+
+            if (data.success && data.activities.length > 0) {
+                list.innerHTML = data.activities.map(a => {
+                    let iconClass = 'action';
+                    let icon = 'A';
+                    if (a.type.includes('LOGIN')) { iconClass = 'login'; icon = 'L'; }
+                    if (a.type.includes('BACKUP')) { iconClass = 'backup'; icon = 'B'; }
+                    if (a.type.includes('ERROR')) { iconClass = 'error'; icon = 'E'; }
+
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon ${iconClass}">${icon}</div>
+                            <div class="activity-content">
+                                <div class="activity-title">${a.description}</div>
+                                <div class="activity-time">${formatRelativeTime(a.timestamp)} ${a.userName ? '- ' + a.userName : ''}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                list.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">No activities yet</p>';
+            }
+        }
+
+        async function loadWebhooks() {
+            const data = await api('/api/admin/webhooks');
+            const list = document.getElementById('webhookList');
+
+            if (data.success && data.webhooks.length > 0) {
+                list.innerHTML = data.webhooks.map(w => `
+                    <div class="webhook-item">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span class="status-badge ${w.status}">${w.status}</span>
+                            <button class="btn btn-danger btn-sm" onclick="deleteWebhook('${w.id}')">Delete</button>
+                        </div>
+                        <div class="webhook-url">${w.url}</div>
+                        <div class="webhook-events">
+                            ${w.events.map(e => `<span class="webhook-event">${e}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">No webhooks configured</p>';
+            }
+        }
+
+        async function loadAdmins() {
+            const data = await api('/api/admin/users/admins');
+            const list = document.getElementById('adminList');
+
+            if (data.success && data.admins.length > 0) {
+                list.innerHTML = data.admins.map(a => `
+                    <div class="stat-row">
+                        <div>
+                            <strong>${a.username}</strong>
+                            <span style="color:#888;font-size:12px;margin-left:10px;">${a.roleName}</span>
+                        </div>
+                        <span class="status-badge ${a.status}">${a.status}</span>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">No admins</p>';
+            }
+        }
+
+        function showWebhookModal() {
+            document.getElementById('webhookModal').classList.add('show');
+        }
+
+        function showAPIKeyModal() {
+            document.getElementById('apiKeyModal').classList.add('show');
+        }
+
+        function showAdminModal() {
+            alert('Admin creation modal - coming soon!');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        document.getElementById('webhookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const events = Array.from(form.events.selectedOptions).map(o => o.value);
+
+            const data = await api('/api/admin/webhooks', {
+                method: 'POST',
+                body: JSON.stringify({
+                    url: form.url.value,
+                    description: form.description.value,
+                    events
+                })
+            });
+
+            if (data.success) {
+                alert('Webhook created! Secret: ' + (data.webhook.secret || 'Check settings'));
+                closeModal('webhookModal');
+                loadWebhooks();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+
+        document.getElementById('apiKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const permissions = Array.from(form.permissions.selectedOptions).map(o => o.value);
+
+            const data = await api('/api/admin/api-keys', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: form.name.value,
+                    permissions
+                })
+            });
+
+            if (data.success) {
+                alert('API Key Generated!\\n\\nKey: ' + data.apiKey + '\\n\\nSave this key securely - it will not be shown again!');
+                closeModal('apiKeyModal');
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+
+        async function deleteWebhook(id) {
+            if (!confirm('Delete this webhook?')) return;
+            await api(`/api/admin/webhooks/${id}`, { method: 'DELETE' });
+            loadWebhooks();
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '/v2/admin/login.html';
+        }
+
+        // Load all data
+        loadBackupStats();
+        loadBackups();
+        loadActivities();
+        loadWebhooks();
+        loadAdmins();
+
+        // Update security stats (simulated for now)
+        document.getElementById('activeSessions').textContent = '1';
+        document.getElementById('loginAttempts').textContent = '1';
+        document.getElementById('failedLogins').textContent = '0';
+        document.getElementById('rateLimitBlocks').textContent = '0';
+    </script>
+</body>
+</html>

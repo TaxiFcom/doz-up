@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOZ Terminal - SSH Client</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-tertiary: #0f0f1a;
+            --accent: #4CAF50;
+            --accent-hover: #45a049;
+            --text-primary: #ffffff;
+            --text-secondary: #888;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--bg-tertiary);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+            min-height: 50px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent), #2E7D32);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* Connection Tabs */
+        .tabs-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            overflow-x: auto;
+            padding: 0 10px;
+        }
+
+        .tab {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover { background: rgba(76, 175, 80, 0.1); }
+        .tab.active {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: var(--accent);
+        }
+
+        .tab-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #666;
+        }
+
+        .tab-status.connected { background: var(--accent); }
+        .tab-status.connecting { background: #FFC107; animation: pulse 1s infinite; }
+        .tab-status.error { background: #f44336; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tab-close {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            opacity: 0.5;
+            transition: all 0.2s;
+        }
+
+        .tab-close:hover {
+            background: rgba(244, 67, 54, 0.3);
+            opacity: 1;
+        }
+
+        .btn-new-tab {
+            background: transparent;
+            border: 1px dashed var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .btn-new-tab:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Top Bar Actions */
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar - Connections */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s;
+        }
+
+        .sidebar.collapsed { width: 0; overflow: hidden; }
+
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .btn-add {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-add:hover { background: var(--accent-hover); }
+
+        .connections-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .connection-group {
+            margin-bottom: 15px;
+        }
+
+        .group-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 5px 10px;
+            margin-bottom: 5px;
+        }
+
+        .connection-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .connection-item:hover { background: rgba(255,255,255,0.05); }
+        .connection-item.active { background: rgba(76, 175, 80, 0.15); }
+
+        .connection-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .connection-info { flex: 1; }
+        .connection-name { font-weight: 500; font-size: 14px; }
+        .connection-host { font-size: 12px; color: var(--text-secondary); }
+
+        .connection-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #666;
+        }
+
+        .connection-status.online { background: var(--accent); }
+
+        /* Terminal Area */
+        .terminal-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-tertiary);
+        }
+
+        .terminal-header {
+            padding: 8px 15px;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .terminal-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        #terminal-container {
+            flex: 1;
+            padding: 10px;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .welcome-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            max-width: 400px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover { background: var(--accent-hover); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            width: 450px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title { font-size: 18px; font-weight: 600; }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close:hover { color: var(--text-primary); }
+
+        .modal-body { padding: 20px; }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group { flex: 1; }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover { background: rgba(255,255,255,0.05); }
+
+        /* Theme Selector */
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .theme-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .theme-option:hover { transform: scale(1.1); }
+        .theme-option.active { border-color: var(--accent); }
+
+        .theme-option .theme-bg { flex: 1; }
+        .theme-option .theme-fg { height: 8px; }
+
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100%;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            z-index: 100;
+            transition: right 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-panel.show { right: 0; }
+
+        .settings-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-section-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        /* Online indicator */
+        .online-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="/up" class="logo" style="text-decoration: none;">
+            <div class="logo-icon">D</div>
+            <span>DOZ Terminal</span>
+        </a>
+
+        <div class="tabs-container" id="tabsContainer">
+            <!-- Tabs will be added here -->
+        </div>
+
+        <button class="btn-new-tab" onclick="showNewConnectionModal()" title="New Connection">+</button>
+
+        <div class="top-actions">
+            <div class="online-badge">
+                <span class="online-dot"></span>
+                <span id="onlineCount">0</span> online
+            </div>
+            <button class="btn-icon" onclick="toggleSidebar()" title="Toggle Sidebar">☰</button>
+            <button class="btn-icon" onclick="toggleSettings()" title="Settings">⚙</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Connections</span>
+                <button class="btn-add" onclick="showNewConnectionModal()">+</button>
+            </div>
+            <div class="connections-list" id="connectionsList">
+                <div class="connection-group">
+                    <div class="group-title">Saved</div>
+                    <div id="savedConnections">
+                        <!-- Saved connections will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Area -->
+        <div class="terminal-area" id="terminalArea">
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-icon">🖥️</div>
+                <h2 class="welcome-title">Welcome to DOZ Terminal</h2>
+                <p class="welcome-text">
+                    A professional SSH client. Connect to your servers securely with beautiful themes and powerful features.
+                </p>
+                <button class="btn-primary" onclick="showNewConnectionModal()">
+                    <span>+</span> New Connection
+                </button>
+            </div>
+            <div id="activeTerminals" style="display: none; flex: 1; flex-direction: column;">
+                <!-- Active terminal sessions -->
+            </div>
+        </div>
+    </div>
+
+    <!-- New Connection Modal -->
+    <div class="modal-overlay" id="connectionModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">New SSH Connection</h3>
+                <button class="modal-close" onclick="hideNewConnectionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Connection Name</label>
+                    <input type="text" class="form-input" id="connName" placeholder="My Server">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Host</label>
+                        <input type="text" class="form-input" id="connHost" placeholder="192.168.1.1">
+                    </div>
+                    <div class="form-group" style="flex: 0.4;">
+                        <label class="form-label">Port</label>
+                        <input type="number" class="form-input" id="connPort" value="22">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="connUser" placeholder="root">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="connPass" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Theme</label>
+                    <div class="theme-selector" id="themeSelector">
+                        <!-- Themes will be added by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="hideNewConnectionModal()">Cancel</button>
+                <button class="btn-primary" onclick="connect()">Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button class="modal-close" onclick="toggleSettings()">&times;</button>
+        </div>
+        <div class="settings-content">
+            <div class="settings-section">
+                <div class="settings-section-title">Appearance</div>
+                <div class="form-group">
+                    <label class="form-label">Default Theme</label>
+                    <div class="theme-selector" id="defaultThemeSelector"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Font Size</label>
+                    <input type="range" min="10" max="24" value="14" id="fontSize" style="width: 100%;">
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title">Terminal</div>
+                <div class="form-group">
+                    <label class="form-label">Cursor Style</label>
+                    <select class="form-input" id="cursorStyle">
+                        <option value="block">Block</option>
+                        <option value="underline">Underline</option>
+                        <option value="bar">Bar</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+    <script>
+        // Color Themes
+        const themes = {
+            'Dracula': {
+                background: '#282a36',
+                foreground: '#f8f8f2',
+                cursor: '#f8f8f2',
+                cursorAccent: '#282a36',
+                selectionBackground: '#44475a',
+                black: '#21222c',
+                red: '#ff5555',
+                green: '#50fa7b',
+                yellow: '#f1fa8c',
+                blue: '#bd93f9',
+                magenta: '#ff79c6',
+                cyan: '#8be9fd',
+                white: '#f8f8f2',
+                brightBlack: '#6272a4',
+                brightRed: '#ff6e6e',
+                brightGreen: '#69ff94',
+                brightYellow: '#ffffa5',
+                brightBlue: '#d6acff',
+                brightMagenta: '#ff92df',
+                brightCyan: '#a4ffff',
+                brightWhite: '#ffffff'
+            },
+            'Monokai': {
+                background: '#272822',
+                foreground: '#f8f8f2',
+                cursor: '#f8f8f0',
+                black: '#272822',
+                red: '#f92672',
+                green: '#a6e22e',
+                yellow: '#f4bf75',
+                blue: '#66d9ef',
+                magenta: '#ae81ff',
+                cyan: '#a1efe4',
+                white: '#f8f8f2'
+            },
+            'Solarized Dark': {
+                background: '#002b36',
+                foreground: '#839496',
+                cursor: '#839496',
+                black: '#073642',
+                red: '#dc322f',
+                green: '#859900',
+                yellow: '#b58900',
+                blue: '#268bd2',
+                magenta: '#d33682',
+                cyan: '#2aa198',
+                white: '#eee8d5'
+            },
+            'Nord': {
+                background: '#2e3440',
+                foreground: '#d8dee9',
+                cursor: '#d8dee9',
+                black: '#3b4252',
+                red: '#bf616a',
+                green: '#a3be8c',
+                yellow: '#ebcb8b',
+                blue: '#81a1c1',
+                magenta: '#b48ead',
+                cyan: '#88c0d0',
+                white: '#e5e9f0'
+            },
+            'One Dark': {
+                background: '#282c34',
+                foreground: '#abb2bf',
+                cursor: '#528bff',
+                black: '#282c34',
+                red: '#e06c75',
+                green: '#98c379',
+                yellow: '#d19a66',
+                blue: '#61afef',
+                magenta: '#c678dd',
+                cyan: '#56b6c2',
+                white: '#abb2bf'
+            },
+            'Matrix': {
+                background: '#0d0d0d',
+                foreground: '#00ff00',
+                cursor: '#00ff00',
+                black: '#0d0d0d',
+                red: '#ff0000',
+                green: '#00ff00',
+                yellow: '#ffff00',
+                blue: '#0000ff',
+                magenta: '#ff00ff',
+                cyan: '#00ffff',
+                white: '#ffffff'
+            },
+            'Ubuntu': {
+                background: '#300a24',
+                foreground: '#eeeeec',
+                cursor: '#eeeeec',
+                black: '#2e3436',
+                red: '#cc0000',
+                green: '#4e9a06',
+                yellow: '#c4a000',
+                blue: '#3465a4',
+                magenta: '#75507b',
+                cyan: '#06989a',
+                white: '#d3d7cf'
+            },
+            'Cyberpunk': {
+                background: '#0a0a0f',
+                foreground: '#00fff9',
+                cursor: '#ff00ff',
+                black: '#0a0a0f',
+                red: '#ff003c',
+                green: '#00ff9f',
+                yellow: '#fffc58',
+                blue: '#00b3ff',
+                magenta: '#ff00ff',
+                cyan: '#00fff9',
+                white: '#ffffff'
+            }
+        };
+
+        // App State
+        let connections = JSON.parse(localStorage.getItem('doz_connections') || '[]');
+        let sessions = {};
+        let activeSessionId = null;
+        let selectedTheme = 'Dracula';
+        let settings = JSON.parse(localStorage.getItem('doz_terminal_settings') || '{"fontSize": 14, "cursorStyle": "block", "defaultTheme": "Dracula"}');
+
+        // Initialize theme selectors
+        function initThemeSelectors() {
+            const selectors = ['themeSelector', 'defaultThemeSelector'];
+            selectors.forEach(id => {
+                const container = document.getElementById(id);
+                if (!container) return;
+                container.innerHTML = '';
+                Object.keys(themes).forEach(name => {
+                    const theme = themes[name];
+                    const option = document.createElement('div');
+                    option.className = 'theme-option' + (name === selectedTheme ? ' active' : '');
+                    option.title = name;
+                    option.innerHTML = `
+                        <div class="theme-bg" style="background: ${theme.background}"></div>
+                        <div class="theme-fg" style="background: ${theme.green || theme.foreground}"></div>
+                    `;
+                    option.onclick = () => selectTheme(name, id);
+                    container.appendChild(option);
+                });
+            });
+        }
+
+        function selectTheme(name, selectorId) {
+            selectedTheme = name;
+            document.querySelectorAll(`#${selectorId} .theme-option`).forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            if (selectorId === 'defaultThemeSelector') {
+                settings.defaultTheme = name;
+                saveSettings();
+            }
+        }
+
+        function saveSettings() {
+            localStorage.setItem('doz_terminal_settings', JSON.stringify(settings));
+        }
+
+        // Connection Management
+        function saveConnections() {
+            localStorage.setItem('doz_connections', JSON.stringify(connections));
+            renderConnections();
+        }
+
+        function renderConnections() {
+            const container = document.getElementById('savedConnections');
+            if (connections.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary); font-size: 13px; padding: 10px;">No saved connections</p>';
+                return;
+            }
+            container.innerHTML = connections.map((conn, idx) => `
+                <div class="connection-item" data-idx="${idx}" onclick="quickConnect(${idx})">
+                    <div class="connection-icon">🖥️</div>
+                    <div class="connection-info">
+                        <div class="connection-name">${conn.name || conn.host}</div>
+                        <div class="connection-host">${conn.user}@${conn.host}:${conn.port}</div>
+                    </div>
+                    <div class="connection-status ${sessions[conn.id] ? 'online' : ''}"></div>
+                </div>
+            `).join('');
+        }
+
+        function showNewConnectionModal() {
+            document.getElementById('connectionModal').classList.add('show');
+            document.getElementById('connHost').focus();
+        }
+
+        function hideNewConnectionModal() {
+            document.getElementById('connectionModal').classList.remove('show');
+        }
+
+        function quickConnect(idx) {
+            const conn = connections[idx];
+            document.getElementById('connName').value = conn.name || '';
+            document.getElementById('connHost').value = conn.host;
+            document.getElementById('connPort').value = conn.port;
+            document.getElementById('connUser').value = conn.user;
+            document.getElementById('connPass').value = conn.password || '';
+            selectedTheme = conn.theme || settings.defaultTheme;
+            initThemeSelectors();
+            showNewConnectionModal();
+        }
+
+        // Terminal Sessions
+        function connect() {
+            const name = document.getElementById('connName').value;
+            const host = document.getElementById('connHost').value;
+            const port = parseInt(document.getElementById('connPort').value) || 22;
+            const user = document.getElementById('connUser').value;
+            const password = document.getElementById('connPass').value;
+
+            if (!host || !user) {
+                alert('Host and username are required');
+                return;
+            }
+
+            const sessionId = Date.now().toString();
+            const connData = { id: sessionId, name, host, port, user, password, theme: selectedTheme };
+
+            // Save connection if it has a name
+            if (name && !connections.find(c => c.name === name)) {
+                connections.push({ ...connData, password: '' }); // Don't save password
+                saveConnections();
+            }
+
+            hideNewConnectionModal();
+            createSession(sessionId, connData);
+        }
+
+        function createSession(sessionId, connData) {
+            // Hide welcome screen
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('activeTerminals').style.display = 'flex';
+
+            // Create tab
+            const tab = document.createElement('div');
+            tab.className = 'tab active';
+            tab.id = `tab-${sessionId}`;
+            tab.innerHTML = `
+                <span class="tab-status connecting"></span>
+                <span class="tab-name">${connData.name || connData.host}</span>
+                <span class="tab-close" onclick="closeSession('${sessionId}', event)">&times;</span>
+            `;
+            tab.onclick = (e) => {
+                if (!e.target.classList.contains('tab-close')) {
+                    switchSession(sessionId);
+                }
+            };
+
+            // Deactivate other tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tabsContainer').appendChild(tab);
+
+            // Create terminal container
+            const termContainer = document.createElement('div');
+            termContainer.id = `term-${sessionId}`;
+            termContainer.style.cssText = 'flex: 1; display: flex; flex-direction: column;';
+            termContainer.innerHTML = `
+                <div class="terminal-header">
+                    <div class="terminal-info">
+                        <span>${connData.user}@${connData.host}:${connData.port}</span>
+                    </div>
+                    <div class="terminal-actions">
+                        <button class="btn-icon" onclick="copyTerminal('${sessionId}')" title="Copy">📋</button>
+                        <button class="btn-icon" onclick="clearTerminal('${sessionId}')" title="Clear">🗑️</button>
+                    </div>
+                </div>
+                <div id="xterm-${sessionId}" style="flex: 1; padding: 10px;"></div>
+            `;
+
+            // Hide other terminals
+            document.querySelectorAll('#activeTerminals > div').forEach(t => t.style.display = 'none');
+            document.getElementById('activeTerminals').appendChild(termContainer);
+
+            // Create xterm instance
+            const theme = themes[connData.theme] || themes['Dracula'];
+            const term = new Terminal({
+                theme: theme,
+                fontSize: settings.fontSize,
+                fontFamily: 'Consolas, "Courier New", monospace',
+                cursorStyle: settings.cursorStyle,
+                cursorBlink: true,
+                scrollback: 10000
+            });
+
+            const fitAddon = new FitAddon.FitAddon();
+            term.loadAddon(fitAddon);
+            term.loadAddon(new WebLinksAddon.WebLinksAddon());
+
+            term.open(document.getElementById(`xterm-${sessionId}`));
+            fitAddon.fit();
+
+            // Handle resize
+            window.addEventListener('resize', () => fitAddon.fit());
+
+            // Connect via WebSocket
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const ws = new WebSocket(`${wsProtocol}//${window.location.host}/terminal/ssh`);
+
+            ws.onopen = () => {
+                // Send connection details
+                ws.send(JSON.stringify({
+                    type: 'connect',
+                    host: connData.host,
+                    port: connData.port,
+                    username: connData.user,
+                    password: connData.password
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'data') {
+                    term.write(msg.data);
+                } else if (msg.type === 'connected') {
+                    document.querySelector(`#tab-${sessionId} .tab-status`).className = 'tab-status connected';
+                    term.write('\r\n\x1b[32mConnected to ' + connData.host + '\x1b[0m\r\n\r\n');
+                } else if (msg.type === 'error') {
+                    document.querySelector(`#tab-${sessionId} .tab-status`).className = 'tab-status error';
+                    term.write('\r\n\x1b[31mError: ' + msg.message + '\x1b[0m\r\n');
+                } else if (msg.type === 'close') {
+                    document.querySelector(`#tab-${sessionId} .tab-status`).className = 'tab-status';
+                    term.write('\r\n\x1b[33mConnection closed\x1b[0m\r\n');
+                }
+            };
+
+            ws.onclose = () => {
+                const tabStatus = document.querySelector(`#tab-${sessionId} .tab-status`);
+                if (tabStatus) tabStatus.className = 'tab-status';
+            };
+
+            ws.onerror = () => {
+                term.write('\r\n\x1b[31mWebSocket error\x1b[0m\r\n');
+            };
+
+            // Handle terminal input
+            term.onData(data => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'data', data }));
+                }
+            });
+
+            // Handle terminal resize
+            term.onResize(({ cols, rows }) => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'resize', cols, rows }));
+                }
+            });
+
+            // Store session
+            sessions[sessionId] = { term, ws, fitAddon, connData };
+            activeSessionId = sessionId;
+
+            setTimeout(() => fitAddon.fit(), 100);
+        }
+
+        function switchSession(sessionId) {
+            if (activeSessionId === sessionId) return;
+
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${sessionId}`).classList.add('active');
+
+            // Update terminals
+            document.querySelectorAll('#activeTerminals > div').forEach(t => t.style.display = 'none');
+            document.getElementById(`term-${sessionId}`).style.display = 'flex';
+
+            activeSessionId = sessionId;
+            sessions[sessionId].fitAddon.fit();
+            sessions[sessionId].term.focus();
+        }
+
+        function closeSession(sessionId, event) {
+            if (event) event.stopPropagation();
+
+            const session = sessions[sessionId];
+            if (session) {
+                session.ws.close();
+                session.term.dispose();
+                delete sessions[sessionId];
+            }
+
+            document.getElementById(`tab-${sessionId}`).remove();
+            document.getElementById(`term-${sessionId}`).remove();
+
+            // Switch to another session or show welcome
+            const remainingSessions = Object.keys(sessions);
+            if (remainingSessions.length > 0) {
+                switchSession(remainingSessions[0]);
+            } else {
+                document.getElementById('welcomeScreen').style.display = 'flex';
+                document.getElementById('activeTerminals').style.display = 'none';
+                activeSessionId = null;
+            }
+        }
+
+        function clearTerminal(sessionId) {
+            sessions[sessionId]?.term.clear();
+        }
+
+        function copyTerminal(sessionId) {
+            const selection = sessions[sessionId]?.term.getSelection();
+            if (selection) {
+                navigator.clipboard.writeText(selection);
+            }
+        }
+
+        // UI Controls
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            setTimeout(() => {
+                if (activeSessionId && sessions[activeSessionId]) {
+                    sessions[activeSessionId].fitAddon.fit();
+                }
+            }, 300);
+        }
+
+        function toggleSettings() {
+            document.getElementById('settingsPanel').classList.toggle('show');
+        }
+
+        // Live stats
+        function connectLiveStats() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const ws = new WebSocket(`${wsProtocol}//${window.location.host}/ws/live?type=web`);
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.stats) {
+                        document.getElementById('onlineCount').textContent = msg.stats.online || 0;
+                    }
+                } catch (e) {}
+            };
+            ws.onclose = () => setTimeout(connectLiveStats, 5000);
+        }
+
+        // Settings handlers
+        document.getElementById('fontSize').addEventListener('input', (e) => {
+            settings.fontSize = parseInt(e.target.value);
+            saveSettings();
+            Object.values(sessions).forEach(s => {
+                s.term.options.fontSize = settings.fontSize;
+                s.fitAddon.fit();
+            });
+        });
+
+        document.getElementById('cursorStyle').addEventListener('change', (e) => {
+            settings.cursorStyle = e.target.value;
+            saveSettings();
+            Object.values(sessions).forEach(s => {
+                s.term.options.cursorStyle = settings.cursorStyle;
+            });
+        });
+
+        // Initialize
+        selectedTheme = settings.defaultTheme;
+        initThemeSelectors();
+        renderConnections();
+        connectLiveStats();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+                e.preventDefault();
+                showNewConnectionModal();
+            }
+            if (e.ctrlKey && e.key === 'w' && activeSessionId) {
+                e.preventDefault();
+                closeSession(activeSessionId);
+            }
+        });
+    </script>
+</body>
+</html>

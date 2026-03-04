@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Uploads - DOZ UP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            font-size: 2rem;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .stat { display: flex; align-items: center; gap: 5px; }
+        .stat-value { color: #4CAF50; font-weight: bold; }
+        .back-link {
+            color: #4CAF50;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .auth-notice {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        .auth-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .auth-icon { font-size: 1.5rem; }
+        .auth-text { color: #aaa; font-size: 0.9rem; }
+        .auth-text strong { color: #4CAF50; }
+        .device-id-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .device-id-label {
+            color: #888;
+            font-size: 0.75rem;
+            margin-bottom: 3px;
+        }
+        .device-id-value {
+            color: #4CAF50;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+        .btn-copy-id {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+        .btn-copy-id:hover { background: #45a049; }
+        .no-uploads {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .no-uploads h2 { margin-bottom: 10px; color: #888; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .upload-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .upload-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .upload-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .upload-info {
+            padding: 12px;
+        }
+        .upload-date {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .upload-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .btn-copy {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-copy:hover { background: #45a049; }
+        .btn-delete {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+        .btn-delete:hover { background: rgba(244, 67, 54, 0.3); }
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+        }
+        .error {
+            text-align: center;
+            padding: 60px;
+            color: #f44336;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show { display: flex; }
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1001;
+        }
+        .toast.show { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Live indicator */
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
+        }
+        #onlineCount { color: #4CAF50; font-weight: bold; }
+    </style>
+    <!-- Time-Based Theme Styles -->
+    <link rel="stylesheet" href="/css/time-theme.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <a href="/up" class="back-link">← Back to Home</a>
+                <h1>My Uploads</h1>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="live-dot"></span>
+                    <span id="onlineCount">0</span> online
+                </div>
+                <div class="stat">Uploads: <span class="stat-value" id="totalCount">-</span></div>
+                <div class="stat">Browsers: <span class="stat-value" id="browserCount">-</span></div>
+            </div>
+        </header>
+
+        <div class="auth-notice">
+            <div class="auth-header">
+                <span class="auth-icon">🔐</span>
+                <div class="auth-text">
+                    Authenticated via <strong>Device Fingerprint</strong>.
+                    Only uploads from your device are shown here.
+                </div>
+            </div>
+            <div class="device-id-box" id="deviceIdBox" style="display: none;">
+                <div>
+                    <div class="device-id-label">Your Device ID</div>
+                    <div class="device-id-value" id="deviceIdDisplay">-</div>
+                </div>
+                <button class="btn-copy-id" onclick="copyDeviceId()">Copy ID</button>
+            </div>
+        </div>
+
+        <div id="content">
+            <div class="loading">Loading your uploads...</div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <img id="modalImg" src="">
+    </div>
+
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let deviceId = urlParams.get('device');
+        const content = document.getElementById('content');
+
+        // Real-time sync settings
+        const SYNC_INTERVAL = 3000; // Check every 3 seconds
+        let knownUploadIds = new Set();
+        let syncInterval = null;
+
+        // Multi-device tracking: remember ALL device IDs across sessions
+        function getAllDeviceIds() {
+            try {
+                return JSON.parse(localStorage.getItem('doz_all_device_ids') || '[]');
+            } catch (e) { return []; }
+        }
+        function addDeviceId(id) {
+            if (!id) return;
+            const ids = getAllDeviceIds();
+            if (!ids.includes(id)) {
+                ids.push(id);
+                localStorage.setItem('doz_all_device_ids', JSON.stringify(ids));
+            }
+        }
+        function getUploadsUrl() {
+            const allIds = getAllDeviceIds();
+            if (allIds.length > 1) {
+                return `/api/uploads?devices=${encodeURIComponent(allIds.join(','))}`;
+            }
+            return `/api/uploads?device=${encodeURIComponent(deviceId)}`;
+        }
+
+        // Generate browser fingerprint for automatic device recognition
+        async function getBrowserFingerprint() {
+            const components = [];
+
+            // Screen info
+            components.push(screen.width + 'x' + screen.height);
+            components.push(screen.colorDepth);
+            components.push(window.devicePixelRatio || 1);
+
+            // Timezone
+            components.push(Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+            // Language
+            components.push(navigator.language);
+            components.push(navigator.languages ? navigator.languages.join(',') : '');
+
+            // Platform
+            components.push(navigator.platform);
+            components.push(navigator.hardwareConcurrency || 0);
+
+            // Canvas fingerprint
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 200;
+                canvas.height = 50;
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#f60';
+                ctx.fillRect(0, 0, 100, 50);
+                ctx.fillStyle = '#069';
+                ctx.fillText('DOZ UP FP', 2, 15);
+                ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                ctx.fillText('DOZ UP FP', 4, 17);
+                components.push(canvas.toDataURL().slice(-50));
+            } catch (e) {
+                components.push('no-canvas');
+            }
+
+            // WebGL info
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        components.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+                        components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+                    }
+                }
+            } catch (e) {
+                components.push('no-webgl');
+            }
+
+            // Create hash
+            const str = components.join('|||');
+            const msgBuffer = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Initialize device recognition
+        async function initDevice() {
+            const browserFingerprint = await getBrowserFingerprint();
+            console.log('Browser fingerprint:', browserFingerprint);
+
+            // If device ID passed from desktop app, link it with browser fingerprint
+            if (deviceId) {
+                localStorage.setItem('doz_device_id', deviceId);
+                addDeviceId(deviceId); // Track this device ID alongside previous ones
+                localStorage.setItem('doz_browser_fp', browserFingerprint);
+                // Register link on server
+                try {
+                    await fetch('/api/link-device', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ deviceId, browserFingerprint })
+                    });
+                } catch (e) {
+                    console.log('Link registration failed:', e);
+                }
+            } else {
+                // Try to get device ID from localStorage first
+                deviceId = localStorage.getItem('doz_device_id');
+                if (deviceId) addDeviceId(deviceId); // Track existing device ID
+
+                // If not in localStorage, try to lookup by browser fingerprint
+                if (!deviceId) {
+                    try {
+                        const res = await fetch(`/api/lookup-device?fp=${browserFingerprint}`);
+                        const data = await res.json();
+                        if (data.success && data.deviceId) {
+                            deviceId = data.deviceId;
+                            localStorage.setItem('doz_device_id', deviceId);
+                        }
+                    } catch (e) {
+                        console.log('Device lookup failed:', e);
+                    }
+                }
+            }
+
+            if (!deviceId) {
+                content.innerHTML = `
+                    <div class="error">
+                        <h2>No Device Linked</h2>
+                        <p>Open this page from the DOZ UP desktop app first to link your device.</p>
+                        <p style="margin-top: 20px;">Right-click tray icon → "My Uploads"</p>
+                        <p style="margin-top: 10px; color: #666;">After linking once, this browser will remember your device.</p>
+                        <p style="margin-top: 15px; font-size: 0.8rem; color: #555;">Browser Fingerprint: ${browserFingerprint.substring(0, 16)}...</p>
+                    </div>
+                `;
+            } else {
+                // Show full device ID
+                document.getElementById('deviceIdBox').style.display = 'flex';
+                document.getElementById('deviceIdDisplay').textContent = deviceId;
+                loadUploads();
+                loadDeviceStats();
+                // Start real-time sync
+                syncInterval = setInterval(checkForNewUploads, SYNC_INTERVAL);
+            }
+        }
+
+        // Load device stats (linked browsers)
+        async function loadDeviceStats() {
+            try {
+                const res = await fetch(`/api/device-stats?device=${deviceId}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('browserCount').textContent = data.linkedBrowsers;
+                }
+            } catch (e) {
+                console.log('Failed to load device stats:', e);
+            }
+        }
+
+        // Start initialization
+        initDevice();
+
+        function copyDeviceId() {
+            navigator.clipboard.writeText(deviceId);
+            showToast('Device ID copied!');
+        }
+
+        async function loadUploads() {
+            try {
+                const res = await fetch(getUploadsUrl());
+                const data = await res.json();
+
+                if (!data.success) {
+                    throw new Error(data.error);
+                }
+
+                document.getElementById('totalCount').textContent = data.count;
+
+                // Track known uploads
+                knownUploadIds = new Set(data.uploads.map(u => u.id));
+
+                if (data.uploads.length === 0) {
+                    content.innerHTML = `
+                        <div class="no-uploads">
+                            <h2>No uploads yet</h2>
+                            <p>Use Ctrl+Shift+S to capture and upload screenshots!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                content.innerHTML = `<div class="grid" id="uploadsGrid">${data.uploads.map(renderUpload).join('')}</div>`;
+            } catch (err) {
+                content.innerHTML = `<div class="error"><h2>Error</h2><p>${err.message}</p></div>`;
+            }
+        }
+
+        // Real-time sync: check for new uploads
+        async function checkForNewUploads() {
+            try {
+                const res = await fetch(getUploadsUrl());
+                const data = await res.json();
+
+                if (!data.success) return;
+
+                // Find new uploads
+                const newUploads = data.uploads.filter(u => !knownUploadIds.has(u.id));
+
+                if (newUploads.length > 0) {
+                    // Update count
+                    document.getElementById('totalCount').textContent = data.count;
+
+                    // Get or create grid
+                    let grid = document.getElementById('uploadsGrid');
+                    if (!grid) {
+                        content.innerHTML = `<div class="grid" id="uploadsGrid"></div>`;
+                        grid = document.getElementById('uploadsGrid');
+                    }
+
+                    // Add new uploads at the beginning with animation
+                    newUploads.forEach(upload => {
+                        knownUploadIds.add(upload.id);
+                        const div = document.createElement('div');
+                        div.innerHTML = renderUpload(upload);
+                        const card = div.firstElementChild;
+                        card.style.animation = 'fadeIn 0.5s';
+                        grid.insertBefore(card, grid.firstChild);
+                    });
+
+                    // Show notification
+                    showToast(`${newUploads.length} new upload${newUploads.length > 1 ? 's' : ''} synced!`);
+                }
+            } catch (err) {
+                console.error('Sync error:', err);
+            }
+        }
+
+        function renderUpload(upload) {
+            const date = new Date(upload.timestamp).toLocaleString();
+            return `
+                <div class="upload-card" data-id="${upload.id}">
+                    <img class="upload-img" src="${upload.url}?raw=1" onclick="openModal('${upload.url}?raw=1')" loading="lazy">
+                    <div class="upload-info">
+                        <div class="upload-date">${date}</div>
+                        <div class="upload-actions">
+                            <button class="btn btn-copy" onclick="copyUrl('${upload.url}')">Copy URL</button>
+                            <button class="btn btn-delete" onclick="deleteUpload('${upload.id}')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openModal(url) {
+            document.getElementById('modalImg').src = url.includes('?') ? url : url + '?raw=1';
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        document.getElementById('modal').onclick = function(e) {
+            if (e.target === this) closeModal();
+        };
+
+        document.onkeydown = function(e) {
+            if (e.key === 'Escape') closeModal();
+        };
+
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url);
+            showToast('Copied to clipboard!');
+        }
+
+        async function deleteUpload(id) {
+            if (!confirm('Delete this upload?')) return;
+
+            try {
+                const res = await fetch(`/api/uploads/${id}?device=${deviceId}`, { method: 'DELETE' });
+                const data = await res.json();
+
+                if (data.success) {
+                    document.querySelector(`[data-id="${id}"]`).remove();
+                    const count = document.querySelectorAll('.upload-card').length;
+                    document.getElementById('totalCount').textContent = count;
+                    showToast('Deleted!');
+
+                    if (count === 0) {
+                        content.innerHTML = `
+                            <div class="no-uploads">
+                                <h2>No uploads yet</h2>
+                                <p>Use Ctrl+Shift+S to capture and upload screenshots!</p>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (err) {
+                alert('Failed to delete: ' + err.message);
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // ============ LIVE USER TRACKING ============
+        let liveSocket = null;
+
+        function connectLiveSocket() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${wsProtocol}//${window.location.host}/ws/live?device=${deviceId || 'web'}&type=web`;
+
+            liveSocket = new WebSocket(wsUrl);
+
+            liveSocket.onopen = () => {
+                console.log('[Live] Connected');
+                // Send ping every 30 seconds
+                setInterval(() => {
+                    if (liveSocket && liveSocket.readyState === WebSocket.OPEN) {
+                        liveSocket.send(JSON.stringify({ type: 'ping' }));
+                    }
+                }, 30000);
+            };
+
+            liveSocket.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'stats' || msg.type === 'welcome') {
+                        const stats = msg.stats || msg;
+                        document.getElementById('onlineCount').textContent = stats.online || 0;
+                    }
+                } catch (e) {}
+            };
+
+            liveSocket.onclose = () => {
+                console.log('[Live] Disconnected, reconnecting...');
+                setTimeout(connectLiveSocket, 5000);
+            };
+
+            liveSocket.onerror = () => {
+                console.log('[Live] Connection error');
+            };
+        }
+
+        // Connect after page loads
+        setTimeout(connectLiveSocket, 1000);
+    </script>
+
+</body>
+</html>

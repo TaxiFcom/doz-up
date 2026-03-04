@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - DOZ UP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(145deg, #0a0a12 0%, #1a1a2e 50%, #0f0f1a 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 500px;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .checkmark {
+            width: 50px;
+            height: 50px;
+            stroke: #4CAF50;
+            stroke-width: 3;
+            fill: none;
+            animation: draw 0.6s ease-out 0.3s forwards;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+        }
+
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .message {
+            color: #888;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .plan-info {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .plan-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .plan-details {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .receipt-info {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">
+            <svg class="checkmark" viewBox="0 0 50 50">
+                <path d="M14 27 L22 35 L37 16"/>
+            </svg>
+        </div>
+
+        <h1>Payment Successful!</h1>
+        <p class="message">
+            Thank you for subscribing to DOZ UP. Your account has been upgraded and you now have access to all premium features.
+        </p>
+
+        <div class="plan-info">
+            <div class="plan-name" id="planName">Pro Plan</div>
+            <div class="plan-details" id="planDetails">
+                Your subscription is now active
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/download/DOZ-UP-v2.0.0.exe" class="btn btn-primary">Download App</a>
+            <a href="/v2/dashboard" class="btn btn-secondary">Go to Dashboard</a>
+        </div>
+
+        <div class="receipt-info">
+            A confirmation email has been sent to your email address.<br>
+            Transaction ID: <span id="transactionId">-</span>
+        </div>
+    </div>
+
+    <script>
+        // Get plan from URL
+        const params = new URLSearchParams(window.location.search);
+        const planId = params.get('plan');
+        const sessionId = params.get('cko-session-id') || params.get('session_id');
+
+        // Plan names mapping
+        const planNames = {
+            'starter_monthly': 'Starter Monthly',
+            'starter_yearly': 'Starter Yearly',
+            'pro_monthly': 'Pro Monthly',
+            'pro_yearly': 'Pro Yearly',
+            'business_monthly': 'Business Monthly',
+            'business_yearly': 'Business Yearly'
+        };
+
+        if (planId && planNames[planId]) {
+            document.getElementById('planName').textContent = planNames[planId];
+        }
+
+        if (sessionId) {
+            document.getElementById('transactionId').textContent = sessionId.substring(0, 16) + '...';
+        } else {
+            document.getElementById('transactionId').textContent = 'TXN-' + Date.now();
+        }
+
+        // Confetti effect
+        function createConfetti() {
+            const colors = ['#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-20px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+        }
+
+        createConfetti();
+    </script>
+</body>
+</html>
