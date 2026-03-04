@@ -1,0 +1,149 @@
+   if (pathPart === ADMIN_COMMAND_CENTER_UUID) {
+            return res.sendFile(path.join(__dirname, 'public', 'admin', 'command-center.html'));
+        }
+
+        // Check if path looks like a UUID (8-4-4-4-12 format) or image filename
+        const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\.png|\.jpg|\.jpeg|\.gif|\.webp)?$/i;
+        if (uuidPattern.test(pathPart)) {
+            // Rewrite to /i/:filename internally
+            req.url = '/i/' + pathPart + (req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '');
+        }
+    }
+    next();
+});
+
+// Static file caching headers with CDN optimization
+const staticOptions = {
+    maxAge: '1d',
+    etag: false,
+    lastModified: false,
+    setHeaders: (res, filePath) => {
+        // HTML pages
+        if (filePath.includes('.html')) {
+            if (filePath.includes('/lp/') || filePath.includes('\\lp\\')) {
+                // Landing pages: short cache for fast revisits + CDN edge caching
+                res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+                res.setHeader('CDN-Cache-Control', 'public, max-age=300');
+                res.setHeader('Cloudflare-CDN-Cache-Control', 'public, max-age=300');
+            } else {
+                // All other HTML: never cache for instant live updates
+                res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+                res.setHeader('Pragma', 'no-cache');
+                res.setHeader('Expires', '0');
+                res.setHeader('CDN-Cache-Control', 'no-store');
+                res.setHeader('Cloudflare-CDN-Cache-Control', 'no-store');
+            }
+        }
+        // Service worker - never cache
+        else if (filePath.includes('sw.js')) {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        }
+        // JS/CSS - cache with short TTL for quick updates
+        else if (filePath.includes('.js') || filePath.includes('.css')) {
+            res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+            res.setHeader('CDN-Cache-Control', 'public, max-age=3600');
+            res.setHeader('Cloudflare-CDN-Cache-Control', 'public, max-age=3600');
+        }
+        // Images cached for 1 month
+        else if (filePath.match(/\.(png|jpg|jpeg|gif|ico|svg|webp|avif)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+            res.setHeader('CDN-Cache-Control', 'public, max-age=2592000');
+            res.setHeader('Cloudflare-CDN-Cache-Control', 'public, max-age=2592000');
+        }
+        // Fonts cached for 1 year
+        else if (filePath.match(/\.(woff|woff2|ttf|eot)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            res.setHeader('CDN-Cache-Control', 'public, max-age=31536000');
+            res.setHeader('Cloudflare-CDN-Cache-Control', 'public, max-age=31536000');
+        }
+    }
+};
+
+// ============ UPLOAD METRICS (in-memory, hourly rolling window) ============
+const uploadMetrics = {
+    successCount: 0,
+    failureCount: 0,
+    totalResponseTimeMs: 0,
+    requestCount: 0,
+    lastReset: Date.now(),
+    getSuccessRate() {
+        const total = this.successCount + this.failureCount;
+        return total === 0 ? 1.0 : this.successCount / total;
+    },
+    getAvgResponseTime() {
+        return this.requestCount === 0 ? 0 : Math.round(this.totalResponseTimeMs / this.requestCount);
+    },
+    record(success, responseTimeMs) {
+        if (success) this.successCount++;
+        else this.failureCount++;
+        this.totalResponseTimeMs += (responseTimeMs || 0);
+        this.requestCount++;
+    }
+};
+setInterval(() => {
+    uploadMetrics.successCount = 0;
+    uploadMetrics.failureCount = 0;
+    uploadMetrics.totalResponseTimeMs = 0;
+    uploadMetrics.requestCount = 0;
+    uploadMetrics.lastReset = Date.now();
+}, 3600000);
+
+// In-memory response cache for ultra-fast API responses
+const responseCache = new Map();
+const CACHE_TTL = 60000; // 1 minute cache
+
+function getCached(key) {
+    const cached = responseCache.get(key);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return cached.data;
+    }
+    responseCache.delete(key);
+    return null;
+}
+
+function setCache(key, data) {
+    // Limit cache size to prevent memory issues
+    if (responseCache.size > 1000) {
+        const firstKey = responseCache.keys().next().value;
+        responseCache.delete(firstKey);
+    }
+    responseCache.set(key, { data, timestamp: Date.now() });
+}
+
+// ============ FILE STATS CACHE FOR PERFORMANCE ============
+const fileStatsCache = new Map();
+const FILE_CACHE_TTL = 60000; // 1 minute cache
+
+async function getFileInfo(filename) {
+    const cacheKey = filename;
+    const cached = fileStatsCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < FILE_CACHE_TTL) {
+        return cached.data;
+    }
+
+    const baseName = filename.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '');
+    const extensions = ['', '.png', '.jpg', '.jpeg', '.gif', '.webp'];
+
+    for (const ext of extensions) {
+        const testName = ext ? baseName + ext : filename;
+        const testPath = path.join(uploadsDir, testName);
+        try {
+            const stats = await fs.promises.stat(testPath);
+            const result = {
+                exists: true,
+                path: testPath,
+                size: stats.size,
+                sizeKB: Math.round(stats.size / 1024)
+            };
+            fileStatsCache.set(cacheKey, { data: result, timestamp: Date.now() });
+
+            // Limit cache size
+            if (fileStatsCache.size > 5000) {
+                const firstKey = fileStatsCache.keys().next().value;
+                fileStatsCache.delete(firstKey);
+            }
+            return result;
+        } catch (e) {
+           
