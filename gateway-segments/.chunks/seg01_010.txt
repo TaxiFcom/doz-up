@@ -1,0 +1,179 @@
+         client.conversationHistory.push({ role: 'assistant', content: data.message });
+                    ws.send(JSON.stringify({ type: 'support_reply_sent', fingerprintId: data.fingerprintId }));
+                    console.log(`[WS Admin] ${admin.username} replied to support user ${data.fingerprintId}`);
+                } else {
+                    ws.send(JSON.stringify({ type: 'support_reply_failed', reason: 'User disconnected' }));
+                }
+            }
+
+            // Admin requests list of active support chats
+            if (data.type === 'get_support_chats') {
+                const chats = [];
+                supportClients.forEach((client, fpId) => {
+                    if (client.conversationHistory.length > 0) {
+                        const lastMsg = client.conversationHistory[client.conversationHistory.length - 1];
+                        chats.push({
+                            fingerprintId: fpId,
+                            messageCount: client.conversationHistory.length,
+                            lastMessage: lastMsg.content?.substring(0, 100),
+                            lastRole: lastMsg.role,
+                            isConnected: client.ws?.readyState === WebSocket.OPEN
+                        });
+                    }
+                });
+                ws.send(JSON.stringify({ type: 'support_chats', chats }));
+            }
+        } catch (e) {}
+    });
+
+    ws.on('close', () => {
+        unsubscribe();
+        adminConnections.delete(connectionId);
+        console.log(`[WS Admin] ${admin.username} disconnected - Total: ${adminConnections.size}`);
+    });
+
+    ws.on('error', () => {
+        unsubscribe();
+        adminConnections.delete(connectionId);
+    });
+});
+
+// Broadcast notification to all connected admins
+function broadcastAdminNotification(notification) {
+    adminConnections.forEach((conn) => {
+        if (conn.ws.readyState === WebSocket.OPEN) {
+            // Check if notification targets this admin
+            if (!notification.targetUsers || notification.targetUsers.includes(conn.user.id)) {
+                conn.ws.send(JSON.stringify({
+                    type: 'notification',
+                    notification
+                }));
+            }
+        }
+    });
+}
+
+// ============ LIVE MONITOR WEBSOCKET ============
+const monitorWss = new WebSocket.Server({ noServer: true });
+const monitorConnections = new Set();
+
+// Live monitor state
+const monitorState = {
+    todayStats: {
+        visitors: 0,
+        signups: 0,
+        uploads: 0,
+        shares: 0,
+        sales: 0,
+        revenue: 0
+    },
+    recentActivities: [],
+    recentSales: [],
+    activeIssues: [],
+    geoData: {},
+    timeline: new Array(24).fill(0),
+    lastReset: new Date().toDateString()
+};
+
+// Reset daily stats at midnight
+function checkDailyReset() {
+    const today = new Date().toDateString();
+    if (monitorState.lastReset !== today) {
+        monitorState.todayStats = { visitors: 0, signups: 0, uploads: 0, shares: 0, sales: 0, revenue: 0 };
+        monitorState.recentActivities = [];
+        monitorState.recentSales = [];
+        monitorState.timeline = new Array(24).fill(0);
+        monitorState.lastReset = today;
+    }
+}
+
+// Broadcast to all monitor connections
+function broadcastMonitor(data) {
+    monitorConnections.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN) {
+            try {
+                ws.send(JSON.stringify(data));
+            } catch (e) {}
+        }
+    });
+}
+
+// Track activity for monitor
+function trackMonitorActivity(action, details = {}) {
+    checkDailyReset();
+
+    const activity = {
+        action,
+        description: details.description || action,
+        page: details.page || '',
+        device: details.device || '',
+        user: details.user || 'Anonymous',
+        country: details.country || '',
+        city: details.city || '',
+        timestamp: new Date().toISOString()
+    };
+
+    monitorState.recentActivities.unshift(activity);
+    if (monitorState.recentActivities.length > 100) {
+        monitorState.recentActivities.pop();
+    }
+
+    // Update timeline
+    const hour = new Date().getHours();
+    monitorState.timeline[hour]++;
+
+    // Update geo data
+    if (details.country) {
+        monitorState.geoData[details.country] = monitorState.geoData[details.country] || { count: 0, cities: {} };
+        monitorState.geoData[details.country].count++;
+        if (details.city) {
+            monitorState.geoData[details.country].cities[details.city] =
+                (monitorState.geoData[details.country].cities[details.city] || 0) + 1;
+        }
+    }
+
+    // Update stats
+    if (action === 'visit') monitorState.todayStats.visitors++;
+    if (action === 'signup') monitorState.todayStats.signups++;
+    if (action === 'upload') monitorState.todayStats.uploads++;
+    if (action === 'share') monitorState.todayStats.shares++;
+
+    broadcastMonitor({ type: 'activity', ...activity });
+
+    if (details.country) {
+        broadcastMonitor({ type: 'geo', country: details.country, city: details.city });
+    }
+}
+
+// Track sale for monitor
+function trackMonitorSale(sale) {
+    checkDailyReset();
+
+    const saleData = {
+        plan: sale.plan || 'Subscription',
+        amount: sale.amount || 0,
+        email: sale.email ? sale.email.replace(/(.{2}).*(@.*)/, '$1***$2') : 'Customer',
+        timestamp: new Date().toISOString()
+    };
+
+    monitorState.recentSales.unshift(saleData);
+    if (monitorState.recentSales.length > 50) {
+        monitorState.recentSales.pop();
+    }
+
+    monitorState.todayStats.sales++;
+    monitorState.todayStats.revenue += sale.amount || 0;
+
+    broadcastMonitor({ type: 'sale', ...saleData });
+    broadcastMonitor({
+        type: 'stats',
+        todayRevenue: monitorState.todayStats.revenue,
+        todaySales: monitorState.todayStats.sales
+    });
+}
+
+// Track issue for monitor
+function trackMonitorIssue(issue) {
+    const issueData = {
+        message: issue.message || 'Unknown error',
+        severity
