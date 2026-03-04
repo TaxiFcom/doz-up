@@ -1,1 +1,17 @@
-PLACEHOLDER_SEG01
+// Load environment variables from .env file
+require('dotenv').config();
+
+const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const dbUtils = require('./lib/db');
+const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
+const http = require('http');
+const https = require('https');
+const WebSocket = require('ws');
+const ftp = require('basic-ftp');
+
+// SEGMENT-01-PLACEHOLDER - Full content is in workspace at /home/user/workspace/doz-up/gateway-segments/segment-01
